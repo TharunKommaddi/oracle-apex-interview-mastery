@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery Interview Questions - APEX Interview Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
+                Oracle APEX Interview Mastery
+            </div>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html" class="active"><i class="fas fa-j"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">jQuery Interview Questions</h1>
+        <p class="page-subtitle">Master jQuery for enhanced APEX user interfaces and DOM manipulation</p>
+    </section>
+
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fas fa-j"></i> Filter Questions
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
+                <button class="filter-tab" onclick="filterQuestions('basic')">Basic</button>
+                <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate</button>
+                <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced</button>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search jQuery questions..." 
+                       onkeyup="searchQuestions()" id="searchInput">
+            </div>
+        </div>
+
+        <div id="questionsContainer" class="questions-container">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Ready to Master jQuery?</h3>
+            <p>Essential jQuery knowledge for enhanced APEX development</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="javascript-questions.html">JavaScript Questions</a>
+                <a href="oracle-apex.html">APEX Questions</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // jQuery Questions Data
+        const jqueryQuestions = [
+            {
+                id: 1,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What is jQuery and what are its main advantages?',
+                answer: 'jQuery is a fast, lightweight JavaScript library that simplifies HTML manipulation, event handling, animations, and AJAX. It provides cross-browser compatibility and easier DOM manipulation.',
+                language: 'jQuery',
+                code: `// jQuery Advantages Demo
+
+// 1. SIMPLIFIED DOM SELECTION AND MANIPULATION
+// Vanilla JavaScript
+const elements = document.querySelectorAll('.my-class');
+for (let i = 0; i < elements.length; i++) {
+    elements[i].style.color = 'red';
+    elements[i].innerHTML = 'Updated text';
+}
+
+// jQuery equivalent (much simpler)
+$('.my-class').css('color', 'red').html('Updated text');
+
+// 2. CROSS-BROWSER COMPATIBILITY
+// jQuery handles browser differences automatically
+$('#myElement').fadeIn(500); // Works across all browsers
+
+// 3. METHOD CHAINING
+$('#myButton')
+    .addClass('active')
+    .css('background', 'blue')
+    .fadeIn(300)
+    .on('click', function() {
+        alert('Button clicked!');
+    });
+
+// 4. EASY EVENT HANDLING
+// Vanilla JavaScript
+document.getElementById('btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('Clicked');
+});
+
+// jQuery
+$('#btn').click(function(e) {
+    e.preventDefault();
+    console.log('Clicked');
+});
+
+// 5. SIMPLIFIED AJAX
+// Vanilla JavaScript AJAX (verbose)
+const xhr = new XMLHttpRequest();
+xhr.open('GET', '/api/data');
+xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        console.log(data);
+    }
+};
+xhr.send();
+
+// jQuery AJAX (simple)
+$.get('/api/data', function(data) {
+    console.log(data);
+});
+
+// 6. BUILT-IN ANIMATIONS
+$('#element').slideDown(300);
+$('#element').fadeOut(500);
+$('#element').animate({
+    left: '250px',
+    opacity: 0.5
+}, 1000);
+
+// 7. EASY CSS MANIPULATION
+$('.box').css({
+    'width': '200px',
+    'height': '200px',
+    'background-color': '#f0f0f0',
+    'border': '1px solid #ccc'
+});
+
+// 8. POWERFUL SELECTORS
+$('div:first-child');           // First child div
+$('input[type="text"]');        // Text inputs
+$('li:nth-child(odd)');         // Odd list items
+$('a:contains("Click me")');    // Links containing text
+$('div').filter('.highlight');  // Filtered selection
+
+// 9. DOM READY EVENT
+$(document).ready(function() {
+    // Code runs when DOM is ready (before images load)
+    console.log('DOM is ready');
+});
+
+// Shorthand
+$(function() {
+    console.log('DOM is ready - shorthand');
+});
+
+// 10. EASY FORM HANDLING
+$('#myForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: $('#name').val(),
+        email: $('#email').val(),
+        message: $('#message').val()
+    };
+    
+    console.log('Form data:', formData);
+   
+   // Validate and submit
+   if (formData.name && formData.email) {
+       $.post('/submit-form', formData)
+           .done(function(response) {
+               alert('Form submitted successfully!');
+           })
+           .fail(function() {
+               alert('Error submitting form');
+           });
+   }
+});`
+           },
+           {
+               id: 2,
+               category: 'basic',
+               difficulty: 'basic',
+               question: 'Explain different jQuery selectors and provide examples.',
+               answer: 'jQuery selectors are used to find and select HTML elements. They are based on CSS selectors but with additional jQuery-specific selectors.',
+               language: 'jQuery',
+               code: `// jQuery Selectors - Comprehensive Guide
+
+// 1. BASIC SELECTORS
+$('*');                    // Universal selector - all elements
+$('div');                  // Element selector - all div elements
+$('.className');           // Class selector - elements with class
+$('#elementId');           // ID selector - element with specific ID
+$('div, p, span');         // Multiple selector - div OR p OR span
+
+// 2. HIERARCHY SELECTORS
+$('div p');                // Descendant - p inside div (any level)
+$('div > p');              // Child - p directly inside div
+$('div + p');              // Adjacent sibling - p immediately after div
+$('div ~ p');              // General sibling - p after div (same level)
+
+// 3. ATTRIBUTE SELECTORS
+$('[title]');              // Elements with title attribute
+$('[title="test"]');       // Elements with title="test"
+$('[title!="test"]');      // Elements with title not equal to "test"
+$('[title^="test"]');      // Elements with title starting with "test"
+$('[title$="test"]');      // Elements with title ending with "test"
+$('[title*="test"]');      // Elements with title containing "test"
+$('[title~="test"]');      // Elements with title containing "test" as word
+$('[title|="test"]');      // Elements with title equal to "test" or starting with "test-"
+
+// 4. FORM SELECTORS
+$(':input');               // All input elements (input, textarea, select, button)
+$(':text');                // Text inputs
+$(':password');            // Password inputs
+$(':radio');               // Radio buttons
+$(':checkbox');            // Checkboxes
+$(':submit');              // Submit buttons
+$(':reset');               // Reset buttons
+$(':file');                // File inputs
+$(':image');               // Image inputs
+$(':button');              // Button elements
+$(':selected');            // Selected option elements
+$(':checked');             // Checked checkboxes/radio buttons
+$(':disabled');            // Disabled form elements
+$(':enabled');             // Enabled form elements
+$(':focus');               // Element with focus
+
+// 5. POSITION SELECTORS
+$('li:first');             // First li element
+$('li:last');              // Last li element
+$('li:first-child');       // First child li of each parent
+$('li:last-child');        // Last child li of each parent
+$('li:only-child');        // li elements that are only children
+$('li:nth-child(2)');      // Second child li of each parent
+$('li:nth-child(odd)');    // Odd numbered li children
+$('li:nth-child(even)');   // Even numbered li children
+$('li:nth-child(3n+1)');   // Every 3rd li starting from 1st
+$('li:eq(2)');             // Third li element (0-indexed)
+$('li:gt(2)');             // li elements after index 2
+$('li:lt(2)');             // li elements before index 2
+
+// 6. CONTENT SELECTORS
+$(':contains("text")');    // Elements containing "text"
+$(':empty');               // Empty elements
+$(':has(p)');              // Elements containing p elements
+$(':parent');              // Elements that have children
+
+// 7. VISIBILITY SELECTORS
+$(':visible');             // Visible elements
+$(':hidden');              // Hidden elements
+
+// 8. PRACTICAL EXAMPLES
+// Select all external links
+$('a[href^="http://"], a[href^="https://"]').addClass('external-link');
+
+// Select all required form fields
+$('input[required], textarea[required], select[required]').addClass('required-field');
+
+// Select all images without alt text
+$('img:not([alt])').css('border', '2px solid red');
+
+// Select all table rows except first and last
+$('tr:not(:first-child):not(:last-child)').addClass('middle-row');
+
+// Select all checked checkboxes in a specific form
+$('#myForm input:checkbox:checked').each(function() {
+   console.log('Checked:', $(this).val());
+});
+
+// Select all odd table rows for zebra striping
+$('tr:odd').addClass('alternate-row');
+
+// 9. FILTERING METHODS
+$('div').filter('.highlight');           // Filter by class
+$('div').filter('[data-type="special"]'); // Filter by attribute
+$('div').filter(function() {             // Filter by function
+   return $(this).children().length > 2;
+});
+
+$('div').not('.exclude');                // Exclude elements
+$('div').has('p');                       // Elements containing p
+$('div').eq(2);                          // Element at index 2
+$('div').first();                        // First element
+$('div').last();                         // Last element
+$('div').slice(1, 4);                    // Elements from index 1 to 3
+
+// 10. PERFORMANCE TIPS
+// Cache selectors for better performance
+const $navbar = $('#navbar');
+const $buttons = $('.btn');
+
+// Use more specific selectors
+$('#content .sidebar ul li');  // More specific
+$('li');                       // Less specific (slower)
+
+// Use find() for descendant searches
+$('#content').find('.widget');  // Faster
+$('#content .widget');          // Slower
+
+// 11. APEX-SPECIFIC SELECTORS (Oracle APEX)
+// Select APEX items
+$('#P1_EMPLOYEE_NAME');                    // APEX page item
+$('input[name="P1_DEPARTMENT"]');          // APEX item by name
+$('.t-Report-cell[headers="SALARY"]');     // Interactive Report column
+$('.apex-item-text');                      // APEX text items
+$('.apex-item-select');                    // APEX select lists
+
+// Select APEX regions
+$('#myRegion .t-Region-body');             // Region body
+$('.t-IRR-table');                         // Interactive Report table
+$('.t-Form-region');                       // Form region`
+           },
+           {
+               id: 3,
+               category: 'intermediate',
+               difficulty: 'intermediate',
+               question: 'How do you handle events in jQuery and what is event delegation?',
+               answer: 'jQuery provides simple event handling methods. Event delegation allows handling events for elements that may not exist yet by attaching the event to a parent element.',
+               language: 'jQuery',
+               code: `// jQuery Event Handling - Comprehensive Guide
+
+// 1. BASIC EVENT BINDING
+$('#button').click(function() {
+   console.log('Button clicked');
+});
+
+$('#input').keyup(function() {
+   console.log('Key released:', $(this).val());
+});
+
+$('#form').submit(function(e) {
+   e.preventDefault();
+   console.log('Form submission prevented');
+});
+
+// 2. ON() METHOD - PREFERRED APPROACH
+$('#button').on('click', function() {
+   console.log('Button clicked using on()');
+});
+
+// Multiple events
+$('#element').on('mouseenter mouseleave', function(e) {
+   console.log('Event type:', e.type);
+});
+
+// Multiple events with different handlers
+$('#element').on({
+   mouseenter: function() {
+       $(this).addClass('hovered');
+   },
+   mouseleave: function() {
+       $(this).removeClass('hovered');
+   },
+   click: function() {
+       alert('Clicked!');
+   }
+});
+
+// 3. EVENT DELEGATION - KEY CONCEPT
+// Problem: Events not working for dynamically added elements
+$('.dynamic-button').click(function() {
+   console.log('This won\'t work for dynamically added buttons');
+});
+
+// Solution: Event delegation
+$(document).on('click', '.dynamic-button', function() {
+   console.log('This works for current and future .dynamic-button elements');
+});
+
+// Better approach: Use closest parent container
+$('#container').on('click', '.dynamic-button', function() {
+   console.log('Event delegated to #container');
+});
+
+// 4. PRACTICAL EVENT DELEGATION EXAMPLES
+// Table row clicks (works for dynamically added rows)
+$('#data-table').on('click', 'tr', function() {
+   const rowData = $(this).data('id');
+   console.log('Row clicked:', rowData);
+});
+
+// Form field validation (works for dynamically added fields)
+$('#main-form').on('blur', 'input[required]', function() {
+   const $field = $(this);
+   if (!$field.val()) {
+       $field.addClass('error');
+   } else {
+       $field.removeClass('error');
+   }
+});
+
+// Modal dialog buttons
+$(document).on('click', '[data-modal-close]', function() {
+   $(this).closest('.modal').hide();
+});
+
+// 5. EVENT OBJECT AND DATA PASSING
+$('.button').on('click', {msg: 'Hello World'}, function(e) {
+   console.log('Event data:', e.data.msg);
+   console.log('Element:', e.target);
+   console.log('Current element:', e.currentTarget);
+   console.log('Mouse position:', e.pageX, e.pageY);
+});
+
+// 6. ONE-TIME EVENTS
+$('#button').one('click', function() {
+   console.log('This will only execute once');
+});
+
+// Using on() with one-time flag
+$('#button').on('click.once', function() {
+   console.log('One-time event with namespace');
+   $(this).off('click.once');
+});
+
+// 7. EVENT NAMESPACING
+$('#element').on('click.myNamespace', function() {
+   console.log('Namespaced click event');
+});
+
+$('#element').on('hover.myNamespace', function() {
+   console.log('Namespaced hover event');
+});
+
+// Remove only namespaced events
+$('#element').off('.myNamespace');
+
+// 8. CUSTOM EVENTS
+// Trigger custom events
+$('#element').on('customEvent', function(e, data) {
+   console.log('Custom event triggered with data:', data);
+});
+
+$('#trigger').click(function() {
+   $('#element').trigger('customEvent', {message: 'Hello'});
+});
+
+// 9. FORM EVENTS
+$('#myForm').on('submit', function(e) {
+   e.preventDefault();
+   
+   // Serialize form data
+   const formData = $(this).serialize();
+   console.log('Form data:', formData);
+   
+   // Or get form data as object
+   const formArray = $(this).serializeArray();
+   const formObject = {};
+   $.each(formArray, function(i, field) {
+       formObject[field.name] = field.value;
+   });
+   
+   console.log('Form object:', formObject);
+});
+
+// Input change events
+$('#myForm').on('change', 'select, input[type="checkbox"], input[type="radio"]', function() {
+   console.log('Field changed:', $(this).attr('name'), '=', $(this).val());
+});
+
+// Real-time input validation
+$('#myForm').on('input', 'input[type="text"], textarea', function() {
+   const $field = $(this);
+   const value = $field.val();
+   
+   // Example validation
+   if (value.length < 3) {
+       $field.addClass('invalid');
+   } else {
+       $field.removeClass('invalid');
+   }
+});
+
+// 10. AJAX EVENTS (Global)
+$(document).ajaxStart(function() {
+   $('#loading').show();
+});
+
+$(document).ajaxStop(function() {
+   $('#loading').hide();
+});
+
+$(document).ajaxError(function(event, xhr, settings, error) {
+   console.error('AJAX Error:', error);
+});
+
+// 11. ADVANCED EVENT PATTERNS
+// Debounced events (prevent rapid firing)
+function debounce(func, wait) {
+   let timeout;
+   return function executedFunction(...args) {
+       const later = () => {
+           clearTimeout(timeout);
+           func(...args);
+       };
+       clearTimeout(timeout);
+       timeout = setTimeout(later, wait);
+   };
+}
+
+$('#search').on('input', debounce(function() {
+   const query = $(this).val();
+   console.log('Searching for:', query);
+   // Perform search
+}, 300));
+
+// Throttled events (limit frequency)
+function throttle(func, limit) {
+   let inThrottle;
+   return function() {
+       const args = arguments;
+       const context = this;
+       if (!inThrottle) {
+           func.apply(context, args);
+           inThrottle = true;
+           setTimeout(() => inThrottle = false, limit);
+       }
+   };
+}
+
+$(window).on('scroll', throttle(function() {
+   console.log('Scroll position:', $(window).scrollTop());
+}, 100));
+
+// 12. ORACLE APEX SPECIFIC EVENTS
+// APEX Dynamic Action integration
+$(document).on('apexafterrefresh', '#myRegion', function() {
+   console.log('APEX region refreshed');
+   // Re-initialize any jQuery plugins
+});
+
+// APEX page load
+$(document).ready(function() {
+   // Initialize when page loads
+   apex.jQuery('#P1_DATE').datepicker();
+});
+
+// APEX item change
+$('#P1_DEPARTMENT').on('change', function() {
+   const deptId = $(this).val();
+   // Trigger APEX dynamic action or refresh region
+   apex.item('P1_DEPARTMENT').setValue(deptId);
+});`
+           },
+           {
+               id: 4,
+               category: 'advanced',
+               difficulty: 'advanced',
+               question: 'Explain jQuery AJAX methods and how to handle different response types.',
+               answer: 'jQuery provides several AJAX methods for making asynchronous HTTP requests. These methods can handle various response types including JSON, XML, HTML, and text.',
+               language: 'jQuery',
+               code: `// jQuery AJAX - Comprehensive Guide
+
+// 1. BASIC AJAX METHODS
+// GET request
+$.get('/api/users', function(data) {
+   console.log('Users:', data);
+}).fail(function(xhr, status, error) {
+   console.error('GET failed:', error);
+});
+
+// POST request
+$.post('/api/users', {name: 'John', email: 'john@example.com'}, function(data) {
+   console.log('User created:', data);
+});
+
+// JSON-specific method
+$.getJSON('/api/users.json', function(data) {
+   console.log('JSON data:', data);
+});
+
+// Load HTML content
+$('#content').load('/api/partial-view');
+
+// 2. FULL AJAX METHOD - MOST FLEXIBLE
+$.ajax({
+   url: '/api/users',
+   method: 'GET',                    // HTTP method
+   data: {page: 1, limit: 10},       // Data to send
+   dataType: 'json',                 // Expected response type
+   contentType: 'application/json',   // Content type of request
+   timeout: 5000,                     // Timeout in milliseconds
+   cache: false,                      // Disable caching
+   
+   // Event handlers
+   beforeSend: function(xhr) {
+       console.log('Request starting...');
+       $('#loading').show();
+       
+       // Add custom headers
+       xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+   },
+   
+   success: function(data, textStatus, xhr) {
+       console.log('Success:', data);
+       console.log('Status:', textStatus);
+       console.log('Response headers:', xhr.getAllResponseHeaders());
+   },
+   
+   error: function(xhr, textStatus, errorThrown) {
+       console.error('Error:', textStatus, errorThrown);
+       console.error('Response:', xhr.responseText);
+       console.error('Status code:', xhr.status);
+   },
+   
+   complete: function(xhr, textStatus) {
+       console.log('Request completed:', textStatus);
+       $('#loading').hide();
+   }
+});
+
+// 3. PROMISE-BASED AJAX (jQuery 3.0+)
+const userRequest = $.ajax({
+   url: '/api/users/123',
+   method: 'GET',
+   dataType: 'json'
+});
+
+userRequest
+   .done(function(data) {
+       console.log('User data:', data);
+   })
+   .fail(function(xhr) {
+       console.error('Failed to fetch user');
+   })
+   .always(function() {
+       console.log('Request finished');
+   });
+
+// Chain multiple AJAX requests
+$.ajax({url: '/api/users/123'})
+   .then(function(user) {
+       console.log('User:', user);
+       return $.ajax({url: '/api/users/' + user.id + '/posts'});
+   })
+   .then(function(posts) {
+       console.log('Posts:', posts);
+       return $.ajax({url: '/api/users/' + posts[0].author_id + '/profile'});
+   })
+   .then(function(profile) {
+       console.log('Profile:', profile);
+   })
+   .catch(function(error) {
+       console.error('Chain failed:', error);
+   });
+
+// 4. DIFFERENT RESPONSE TYPES
+// JSON Response
+$.ajax({
+   url: '/api/data.json',
+   dataType: 'json',
+   success: function(data) {
+       console.log('JSON object:', data);
+       // Use data.property directly
+   }
+});
+
+// XML Response
+$.ajax({
+   url: '/api/data.xml',
+   dataType: 'xml',
+   success: function(xmlDoc) {
+       console.log('XML document:', xmlDoc);
+       $(xmlDoc).find('user').each(function() {
+           console.log('User:', $(this).find('name').text());
+       });
+   }
+});
+
+// HTML Response
+$.ajax({
+   url: '/api/partial.html',
+   dataType: 'html',
+   success: function(html) {
+       $('#container').html(html);
+   }
+});
+
+// Text Response
+$.ajax({
+   url: '/api/data.txt',
+   dataType: 'text',
+   success: function(text) {
+       console.log('Plain text:', text);
+   }
+});
+
+// JSONP for cross-domain requests
+$.ajax({
+   url: 'https://api.external.com/data',
+   dataType: 'jsonp',
+   jsonpCallback: 'handleResponse',
+   success: function(data) {
+       console.log('JSONP data:', data);
+   }
+});
+
+// 5. FORM SERIALIZATION AND SUBMISSION
+$('#myForm').on('submit', function(e) {
+   e.preventDefault();
+   
+   const $form = $(this);
+   const formData = $form.serialize(); // URL-encoded string
+   
+   $.ajax({
+       url: $form.attr('action') || '/submit',
+       method: $form.attr('method') || 'POST',
+       data: formData,
+       dataType: 'json',
+       success: function(response) {
+           if (response.success) {
+               alert('Form submitted successfully!');
+               $form[0].reset();
+           } else {
+               alert('Error: ' + response.message);
+           }
+       },
+       error: function() {
+           alert('Network error occurred');
+       }
+   });
+});
+
+// 6. FILE UPLOAD WITH AJAX
+$('#fileForm').on('submit', function(e) {
+   e.preventDefault();
+   
+   const formData = new FormData(this);
+   
+   $.ajax({
+       url: '/upload',
+       method: 'POST',
+       data: formData,
+       processData: false,        // Don't process data
+       contentType: false,        // Don't set content type
+       xhr: function() {
+           const xhr = new window.XMLHttpRequest();
+           
+           // Upload progress
+           xhr.upload.addEventListener('progress', function(e) {
+               if (e.lengthComputable) {
+                   const percent = (e.loaded / e.total) * 100;
+                   $('#progressBar').css('width', percent + '%');
+               }
+           });
+           
+           return xhr;
+       },
+       success: function(response) {
+           console.log('Upload successful:', response);
+       }
+   });
+});
+
+// 7. GLOBAL AJAX SETTINGS
+$.ajaxSetup({
+   timeout: 10000,
+   cache: false,
+   beforeSend: function(xhr) {
+       // Add authentication header to all requests
+       const token = localStorage.getItem('authToken');
+       if (token) {
+           xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+       }
+   },
+   error: function(xhr, status, error) {
+       if (xhr.status === 401) {
+           // Handle unauthorized access
+           window.location.href = '/login';
+       }
+   }
+});
+
+// 8. ADVANCED PATTERNS
+// Caching AJAX responses
+const cache = {};
+
+function getCachedData(url) {
+   if (cache[url]) {
+       return $.Deferred().resolve(cache[url]).promise();
+   }
+   
+   return $.get(url).done(function(data) {
+       cache[url] = data;
+   });
+}
+
+// Usage
+getCachedData('/api/users').done(function(users) {
+   console.log('Users (possibly cached):', users);
+});
+
+// Retry mechanism
+function ajaxWithRetry(options, maxRetries = 3) {
+   let attempt = 0;
+   
+   function makeRequest() {
+       return $.ajax(options).fail(function(xhr) {
+           attempt++;
+           if (attempt < maxRetries && xhr.status >= 500) {
+               console.log(\`Retry attempt \${attempt} for \${options.url}\`);
+               setTimeout(makeRequest, 1000 * attempt); // Exponential backoff
+           }
+       });
+   }
+   
+   return makeRequest();
+}
+
+// 9. ORACLE APEX INTEGRATION
+// Using APEX's built-in AJAX
+apex.server.process('MY_PROCESS', {
+   x01: 'parameter1',
+   x02: 'parameter2'
+}, {
+   success: function(data) {
+       console.log('APEX process result:', data);
+   },
+   error: function(xhr, status) {
+       console.error('APEX process failed:', status);
+   }
+});
+
+// APEX item value submission
+function submitApexItem(itemName, value) {
+   return $.ajax({
+       url: 'wwv_flow.show',
+       method: 'POST',
+       data: {
+           p_request: 'APPLICATION_PROCESS=SET_ITEM_VALUE',
+           p_flow_id: \$v('pFlowId'),
+           p_flow_step_id: \$v('pFlowStepId'),
+           p_instance: \$v('pInstance'),
+           x01: itemName,
+           x02: value
+       },
+       dataType: 'json'
+   });
+}
+
+// 10. ERROR HANDLING BEST PRACTICES
+function handleAjaxError(xhr, textStatus, errorThrown) {
+   let errorMessage = 'An error occurred';
+   
+   if (xhr.status === 0) {
+       errorMessage = 'Network error - please check your connection';
+   } else if (xhr.status === 404) {
+       errorMessage = 'Requested page not found';
+   } else if (xhr.status === 500) {
+       errorMessage = 'Internal server error';
+   } else if (textStatus === 'timeout') {
+       errorMessage = 'Request timeout';
+   } else if (textStatus === 'abort') {
+       errorMessage = 'Request was aborted';
+   } else {
+       errorMessage = \`Error: \${xhr.status} - \${errorThrown}\`;
+   }
+   
+   console.error(errorMessage);
+   return errorMessage;
+}
+
+// Usage in AJAX calls
+$.ajax({
+   url: '/api/data',
+   error: function(xhr, textStatus, errorThrown) {
+       const message = handleAjaxError(xhr, textStatus, errorThrown);
+       $('#errorContainer').html(message).show();
+   }
+});`
+           },
+           {
+               id: 5,
+               category: 'advanced',
+               difficulty: 'advanced',
+               question: 'How do you create custom jQuery plugins and what are the best practices?',
+               answer: 'jQuery plugins extend jQuery\'s functionality by adding new methods. They should follow specific patterns for chainability, options handling, and namespace protection.',
+               language: 'jQuery',
+               code: `// jQuery Plugin Development - Complete Guide
+
+// 1. BASIC PLUGIN STRUCTURE
+(function($) {
+   'use strict';
+   
+   // Plugin definition
+   $.fn.myPlugin = function(options) {
+       // Default options
+       const defaults = {
+           color: 'red',
+           fontSize: '14px',
+           animation: true
+       };
+       
+       // Merge options with defaults
+       const settings = $.extend({}, defaults, options);
+       
+       // Return this for chainability
+       return this.each(function() {
+           const $element = $(this);
+           
+           // Plugin logic here
+           $element.css({
+               'color': settings.color,
+               'font-size': settings.fontSize
+           });
+           
+           if (settings.animation) {
+               $element.fadeIn();
+           }
+       });
+   };
+   
+})(jQuery);
+
+// Usage
+$('.my-elements').myPlugin({
+   color: 'blue',
+   fontSize: '16px'
+});
+
+// 2. ADVANCED PLUGIN WITH METHODS
+(function($) {
+   'use strict';
+   
+   // Plugin constructor
+   function TabWidget(element, options) {
+       this.element = element;
+       this.$element = $(element);
+       this.options = $.extend({}, TabWidget.DEFAULTS, options);
+       this.init();
+   }
+   
+   // Default options
+   TabWidget.DEFAULTS = {
+       activeClass: 'active',
+       tabSelector: '.tab',
+       contentSelector: '.tab-content',
+       animation: 'fade',
+       duration: 300,
+       onTabChange: function() {}
+   };
+   
+   // Plugin methods
+   TabWidget.prototype = {
+       init: function() {
+           this.bindEvents();
+           this.setInitialTab();
+       },
+       
+       bindEvents: function() {
+           const self = this;
+           this.$element.on('click', this.options.tabSelector, function(e) {
+               e.preventDefault();
+               self.switchTab($(this));
+           });
+       },
+       
+       setInitialTab: function() {
+           const $firstTab = this.$element.find(this.options.tabSelector).first();
+           this.switchTab($firstTab);
+       },
+       
+       switchTab: function($tab) {
+           const tabId = $tab.data('tab');
+           const $content = this.$element.find(this.options.contentSelector + '[data-content="' + tabId + '"]');
+           
+           // Remove active class from all tabs and content
+           this.$element.find(this.options.tabSelector).removeClass(this.options.activeClass);
+           this.$element.find(this.options.contentSelector).removeClass(this.options.activeClass);
+           
+           // Add active class to current tab and content
+           $tab.addClass(this.options.activeClass);
+           
+           if (this.options.animation === 'fade') {
+               $content.fadeIn(this.options.duration).addClass(this.options.activeClass);
+           } else {
+               $content.addClass(this.options.activeClass);
+           }
+           
+           // Trigger callback
+           this.options.onTabChange.call(this, $tab, $content);
+       },
+       
+       getActiveTab: function() {
+           return this.$element.find(this.options.tabSelector + '.' + this.options.activeClass);
+       },
+       
+       destroy: function() {
+           this.$element.off('click', this.options.tabSelector);
+           this.$element.removeData('tabWidget');
+       }
+   };
+   
+   // Plugin wrapper
+   $.fn.tabWidget = function(option) {
+       return this.each(function() {
+           const $this = $(this);
+           let data = $this.data('tabWidget');
+           const options = typeof option === 'object' && option;
+           
+           if (!data) {
+               $this.data('tabWidget', (data = new TabWidget(this, options)));
+           }
+           
+           if (typeof option === 'string') {
+               data[option]();
+           }
+       });
+   };
+   
+   // Constructor reference
+   $.fn.tabWidget.Constructor = TabWidget;
+   
+})(jQuery);
+
+// Usage
+$('.tab-container').tabWidget({
+   animation: 'fade',
+   onTabChange: function($tab, $content) {
+       console.log('Tab changed:', $tab.text());
+   }
+});
+
+// Call methods
+$('.tab-container').tabWidget('getActiveTab');
+$('.tab-container').tabWidget('destroy');
+
+// 3. PLUGIN WITH DATA API (Bootstrap-style)
+(function($) {
+   'use strict';
+   
+   // Modal plugin
+   function Modal(element, options) {
+       this.$element = $(element);
+       this.options = $.extend({}, Modal.DEFAULTS, options);
+       this.isShown = false;
+       this.init();
+   }
+   
+   Modal.DEFAULTS = {
+       backdrop: true,
+       keyboard: true,
+       show: true,
+       closeButton: '[data-dismiss="modal"]'
+   };
+   
+   Modal.prototype = {
+       init: function() {
+           this.bindEvents();
+           if (this.options.show) {
+               this.show();
+           }
+       },
+       
+       bindEvents: function() {
+           const self = this;
+           
+           this.$element.on('click', this.options.closeButton, function() {
+               self.hide();
+           });
+           
+           if (this.options.keyboard) {
+               $(document).on('keydown.modal', function(e) {
+                   if (e.which === 27 && self.isShown) { // ESC key
+                       self.hide();
+                   }
+               });
+           }
+       },
+       
+       show: function() {
+           if (this.isShown) return;
+           
+           this.isShown = true;
+           this.$element.trigger('show.modal');
+           
+           if (this.options.backdrop) {
+               this.showBackdrop();
+           }
+           
+           this.$element
+               .addClass('modal-open')
+               .fadeIn(300)
+               .trigger('shown.modal');
+       },
+       
+       hide: function() {
+           if (!this.isShown) return;
+           
+           this.isShown = false;
+           this.$element.trigger('hide.modal');
+           
+           this.$element
+               .removeClass('modal-open')
+               .fadeOut(300, () => {
+                   this.hideBackdrop();
+                   this.$element.trigger('hidden.modal');
+               });
+       },
+       
+       showBackdrop: function() {
+           const self = this;
+           this.$backdrop = $('<div class="modal-backdrop"></div>')
+               .appendTo(document.body)
+               .click(function() {
+                   self.hide();
+               });
+       },
+       
+       hideBackdrop: function() {
+           if (this.$backdrop) {
+               this.$backdrop.remove();
+               this.$backdrop = null;
+           }
+       }
+   };
+   
+   // Plugin definition
+   $.fn.modal = function(option) {
+       return this.each(function() {
+           const $this = $(this);
+           let data = $this.data('modal');
+           const options = $.extend({}, Modal.DEFAULTS, $this.data(), typeof option === 'object' && option);
+           
+           if (!data) $this.data('modal', (data = new Modal(this, options)));
+           if (typeof option === 'string') data[option]();
+       });
+   };
+   
+   // Data API
+   $(document).on('click', '[data-toggle="modal"]', function(e) {
+       e.preventDefault();
+       const $btn = $(this);
+       const target = $btn.attr('data-target') || $btn.attr('href');
+       const $target = $(target);
+       const option = $target.data('modal') ? 'show' :
+
+
+
+
+       
