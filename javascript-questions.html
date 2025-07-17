@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Interview Questions - APEX Interview Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
+                Oracle APEX Interview Mastery
+            </div>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html" class="active"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-j"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">JavaScript Interview Questions</h1>
+        <p class="page-subtitle">Master JavaScript fundamentals and advanced concepts for dynamic web applications</p>
+    </section>
+
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fab fa-js"></i> Filter Questions
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
+                <button class="filter-tab" onclick="filterQuestions('basic')">Basic</button>
+                <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate</button>
+                <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced</button>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search JavaScript questions..." 
+                       onkeyup="searchQuestions()" id="searchInput">
+            </div>
+        </div>
+
+        <div id="questionsContainer" class="questions-container">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Ready to Master JavaScript?</h3>
+            <p>Essential JavaScript knowledge for dynamic APEX applications</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="html-questions.html">HTML Questions</a>
+                <a href="jquery-questions.html">jQuery Questions</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // JavaScript Questions Data
+        const javascriptQuestions = [
+            {
+                id: 1,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What is JavaScript and what are its key features?',
+                answer: 'JavaScript is a high-level, interpreted programming language primarily used for web development. It enables dynamic, interactive web pages and can run in browsers and servers (Node.js).',
+                language: 'JavaScript',
+                code: `// JavaScript Key Features Demo
+
+// 1. Dynamic Typing
+let variable = "Hello";        // String
+variable = 42;                 // Now it's a number
+variable = true;               // Now it's a boolean
+variable = { name: "John" };   // Now it's an object
+
+// 2. First-Class Functions
+function greet(name) {
+    return "Hello, " + name;
+}
+
+// Functions can be assigned to variables
+const sayHello = greet;
+
+// Functions can be passed as arguments
+function processName(name, callback) {
+    return callback(name);
+}
+
+console.log(processName("Alice", greet)); // "Hello, Alice"
+
+// 3. Objects and Prototypes
+const person = {
+    name: "John",
+    age: 30,
+    greet: function() {
+        return "Hi, I'm " + this.name;
+    }
+};
+
+// 4. Event-Driven Programming
+document.addEventListener('click', function(event) {
+    console.log('Page clicked at:', event.clientX, event.clientY);
+});
+
+// 5. Closures
+function createCounter() {
+    let count = 0;
+    return function() {
+        return ++count;
+    };
+}
+
+const counter = createCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+
+// 6. Asynchronous Programming
+// Promises
+fetch('/api/data')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+
+// Async/Await
+async function fetchData() {
+    try {
+        const response = await fetch('/api/data');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}`
+            },
+            {
+                id: 2,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What is the difference between var, let, and const?',
+                answer: '<strong>var:</strong> Function-scoped, can be redeclared, hoisted<br><strong>let:</strong> Block-scoped, cannot be redeclared, temporal dead zone<br><strong>const:</strong> Block-scoped, cannot be reassigned, must be initialized',
+                language: 'JavaScript',
+                code: `// var vs let vs const Comparison
+
+// 1. SCOPE DIFFERENCES
+function scopeExample() {
+    if (true) {
+        var varVariable = "I'm var";
+        let letVariable = "I'm let";
+        const constVariable = "I'm const";
+    }
+    
+    console.log(varVariable);    // "I'm var" - accessible (function-scoped)
+    // console.log(letVariable);    // ReferenceError - not accessible (block-scoped)
+    // console.log(constVariable);  // ReferenceError - not accessible (block-scoped)
+}
+
+// 2. HOISTING BEHAVIOR
+console.log(hoistedVar);    // undefined (hoisted but not initialized)
+// console.log(hoistedLet);    // ReferenceError (temporal dead zone)
+// console.log(hoistedConst);  // ReferenceError (temporal dead zone)
+
+var hoistedVar = "var value";
+let hoistedLet = "let value";
+const hoistedConst = "const value";
+
+// 3. REDECLARATION
+var name = "John";
+var name = "Jane";          // OK - var can be redeclared
+console.log(name);          // "Jane"
+
+let age = 25;
+// let age = 30;            // SyntaxError - let cannot be redeclared
+
+const city = "New York";
+// const city = "Boston";   // SyntaxError - const cannot be redeclared
+
+// 4. REASSIGNMENT
+var varValue = "initial";
+varValue = "changed";       // OK
+
+let letValue = "initial";
+letValue = "changed";       // OK
+
+const constValue = "initial";
+// constValue = "changed";  // TypeError - const cannot be reassigned
+
+// 5. INITIALIZATION
+var uninitializedVar;       // OK - undefined
+let uninitializedLet;       // OK - undefined
+// const uninitializedConst;   // SyntaxError - const must be initialized
+
+// 6. BLOCK SCOPE EXAMPLE
+for (var i = 0; i < 3; i++) {
+    setTimeout(() => console.log("var:", i), 100); // Prints 3, 3, 3
+}
+
+for (let j = 0; j < 3; j++) {
+    setTimeout(() => console.log("let:", j), 200); // Prints 0, 1, 2
+}
+
+// 7. CONST WITH OBJECTS (Important!)
+const person = { name: "Alice", age: 30 };
+person.age = 31;            // OK - modifying property
+person.city = "Boston";     // OK - adding property
+// person = {};             // TypeError - cannot reassign the object reference
+
+const numbers = [1, 2, 3];
+numbers.push(4);            // OK - modifying array
+// numbers = [];            // TypeError - cannot reassign the array reference
+
+// 8. BEST PRACTICES
+// Use const by default
+const API_URL = "https://api.example.com";
+const users = [];
+
+// Use let when you need to reassign
+let currentUser = null;
+let isLoading = false;
+
+// Avoid var in modern JavaScript
+// var should only be used when you specifically need function scoping`
+            },
+            {
+                id: 3,
+                category: 'intermediate',
+                difficulty: 'intermediate',
+                question: 'What are closures in JavaScript and how do they work?',
+                answer: 'A closure is a function that has access to variables from its outer (enclosing) scope even after the outer function has finished executing. This creates a persistent scope chain.',
+               language: 'JavaScript',
+               code: `// Closures in JavaScript - Comprehensive Examples
+
+// 1. BASIC CLOSURE EXAMPLE
+function outerFunction(x) {
+   // Variable in outer scope
+   let outerVariable = x;
+   
+   // Inner function has access to outer variables
+   function innerFunction(y) {
+       return outerVariable + y; // Accessing outerVariable
+   }
+   
+   return innerFunction;
+}
+
+const addFive = outerFunction(5);
+console.log(addFive(3)); // 8 - inner function remembers outerVariable
+
+// 2. CLOSURE WITH PRIVATE VARIABLES
+function createCounter() {
+   let count = 0; // Private variable
+   
+   return {
+       increment: function() {
+           count++;
+           return count;
+       },
+       decrement: function() {
+           count--;
+           return count;
+       },
+       getCount: function() {
+           return count;
+       },
+       reset: function() {
+           count = 0;
+           return count;
+       }
+   };
+}
+
+const counter1 = createCounter();
+const counter2 = createCounter();
+
+console.log(counter1.increment()); // 1
+console.log(counter1.increment()); // 2
+console.log(counter2.increment()); // 1 (separate closure)
+console.log(counter1.getCount()); // 2
+// console.log(count); // ReferenceError - count is private
+
+// 3. CLOSURE IN LOOPS (Common Interview Question)
+// Problem with var
+console.log("Problem with var:");
+for (var i = 0; i < 3; i++) {
+   setTimeout(function() {
+       console.log("var:", i); // Prints 3, 3, 3
+   }, 100);
+}
+
+// Solution 1: Using let (block scope)
+console.log("Solution with let:");
+for (let i = 0; i < 3; i++) {
+   setTimeout(function() {
+       console.log("let:", i); // Prints 0, 1, 2
+   }, 200);
+}
+
+// Solution 2: Using closure with IIFE
+console.log("Solution with closure:");
+for (var i = 0; i < 3; i++) {
+   (function(index) {
+       setTimeout(function() {
+           console.log("closure:", index); // Prints 0, 1, 2
+       }, 300);
+   })(i);
+}
+
+// 4. MODULE PATTERN USING CLOSURES
+const Calculator = (function() {
+   // Private variables and functions
+   let result = 0;
+   
+   function log(operation, value) {
+       console.log(\`\${operation}: \${value}, Result: \${result}\`);
+   }
+   
+   // Public interface
+   return {
+       add: function(x) {
+           result += x;
+           log("Add", x);
+           return this; // For method chaining
+       },
+       subtract: function(x) {
+           result -= x;
+           log("Subtract", x);
+           return this;
+       },
+       multiply: function(x) {
+           result *= x;
+           log("Multiply", x);
+           return this;
+       },
+       divide: function(x) {
+           if (x !== 0) {
+               result /= x;
+               log("Divide", x);
+           }
+           return this;
+       },
+       getResult: function() {
+           return result;
+       },
+       clear: function() {
+           result = 0;
+           log("Clear", 0);
+           return this;
+       }
+   };
+})();
+
+// Usage
+Calculator.add(10).multiply(2).subtract(5).divide(3);
+console.log("Final result:", Calculator.getResult()); // 5
+
+// 5. FUNCTION FACTORIES WITH CLOSURES
+function createMultiplier(multiplier) {
+   return function(x) {
+       return x * multiplier;
+   };
+}
+
+const double = createMultiplier(2);
+const triple = createMultiplier(3);
+const quadruple = createMultiplier(4);
+
+console.log(double(5));    // 10
+console.log(triple(5));    // 15
+console.log(quadruple(5)); // 20
+
+// 6. CLOSURES WITH EVENT HANDLERS
+function attachListeners() {
+   const buttons = document.querySelectorAll('.btn');
+   
+   for (let i = 0; i < buttons.length; i++) {
+       // Each click handler has its own closure with unique 'i'
+       buttons[i].addEventListener('click', function() {
+           console.log(\`Button \${i} clicked!\`);
+       });
+   }
+}
+
+// 7. PRACTICAL EXAMPLE: DEBOUNCE FUNCTION
+function debounce(func, delay) {
+   let timeoutId;
+   
+   return function(...args) {
+       const context = this;
+       
+       clearTimeout(timeoutId);
+       timeoutId = setTimeout(function() {
+           func.apply(context, args);
+       }, delay);
+   };
+}
+
+// Usage
+const expensiveOperation = function(query) {
+   console.log("Searching for:", query);
+   // Simulate API call
+};
+
+const debouncedSearch = debounce(expensiveOperation, 300);
+
+// Only the last call within 300ms will execute
+debouncedSearch("a");
+debouncedSearch("ap");
+debouncedSearch("app"); // Only this will execute
+
+// 8. CLOSURE GOTCHAS AND MEMORY CONSIDERATIONS
+function createHeavyFunction() {
+   const heavyData = new Array(1000000).fill("data"); // Large array
+   
+   return function() {
+       // This function keeps heavyData in memory
+       return "Function executed";
+   };
+}
+
+// heavyData will remain in memory as long as the returned function exists
+const heavyFunc = createHeavyFunction();
+
+// To avoid memory leaks, nullify references when done
+// heavyFunc = null;
+
+// 9. INTERVIEW QUESTION: WHAT WILL THIS PRINT?
+function createFunctions() {
+   const functions = [];
+   
+   for (var i = 0; i < 3; i++) {
+       functions.push(function() {
+           return i; // What value of 'i' will this return?
+       });
+   }
+   
+   return functions;
+}
+
+const funcs = createFunctions();
+console.log(funcs[0]()); // 3 (not 0!)
+console.log(funcs[1]()); // 3 (not 1!)
+console.log(funcs[2]()); // 3 (not 2!)
+
+// Fix using closure:
+function createFunctionsCorrected() {
+   const functions = [];
+   
+   for (let i = 0; i < 3; i++) {
+       functions.push((function(index) {
+           return function() {
+               return index;
+           };
+       })(i));
+   }
+   
+   return functions;
+}`
+           },
+           {
+               id: 4,
+               category: 'advanced',
+               difficulty: 'advanced',
+               question: 'Explain Promises, async/await, and error handling in asynchronous JavaScript.',
+               answer: 'Promises represent eventual completion or failure of asynchronous operations. Async/await provides syntactic sugar for working with Promises in a more synchronous-looking way.',
+               language: 'JavaScript',
+               code: `// Asynchronous JavaScript - Promises and Async/Await
+
+// 1. BASIC PROMISE CREATION AND USAGE
+function createPromise(shouldResolve) {
+   return new Promise((resolve, reject) => {
+       setTimeout(() => {
+           if (shouldResolve) {
+               resolve("Promise resolved successfully!");
+           } else {
+               reject(new Error("Promise rejected!"));
+           }
+       }, 1000);
+   });
+}
+
+// Promise consumption with .then() and .catch()
+createPromise(true)
+   .then(result => {
+       console.log("Success:", result);
+       return "Chained value";
+   })
+   .then(chainedValue => {
+       console.log("Chained:", chainedValue);
+   })
+   .catch(error => {
+       console.error("Error:", error.message);
+   })
+   .finally(() => {
+       console.log("Always executed");
+   });
+
+// 2. PROMISE CHAINING
+function fetchUserData(userId) {
+   return fetch(\`/api/users/\${userId}\`)
+       .then(response => {
+           if (!response.ok) {
+               throw new Error(\`HTTP error! status: \${response.status}\`);
+           }
+           return response.json();
+       });
+}
+
+function fetchUserPosts(userId) {
+   return fetch(\`/api/users/\${userId}/posts\`)
+       .then(response => response.json());
+}
+
+// Chaining promises
+fetchUserData(123)
+   .then(user => {
+       console.log("User:", user);
+       return fetchUserPosts(user.id);
+   })
+   .then(posts => {
+       console.log("Posts:", posts);
+   })
+   .catch(error => {
+       console.error("Error in chain:", error);
+   });
+
+// 3. ASYNC/AWAIT - MODERN SYNTAX
+async function fetchUserDataAsync(userId) {
+   try {
+       const response = await fetch(\`/api/users/\${userId}\`);
+       
+       if (!response.ok) {
+           throw new Error(\`HTTP error! status: \${response.status}\`);
+       }
+       
+       const user = await response.json();
+       console.log("User:", user);
+       
+       const posts = await fetchUserPosts(user.id);
+       console.log("Posts:", posts);
+       
+       return { user, posts };
+   } catch (error) {
+       console.error("Error:", error.message);
+       throw error; // Re-throw if needed
+   }
+}
+
+// Usage
+fetchUserDataAsync(123)
+   .then(result => console.log("Final result:", result))
+   .catch(error => console.error("Final error:", error));
+
+// 4. PROMISE UTILITY METHODS
+const promise1 = createPromise(true);
+const promise2 = createPromise(true);
+const promise3 = createPromise(false);
+
+// Promise.all - Wait for all promises (fails if any fails)
+Promise.all([promise1, promise2])
+   .then(results => {
+       console.log("All resolved:", results);
+   })
+   .catch(error => {
+       console.error("One failed:", error);
+   });
+
+// Promise.allSettled - Wait for all promises (doesn't fail)
+Promise.allSettled([promise1, promise2, promise3])
+   .then(results => {
+       results.forEach((result, index) => {
+           if (result.status === 'fulfilled') {
+               console.log(\`Promise \${index} resolved:`, result.value);
+           } else {
+               console.log(\`Promise \${index} rejected:`, result.reason);
+           }
+       });
+   });
+
+// Promise.race - First promise to settle wins
+Promise.race([promise1, promise2, promise3])
+   .then(result => {
+       console.log("First to resolve:", result);
+   })
+   .catch(error => {
+       console.log("First to reject:", error);
+   });
+
+// Promise.any - First promise to resolve wins (ignores rejections)
+Promise.any([promise1, promise2, promise3])
+   .then(result => {
+       console.log("First successful:", result);
+   })
+   .catch(error => {
+       console.log("All failed:", error);
+   });
+
+// 5. PARALLEL vs SEQUENTIAL EXECUTION
+// Sequential execution (slower)
+async function sequentialExecution() {
+   console.time("Sequential");
+   
+   const result1 = await createPromise(true);
+   const result2 = await createPromise(true);
+   const result3 = await createPromise(true);
+   
+   console.timeEnd("Sequential");
+   return [result1, result2, result3];
+}
+
+// Parallel execution (faster)
+async function parallelExecution() {
+   console.time("Parallel");
+   
+   const [result1, result2, result3] = await Promise.all([
+       createPromise(true),
+       createPromise(true),
+       createPromise(true)
+   ]);
+   
+   console.timeEnd("Parallel");
+   return [result1, result2, result3];
+}
+
+// 6. ERROR HANDLING PATTERNS
+async function robustAsyncFunction() {
+   try {
+       // Multiple operations with different error handling
+       const userData = await fetchUserData(123).catch(error => {
+           console.warn("User fetch failed, using default:", error.message);
+           return { id: 123, name: "Default User" }; // Fallback
+       });
+       
+       const posts = await fetchUserPosts(userData.id).catch(error => {
+           console.warn("Posts fetch failed:", error.message);
+           return []; // Empty array as fallback
+       });
+       
+       // Process data
+       const processedData = {
+           user: userData,
+           posts: posts,
+           timestamp: new Date().toISOString()
+       };
+       
+       return processedData;
+       
+   } catch (error) {
+       // Global error handler
+       console.error("Critical error:", error);
+       throw new Error("Failed to process user data");
+   }
+}
+
+// 7. CREATING CUSTOM PROMISE-BASED FUNCTIONS
+function delay(ms) {
+   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function timeout(promise, ms) {
+   return Promise.race([
+       promise,
+       delay(ms).then(() => {
+           throw new Error(\`Operation timed out after \${ms}ms\`);
+       })
+   ]);
+}
+
+// Usage
+async function exampleWithTimeout() {
+   try {
+       const result = await timeout(fetchUserData(123), 5000);
+       console.log("Completed within timeout:", result);
+   } catch (error) {
+       if (error.message.includes("timed out")) {
+           console.error("Operation took too long");
+       } else {
+           console.error("Other error:", error);
+       }
+   }
+}
+
+// 8. PROMISE-BASED RETRY MECHANISM
+async function retryOperation(operation, maxRetries = 3, delayMs = 1000) {
+   for (let attempt = 1; attempt <= maxRetries; attempt++) {
+       try {
+           const result = await operation();
+           return result;
+       } catch (error) {
+           console.log(\`Attempt \${attempt} failed:`, error.message);
+           
+           if (attempt === maxRetries) {
+               throw new Error(\`Operation failed after \${maxRetries} attempts\`);
+           }
+           
+           await delay(delayMs * attempt); // Exponential backoff
+       }
+   }
+}
+
+// Usage
+const unreliableOperation = () => {
+   return Math.random() > 0.7 ? 
+       Promise.resolve("Success!") : 
+       Promise.reject(new Error("Random failure"));
+};
+
+retryOperation(unreliableOperation, 3, 500)
+   .then(result => console.log("Finally succeeded:", result))
+   .catch(error => console.error("All attempts failed:", error));`
+           },
+           {
+               id: 5,
+               category: 'advanced',
+               difficulty: 'advanced',
+               question: 'What is the Event Loop in JavaScript and how does it work?',
+               answer: 'The Event Loop is the mechanism that allows JavaScript to perform non-blocking operations despite being single-threaded. It manages the execution of code, handles events, and executes queued sub-tasks.',
+               language: 'JavaScript',
+               code: `// JavaScript Event Loop - Comprehensive Explanation
+
+// 1. CALL STACK DEMONSTRATION
+console.log("1. Call Stack Demo:");
+
+function first() {
+   console.log("First function");
+   second();
+   console.log("First function end");
+}
+
+function second() {
+   console.log("Second function");
+   third();
+   console.log("Second function end");
+}
+
+function third() {
+   console.log("Third function");
+}
+
+first();
+// Output: First -> Second -> Third -> Second end -> First end
+
+// 2. ASYNCHRONOUS OPERATIONS AND QUEUES
+console.log("\\n2. Async Operations:");
+
+console.log("Start");
+
+// Macrotask (Task Queue)
+setTimeout(() => {
+   console.log("Timeout 1");
+}, 0);
+
+// Microtask (Job Queue)
+Promise.resolve().then(() => {
+   console.log("Promise 1");
+});
+
+// Synchronous
+console.log("Middle");
+
+// Another Microtask
+Promise.resolve().then(() => {
+   console.log("Promise 2");
+});
+
+// Another Macrotask
+setTimeout(() => {
+   console.log("Timeout 2");
+}, 0);
+
+console.log("End");
+
+/* Output:
+Start
+Middle
+End
+Promise 1
+Promise 2
+Timeout 1
+Timeout 2
+*/
+
+// 3. MICROTASKS vs MACROTASKS
+console.log("\\n3. Task Priority Demo:");
+
+setTimeout(() => console.log("Macrotask 1"), 0);
+
+Promise.resolve().then(() => {
+   console.log("Microtask 1");
+   return Promise.resolve();
+}).then(() => {
+   console.log("Microtask 2");
+});
+
+setTimeout(() => console.log("Macrotask 2"), 0);
+
+queueMicrotask(() => {
+   console.log("queueMicrotask");
+});
+
+console.log("Synchronous");
+
+/* Output:
+Synchronous
+Microtask 1
+Microtask 2
+queueMicrotask
+Macrotask 1
+Macrotask 2
+*/
+
+// 4. COMPLEX EVENT LOOP EXAMPLE
+console.log("\\n4. Complex Example:");
+
+console.log("=== START ===");
+
+setTimeout(() => console.log("1"), 0);
+setTimeout(() => console.log("2"), 0);
+
+Promise.resolve().then(() => console.log("3"));
+Promise.resolve().then(() => console.log("4"));
+
+setTimeout(() => {
+   console.log("5");
+   Promise.resolve().then(() => console.log("6"));
+}, 0);
+
+Promise.resolve().then(() => {
+   console.log("7");
+   setTimeout(() => console.log("8"), 0);
+});
+
+console.log("=== END ===");
+
+/* Output:
+=== START ===
+=== END ===
+3
+4
+7
+1
+2
+5
+6
+8
+*/
+
+// 5. PRACTICAL IMPLICATIONS
+console.log("\\n5. Practical Examples:");
+
+// Problem: Heavy computation blocking the UI
+function heavyComputation() {
+   console.log("Starting heavy computation...");
+   let result = 0;
+   for (let i = 0; i < 1000000000; i++) {
+       result += i;
+   }
+   console.log("Heavy computation done:", result);
+}
+
+// Solution: Break it into chunks
+function heavyComputationNonBlocking() {
+   console.log("Starting non-blocking computation...");
+   let i = 0;
+   let result = 0;
+   const chunkSize = 1000000;
+   
+   function processChunk() {
+       const end = Math.min(i + chunkSize, 1000000000);
+       
+       for (; i < end; i++) {
+           result += i;
+       }
+       
+       if (i < 1000000000) {
+           // Give other tasks a chance to run
+           setTimeout(processChunk, 0);
+       } else {
+           console.log("Non-blocking computation done:", result);
+       }
+   }
+   
+   processChunk();
+}
+
+// 6. RAF (RequestAnimationFrame) vs setTimeout
+console.log("\\n6. RAF vs setTimeout:");
+
+function animateWithSetTimeout() {
+   let frame = 0;
+   function animate() {
+       console.log(\`setTimeout frame: \${frame++}\`);
+       if (frame < 3) {
+           setTimeout(animate, 16); // ~60fps
+       }
+   }
+   animate();
+}
+
+function animateWithRAF() {
+   let frame = 0;
+   function animate() {
+       console.log(\`RAF frame: \${frame++}\`);
+       if (frame < 3) {
+           requestAnimationFrame(animate);
+       }
+   }
+   animate();
+}
+
+// 7. EVENT LISTENERS AND EVENT LOOP
+console.log("\\n7. Event Listeners:");
+
+// Simulating DOM events
+const eventTarget = {
+   listeners: [],
+   addEventListener(type, callback) {
+       this.listeners.push({ type, callback });
+   },
+   dispatchEvent(event) {
+       this.listeners
+           .filter(listener => listener.type === event.type)
+           .forEach(listener => {
+               // Event callbacks are executed synchronously
+               listener.callback(event);
+           });
+   }
+};
+
+eventTarget.addEventListener('click', () => {
+   console.log("Event handler 1");
+   setTimeout(() => console.log("Event timeout"), 0);
+   Promise.resolve().then(() => console.log("Event promise"));
+});
+
+eventTarget.addEventListener('click', () => {
+   console.log("Event handler 2");
+});
+
+console.log("Before event dispatch");
+eventTarget.dispatchEvent({ type: 'click' });
+console.log("After event dispatch");
+
+/* Output:
+Before event dispatch
+Event handler 1
+Event handler 2
+After event dispatch
+Event promise
+Event timeout
+*/
+
+// 8. DEBUGGING EVENT LOOP ISSUES
+function debugEventLoop() {
+   console.log("\\n8. Debugging Tools:");
+   
+   // Visualize call stack
+   function showCallStack(name) {
+       console.log(\`\${name}: Call stack size ~\`, (new Error()).stack.split('\\n').length);
+   }
+   
+   showCallStack("Sync");
+   
+   setTimeout(() => showCallStack("Timeout"), 0);
+   Promise.resolve().then(() => showCallStack("Promise"));
+   
+   // Performance monitoring
+   performance.mark('start');
+   
+   setTimeout(() => {
+       performance.mark('end');
+       performance.measure('async-operation', 'start', 'end');
+       
+       const measures = performance.getEntriesByType('measure');
+       console.log("Async operation took:", measures[0].duration, "ms");
+   }, 10);
+}
+
+// 9. COMMON PITFALLS AND SOLUTIONS
+console.log("\\n9. Common Pitfalls:");
+
+// Pitfall 1: Assuming setTimeout(fn, 0) executes immediately
+console.log("Before setTimeout(0)");
+setTimeout(() => console.log("setTimeout(0)"), 0);
+console.log("After setTimeout(0)");
+
+// Pitfall 2: Promise.resolve() vs new Promise()
+Promise.resolve("immediate").then(console.log);
+
+new Promise(resolve => {
+   console.log("Promise constructor runs synchronously");
+   resolve("delayed");
+}).then(console.log);
+
+// Pitfall 3: Microtask queue starvation
+function createStarvation() {
+   console.log("Creating microtask starvation...");
+   
+   let count = 0;
+   function addMicrotask() {
+       if (count++ < 5) { // Limit to prevent infinite loop
+           Promise.resolve().then(() => {
+               console.log(\`Microtask \${count}\`);
+               addMicrotask(); // This prevents macrotasks from running
+           });
+       }
+   }
+   
+   addMicrotask();
+   setTimeout(() => console.log("This macrotask is delayed"), 0);
+}
+
+// Run examples (uncomment to test)
+// heavyComputationNonBlocking();
+// animateWithSetTimeout();
+// animateWithRAF();
+// debugEventLoop();
+// createStarvation();`
+           }
+       ];
+
+       // Load questions when page loads
+       function loadQuestions() {
+           const container = document.getElementById('questionsContainer');
+           container.innerHTML = '';
+           
+           javascriptQuestions.forEach(question => {
+               const questionElement = createQuestionElement(question);
+               container.appendChild(questionElement);
+           });
+       }
+
+       // Initialize questions on page load
+       document.addEventListener('DOMContentLoaded', function() {
+           loadQuestions();
+       });
+   </script>
+</body>
+</html>
