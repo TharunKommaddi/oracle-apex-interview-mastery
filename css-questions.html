@@ -4,16 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSS Interview Questions - APEX Interview Mastery</title>
+    <meta name="description" content="Master CSS styling and layout techniques for modern web development.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎨</text></svg>">
 </head>
 <body>
     <header class="header">
         <div class="nav-container">
-            <div class="logo">
+            <a href="index.html" class="logo">
                 <i class="fas fa-code"></i>
-                Oracle APEX Interview Mastery
-            </div>
+                APEX Interview Mastery
+            </a>
             <nav>
                 <ul class="nav-menu" id="navMenu">
                     <li class="nav-item">
@@ -44,11 +57,11 @@
                             <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
                             <li><a href="css-questions.html" class="active"><i class="fab fa-css3-alt"></i> CSS</a></li>
                             <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
-                            <li><a href="jquery-questions.html"><i class="fas fa-j"></i> jQuery</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
                         </ul>
                     </li>
                 </ul>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu">
                     <i class="fas fa-bars"></i>
                 </button>
             </nav>
@@ -74,7 +87,7 @@
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" class="search-input" placeholder="Search CSS questions..." 
-                       onkeyup="searchQuestions()" id="searchInput">
+                       onkeyup="searchQuestions()" id="searchInput" aria-label="Search questions">
             </div>
         </div>
 
@@ -86,7 +99,7 @@
     <footer class="footer">
         <div class="footer-content">
             <h3>Ready to Master CSS?</h3>
-            <p>Essential CSS knowledge for creating beautiful APEX applications</p>
+            <p>Essential CSS knowledge for creating beautiful and responsive web applications</p>
             <div class="footer-links">
                 <a href="index.html">Home</a>
                 <a href="html-questions.html">HTML Questions</a>
@@ -97,70 +110,20 @@
 
     <script src="assets/js/script.js"></script>
     <script>
-        // CSS Questions Data
+        // CSS Questions Data (Minimal for testing)
         const cssQuestions = [
             {
                 id: 1,
                 category: 'basic',
                 difficulty: 'basic',
-                question: 'What is CSS and what does it stand for?',
-                answer: 'CSS stands for Cascading Style Sheets. It is a stylesheet language used to describe the presentation of HTML documents, including layout, colors, fonts, and other visual aspects.',
-                language: 'CSS',
-                code: `/* Basic CSS Structure */
-/* Selector { property: value; } */
-
-/* Element selector */
-h1 {
-    color: blue;
-    font-size: 24px;
-    text-align: center;
-}
-
-/* Class selector */
-.highlight {
-    background-color: yellow;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-/* ID selector */
-#header {
-    background-color: #333;
-    color: white;
-    padding: 20px;
-}
-
-/* Multiple selectors */
-h1, h2, h3 {
-    font-family: Arial, sans-serif;
-    margin-bottom: 15px;
-}
-
-/* Descendant selector */
-.container p {
-    line-height: 1.6;
-    margin-bottom: 10px;
-}
-
-/* Attribute selector */
-input[type="text"] {
-    border: 2px solid #ccc;
-    padding: 8px;
-    width: 100%;
-}`
-            },
-            {
-                id: 2,
-                category: 'basic',
-                difficulty: 'basic',
-                question: 'What is the CSS Box Model?',
+                question: 'What is the CSS Box Model and how does it work?',
                 answer: 'The CSS Box Model describes how elements are structured with content, padding, border, and margin areas. It determines the total space an element occupies on the page.',
                 language: 'CSS',
                 code: `/* CSS Box Model Components */
-.box-model-example {
-    /* Content area */
-    width: 200px;
-    height: 100px;
+.box-model-demo {
+    /* Content area - the actual content */
+    width: 300px;
+    height: 200px;
     
     /* Padding - space inside the border */
     padding: 20px;           /* All sides */
@@ -168,142 +131,146 @@ input[type="text"] {
     padding: 5px 10px 15px 20px; /* Top | Right | Bottom | Left */
     
     /* Border - outline around padding */
-    border: 3px solid #333;
-    border-width: 2px;
-    border-style: solid;
-    border-color: blue;
+    border: 3px solid #3182ce;
+    border-radius: 8px;
     
     /* Margin - space outside the border */
-    margin: 15px;            /* All sides */
+    margin: 20px;            /* All sides */
     margin: 10px auto;       /* Vertical | Horizontal (auto centers) */
-    margin: 5px 0 10px 15px; /* Top | Right | Bottom | Left */
     
-    /* Box-sizing property */
-    box-sizing: border-box;  /* Includes padding and border in width/height */
-    /* box-sizing: content-box; /* Default - width/height only applies to content */
+    /* Box-sizing property controls calculation */
+    box-sizing: border-box;  /* Width includes padding and border */
+    /* box-sizing: content-box; /* Default - width only applies to content */
+    
+    /* Background and styling */
+    background-color: #f7fafc;
+    color: #1a202c;
 }
 
-/* Visual representation */
+/* Visual representation with modern styling */
 .box-visualization {
-    background-color: lightblue;    /* Content area */
-    padding: 20px;                  /* Padding area */
-    border: 5px solid red;          /* Border area */
-    margin: 25px;                   /* Margin area */
-    width: 150px;
-    height: 80px;
+    background: linear-gradient(135deg, #e6fffa, #b2f5ea);
+    padding: 24px;
+    border: 2px solid #38b2ac;
+    border-radius: 12px;
+    margin: 32px auto;
+    width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-weight: 600;
 }
 
-/* Different box-sizing comparison */
-.content-box {
+/* Box-sizing comparison */
+.content-box-demo {
     box-sizing: content-box;
     width: 200px;
     padding: 20px;
-    border: 5px solid black;
+    border: 5px solid #e53e3e;
     /* Total width = 200px + 40px (padding) + 10px (border) = 250px */
 }
 
-.border-box {
+.border-box-demo {
     box-sizing: border-box;
     width: 200px;
     padding: 20px;
-    border: 5px solid black;
+    border: 5px solid #38a169;
     /* Total width = 200px (includes padding and border) */
 }`
             },
             {
-                id: 3,
+                id: 2,
                 category: 'intermediate',
                 difficulty: 'intermediate',
-                question: 'What is Flexbox and how does it work?',
+                question: 'What is Flexbox and how does it work for modern layouts?',
                 answer: 'Flexbox (Flexible Box Layout) is a CSS layout method for arranging items in a single dimension (row or column) with flexible sizing and alignment options.',
                 language: 'CSS',
-                code: `/* Flexbox Container (Parent) */
+                code: `/* Modern Flexbox Container */
 .flex-container {
     display: flex;
     
-    /* Direction of flex items */
-    flex-direction: row;        /* Default: left to right */
-    flex-direction: column;     /* Top to bottom */
-    flex-direction: row-reverse; /* Right to left */
-    flex-direction: column-reverse; /* Bottom to top */
-    
-    /* Wrapping behavior */
-    flex-wrap: nowrap;          /* Default: items stay on one line */
-    flex-wrap: wrap;            /* Items wrap to new lines */
-    flex-wrap: wrap-reverse;    /* Items wrap in reverse order */
+    /* Direction and wrapping */
+    flex-direction: row;        /* row | column | row-reverse | column-reverse */
+    flex-wrap: wrap;            /* nowrap | wrap | wrap-reverse */
     
     /* Shorthand for direction and wrap */
     flex-flow: row wrap;
     
-    /* Main axis alignment (horizontal in row, vertical in column) */
-    justify-content: flex-start;   /* Default: items at start */
-    justify-content: center;       /* Items centered */
-    justify-content: flex-end;     /* Items at end */
-    justify-content: space-between; /* Equal space between items */
-    justify-content: space-around;  /* Equal space around items */
-    justify-content: space-evenly;  /* Equal space everywhere */
+    /* Main axis alignment (justify-content) */
+    justify-content: space-between; /* flex-start | center | flex-end | space-around | space-evenly */
     
-    /* Cross axis alignment (vertical in row, horizontal in column) */
-    align-items: stretch;       /* Default: items stretch to fill */
-    align-items: flex-start;    /* Items at top/left */
-    align-items: center;        /* Items centered */
-    align-items: flex-end;      /* Items at bottom/right */
-    align-items: baseline;      /* Items aligned to text baseline */
+    /* Cross axis alignment (align-items) */
+    align-items: center;        /* stretch | flex-start | center | flex-end | baseline */
     
-    /* Multi-line alignment */
-    align-content: stretch;     /* Lines stretch to fill */
-    align-content: center;      /* Lines centered */
-    align-content: space-between; /* Space between lines */
+    /* Multi-line alignment (align-content) */
+    align-content: flex-start;  /* stretch | flex-start | center | flex-end | space-between | space-around */
     
-    /* Gap between items */
-    gap: 20px;                  /* Same gap for rows and columns */
-    row-gap: 15px;              /* Gap between rows */
-    column-gap: 25px;           /* Gap between columns */
+    /* Modern gap property (better than margins) */
+    gap: 1rem;                  /* Sets both row-gap and column-gap */
+    row-gap: 1rem;              /* Space between rows */
+    column-gap: 1.5rem;         /* Space between columns */
+    
+    /* Container styling */
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* Flexbox Items (Children) */
 .flex-item {
-    /* Flexibility */
+    /* Flexibility properties */
     flex-grow: 1;               /* How much item should grow */
     flex-shrink: 1;             /* How much item should shrink */
     flex-basis: 200px;          /* Initial size before growing/shrinking */
     
-    /* Shorthand for grow, shrink, basis */
-    flex: 1;                    /* flex: 1 1 0%; */
-    flex: 0 0 auto;             /* Don't grow or shrink */
+    /* Shorthand: flex: grow shrink basis */
+    flex: 1 1 200px;            /* Flexible item */
+    flex: 0 0 auto;             /* Fixed size item */
     flex: none;                 /* Same as 0 0 auto */
     
-    /* Individual alignment */
-    align-self: auto;           /* Use parent's align-items */
-    align-self: center;         /* Override parent alignment */
-    align-self: flex-end;
+    /* Individual alignment override */
+    align-self: flex-end;       /* auto | flex-start | center | flex-end | stretch | baseline */
     
-    /* Order */
+    /* Order control */
     order: 0;                   /* Default order */
-    order: 1;                   /* Appears after order: 0 items */
-    order: -1;                  /* Appears before order: 0 items */
+    
+    /* Item styling */
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
 }
 
-/* Practical Examples */
-.navigation {
+/* Modern Flexbox Patterns */
+.modern-navigation {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .card-layout {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 1.5rem;
+    padding: 1.5rem;
 }
 
-.card {
+.responsive-card {
     flex: 1 1 300px;           /* Grow, shrink, min-width 300px */
     min-height: 200px;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.centered-content {
+/* Perfect centering */
+.perfect-center {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -311,266 +278,144 @@ input[type="text"] {
 }`
             },
             {
-                id: 4,
+                id: 3,
                 category: 'advanced',
                 difficulty: 'advanced',
-                question: 'What is CSS Grid and how does it differ from Flexbox?',
-                answer: 'CSS Grid is a 2D layout system for creating complex grid-based layouts. Unlike Flexbox (1D), Grid can handle both rows and columns simultaneously.',
+                question: 'Explain CSS Grid and how it differs from Flexbox for complex layouts.',
+                answer: 'CSS Grid is a 2D layout system for creating complex grid-based layouts. Unlike Flexbox (1D), Grid can handle both rows and columns simultaneously, making it perfect for page layouts.',
                 language: 'CSS',
-                code: `/* CSS Grid Container */
+                code: `/* Modern CSS Grid Container */
 .grid-container {
     display: grid;
     
-    /* Define columns */
-    grid-template-columns: 200px 1fr 100px;        /* Fixed, flexible, fixed */
-    grid-template-columns: repeat(3, 1fr);          /* 3 equal columns */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive */
+    /* Define responsive columns */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-rows: auto 1fr auto;
     
-    /* Define rows */
-    grid-template-rows: 100px auto 50px;           /* Fixed, auto, fixed */
-    grid-template-rows: repeat(3, 200px);          /* 3 rows of 200px */
-    
-    /* Named grid areas */
+    /* Named grid areas for semantic layouts */
     grid-template-areas: 
         "header header header"
         "sidebar main aside"
         "footer footer footer";
     
-    /* Gaps between grid items */
-    gap: 20px;                    /* Row and column gap */
-    row-gap: 15px;                /* Gap between rows */
-    column-gap: 25px;             /* Gap between columns */
+    /* Modern gap syntax */
+    gap: 1.5rem;               /* Both row and column gap */
     
-    /* Alignment */
-    justify-items: start;         /* Align items horizontally */
-    align-items: center;          /* Align items vertically */
-    justify-content: center;      /* Align grid horizontally */
-    align-content: center;        /* Align grid vertically */
+    /* Grid alignment */
+    justify-items: stretch;     /* Align items horizontally */
+    align-items: start;         /* Align items vertically */
+    justify-content: center;    /* Align grid horizontally */
+    align-content: start;       /* Align grid vertically */
+    
+    /* Container styling */
+    min-height: 100vh;
+    padding: 1.5rem;
+    background: #f7fafc;
 }
 
-/* Grid Items */
-.grid-item {
+/* Grid Items with Named Areas */
+.header { 
+    grid-area: header; 
+    background: #3182ce;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.sidebar { 
+    grid-area: sidebar; 
+    background: #e6fffa;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.main { 
+    grid-area: main; 
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.aside { 
+    grid-area: aside; 
+    background: #fef5e7;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.footer { 
+    grid-area: footer; 
+    background: #1a202c;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+/* Advanced Grid Positioning */
+.grid-item-positioned {
     /* Position by line numbers */
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 2;
-    grid-row-end: 4;
-    
-    /* Shorthand positioning */
-    grid-column: 1 / 3;           /* From line 1 to 3 */
-    grid-row: 2 / 4;              /* From line 2 to 4 */
-    grid-area: 2 / 1 / 4 / 3;     /* row-start / col-start / row-end / col-end */
+    grid-column: 1 / 4;         /* Span from column 1 to 4 */
+    grid-row: 2 / 4;            /* Span from row 2 to 4 */
     
     /* Span notation */
-    grid-column: span 2;          /* Span 2 columns */
-    grid-row: span 3;             /* Span 3 rows */
+    grid-column: span 2;        /* Span 2 columns */
+    grid-row: span 3;           /* Span 3 rows */
     
-    /* Named areas */
-    grid-area: header;            /* Use named area */
-    
-    /* Individual alignment */
-    justify-self: center;         /* Align this item horizontally */
-    align-self: end;              /* Align this item vertically */
+    /* Complete shorthand */
+    grid-area: 2 / 1 / 4 / 3;   /* row-start / col-start / row-end / col-end */
 }
-
-/* Practical Grid Examples */
-/* Basic Layout */
-.page-layout {
-    display: grid;
-    grid-template-areas:
-        "header header"
-        "sidebar main"
-        "footer footer";
-    grid-template-columns: 250px 1fr;
-    grid-template-rows: auto 1fr auto;
-    min-height: 100vh;
-    gap: 20px;
-}
-
-.header { grid-area: header; }
-.sidebar { grid-area: sidebar; }
-.main { grid-area: main; }
-.footer { grid-area: footer; }
 
 /* Responsive Card Grid */
-.card-grid {
+.responsive-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    gap: 2rem;
+    padding: 2rem;
 }
 
-/* Complex Dashboard Layout */
-.dashboard {
+/* Grid vs Flexbox Comparison */
+/* Flexbox: Best for 1D layouts */
+.flex-example {
+    display: flex;
+    flex-direction: row;        /* One dimension only */
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* Grid: Best for 2D layouts */
+.grid-example {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;  /* Multiple columns */
+    grid-template-rows: auto auto;       /* Multiple rows */
+    gap: 1rem;
+}
+
+/* Modern Dashboard Layout */
+.dashboard-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto;
-    gap: 15px;
+    grid-auto-rows: minmax(200px, auto);
+    gap: 1.5rem;
+    padding: 1.5rem;
 }
 
 .widget-large { grid-column: span 6; }
 .widget-medium { grid-column: span 4; }
 .widget-small { grid-column: span 3; }
 
-/* Grid vs Flexbox Comparison */
-/* Flexbox: 1D layout (row OR column) */
-.flex-example {
-    display: flex;
-    flex-direction: row;          /* One dimension */
-    justify-content: space-between;
-}
-
-/* Grid: 2D layout (rows AND columns) */
-.grid-example {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;  /* Multiple columns */
-    grid-template-rows: auto auto;       /* Multiple rows */
+/* Responsive behavior */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .widget-large,
+    .widget-medium,
+    .widget-small {
+        grid-column: 1;
+    }
 }`
-            },
-            {
-                id: 5,
-                category: 'advanced',
-                difficulty: 'advanced',
-                question: 'Explain CSS specificity and how it works.',
-                answer: 'CSS specificity determines which styles are applied when multiple rules target the same element. It\'s calculated based on the types of selectors used.',
-                language: 'CSS',
-                code: `/* CSS Specificity Hierarchy (from lowest to highest):
-   1. Universal selector (*) = 0
-   2. Element selectors (div, p, a) = 1
-   3. Class selectors (.class), attribute selectors, pseudo-classes = 10
-   4. ID selectors (#id) = 100
-   5. Inline styles (style="") = 1000
-   6. !important = 10000
-*/
-
-/* Specificity Examples */
-
-/* Specificity = 1 (1 element) */
-p {
-    color: blue;
-}
-
-/* Specificity = 10 (1 class) */
-.highlight {
-    color: red;
-}
-
-/* Specificity = 100 (1 ID) */
-#special {
-    color: green;
-}
-
-/* Specificity = 11 (1 element + 1 class) */
-p.highlight {
-    color: orange;
-}
-
-/* Specificity = 101 (1 ID + 1 element) */
-#special p {
-    color: purple;
-}
-
-/* Specificity = 111 (1 ID + 1 class + 1 element) */
-#special p.highlight {
-    color: brown;
-}
-
-/* Specificity = 21 (2 elements + 1 class) */
-div p.highlight {
-    color: pink;
-}
-
-/* Specificity = 200 (2 IDs) */
-#header #navigation {
-    color: navy;
-}
-
-/* Inline style = 1000 */
-/* <p style="color: black;">Text</p> */
-
-/* !important = 10000 (overrides everything except other !important) */
-.important {
-    color: red !important;
-}
-
-/* Practical Specificity Management */
-
-/* Bad: Overly specific selectors */
-#header .navigation ul li a.active {  /* Specificity = 122 */
-    color: white;
-}
-
-/* Good: Use classes for styling */
-.nav-link-active {                    /* Specificity = 10 */
-    color: white;
-}
-
-/* Specificity Conflicts Example */
-.container .item {        /* Specificity = 20 */
-    background: blue;
-}
-
-.item.featured {          /* Specificity = 20 - Same as above! */
-    background: red;      /* This wins because it comes later */
-}
-
-#sidebar .item {          /* Specificity = 110 */
-    background: green;    /* This wins over both above */
-}
-
-/* Best Practices for Managing Specificity */
-
-/* 1. Use classes for styling */
-.button {
-    background: blue;
-    color: white;
-    padding: 10px 20px;
-}
-
-.button--primary {        /* BEM methodology */
-    background: green;
-}
-
-/* 2. Avoid IDs for styling */
-/* Bad */
-#submit-button {
-    background: red;
-}
-
-/* Good */
-.submit-button {
-    background: red;
-}
-
-/* 3. Use descendant selectors carefully */
-/* Overly specific */
-.header .navigation .menu .item .link {
-    color: white;
-}
-
-/* Better */
-.nav-link {
-    color: white;
-}
-
-/* 4. Avoid !important (use only when necessary) */
-/* Last resort */
-.utility-hidden {
-    display: none !important;
-}
-
-/* 5. Use CSS methodologies like BEM */
-.block {}
-.block__element {}
-.block--modifier {}
-.block__element--modifier {}
-
-/* Example: */
-.card {}                  /* Block */
-.card__header {}          /* Element */
-.card__body {}            /* Element */
-.card--featured {}        /* Modifier */
-.card__header--large {}   /* Element modifier */`
             }
         ];
 
