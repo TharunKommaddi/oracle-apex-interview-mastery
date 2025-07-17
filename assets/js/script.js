@@ -101,10 +101,16 @@ const Navigation = {
     },
 
     bindEvents() {
-        // Mobile menu toggle
+        // Mobile menu toggle with proper event handling
         const mobileToggle = Utils.$('.mobile-menu-toggle');
         if (mobileToggle) {
-            mobileToggle.addEventListener('click', this.toggleMobileMenu);
+            // Remove any existing onclick to prevent conflicts
+            mobileToggle.removeAttribute('onclick');
+            mobileToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleMobileMenu();
+            });
         }
 
         // Close mobile menu when clicking outside
@@ -119,8 +125,15 @@ const Navigation = {
             }
         });
 
+        // Handle escape key to close menu
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && AppState.isMenuOpen) {
+                this.closeMobileMenu();
+            }
+        });
+
         // Smooth scroll for anchor links
-        Utils.$$('a[href^="#"]').forEach(anchor => {
+        Utils.$('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', this.handleSmoothScroll);
         });
 
@@ -130,10 +143,21 @@ const Navigation = {
                 this.closeMobileMenu();
             }
         }, 250));
+
+        // Close menu when clicking on menu links (mobile)
+        Utils.$('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (AppState.isMenuOpen && window.innerWidth <= 768) {
+                    setTimeout(() => this.closeMobileMenu(), 150);
+                }
+            });
+        });
     },
 
     toggleMobileMenu() {
         const navMenu = Utils.$('.nav-menu');
+        const toggle = Utils.$('.mobile-menu-toggle');
+        const body = document.body;
         const isOpen = navMenu.classList.contains('active');
         
         if (isOpen) {
@@ -146,27 +170,49 @@ const Navigation = {
     openMobileMenu() {
         const navMenu = Utils.$('.nav-menu');
         const toggle = Utils.$('.mobile-menu-toggle');
+        const body = document.body;
         
+        // Show menu
+        navMenu.style.display = 'flex';
+        
+        // Force reflow
+        navMenu.offsetHeight;
+        
+        // Add active class for animation
         navMenu.classList.add('active');
         toggle.setAttribute('aria-expanded', 'true');
         toggle.innerHTML = '<i class="fas fa-times"></i>';
+        body.classList.add('menu-open');
         AppState.isMenuOpen = true;
         
-        // Prevent body scroll
-        document.body.style.overflow = 'hidden';
+        // Focus first menu item for accessibility
+        const firstLink = navMenu.querySelector('a');
+        if (firstLink) {
+            setTimeout(() => firstLink.focus(), 300);
+        }
     },
 
     closeMobileMenu() {
         const navMenu = Utils.$('.nav-menu');
         const toggle = Utils.$('.mobile-menu-toggle');
+        const body = document.body;
         
+        // Remove active class
         navMenu.classList.remove('active');
         toggle.setAttribute('aria-expanded', 'false');
         toggle.innerHTML = '<i class="fas fa-bars"></i>';
+        body.classList.remove('menu-open');
         AppState.isMenuOpen = false;
         
-        // Restore body scroll
-        document.body.style.overflow = '';
+        // Hide menu after animation
+        setTimeout(() => {
+            if (!navMenu.classList.contains('active')) {
+                navMenu.style.display = 'none';
+            }
+        }, 300);
+        
+        // Return focus to toggle button
+        toggle.focus();
     },
 
     handleSmoothScroll(e) {
