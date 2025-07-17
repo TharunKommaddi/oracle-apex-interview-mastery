@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Interview Questions - APEX Interview Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
+                Oracle APEX Interview Mastery
+            </div>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html" class="active"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-j"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">HTML Interview Questions</h1>
+        <p class="page-subtitle">Master HTML fundamentals and advanced concepts for APEX development</p>
+    </section>
+
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fab fa-html5"></i> Filter Questions
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
+                <button class="filter-tab" onclick="filterQuestions('basic')">Basic</button>
+                <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate</button>
+                <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced</button>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search HTML questions..." 
+                       onkeyup="searchQuestions()" id="searchInput">
+            </div>
+        </div>
+
+        <div id="questionsContainer" class="questions-container">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Ready to Master HTML?</h3>
+            <p>Essential HTML knowledge for Oracle APEX developers</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="css-questions.html">CSS Questions</a>
+                <a href="javascript-questions.html">JavaScript Questions</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // HTML Questions Data
+        const htmlQuestions = [
+            {
+                id: 1,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What is HTML and what does it stand for?',
+                answer: 'HTML stands for HyperText Markup Language. It is the standard markup language for creating web pages and web applications. HTML describes the structure of a webpage using markup elements called tags.',
+                language: 'HTML',
+                code: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First HTML Page</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Website</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="home">
+            <h2>Home Section</h2>
+            <p>This is the main content area.</p>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 My Website. All rights reserved.</p>
+    </footer>
+</body>
+</html>`
+            },
+            {
+                id: 2,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What is the difference between HTML and HTML5?',
+                answer: '<strong>HTML4:</strong> Limited semantic elements, required plugins for multimedia, basic form inputs<br><strong>HTML5:</strong> New semantic elements, built-in audio/video support, new form input types, canvas element, local storage APIs',
+                language: 'HTML5',
+                code: `<!-- HTML5 Semantic Elements -->
+<article>
+    <header>
+        <h1>Article Title</h1>
+        <time datetime="2024-01-15">January 15, 2024</time>
+    </header>
+    
+    <section>
+        <h2>Introduction</h2>
+        <p>Article content goes here...</p>
+    </section>
+    
+    <aside>
+        <h3>Related Links</h3>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+        </ul>
+    </aside>
+    
+    <footer>
+        <p>Author: John Doe</p>
+    </footer>
+</article>
+
+<!-- HTML5 Form Elements -->
+<form>
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+    
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone">
+    
+    <label for="website">Website:</label>
+    <input type="url" id="website">
+    
+    <label for="birthday">Birthday:</label>
+    <input type="date" id="birthday">
+    
+    <label for="volume">Volume:</label>
+    <input type="range" id="volume" min="0" max="100">
+    
+    <button type="submit">Submit</button>
+</form>
+
+<!-- HTML5 Media Elements -->
+<video controls width="400">
+    <source src="movie.mp4" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+    Your browser does not support the video tag.
+</video>
+
+<audio controls>
+    <source src="audio.mp3" type="audio/mpeg">
+    <source src="audio.ogg" type="audio/ogg">
+    Your browser does not support the audio tag.
+</audio>`
+            },
+            {
+                id: 3,
+                category: 'intermediate',
+                difficulty: 'intermediate',
+                question: 'What are semantic HTML elements and why are they important?',
+                answer: 'Semantic HTML elements clearly describe their meaning to both the browser and the developer. They improve accessibility, SEO, and code readability.',
+                language: 'HTML5',
+                code: `<!-- Semantic Structure Example -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Semantic HTML Example</title>
+</head>
+<body>
+    <!-- Main site header -->
+    <header role="banner">
+        <h1>Company Name</h1>
+        <nav role="navigation" aria-label="Main navigation">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main content area -->
+    <main role="main">
+        <!-- Primary content section -->
+        <section id="hero">
+            <h2>Welcome to Our Website</h2>
+            <p>We provide excellent services...</p>
+        </section>
+
+        <!-- Article content -->
+        <article>
+            <header>
+                <h2>Latest News</h2>
+                <time datetime="2024-01-15" pubdate>January 15, 2024</time>
+                <address>By <a href="mailto:author@example.com">John Author</a></address>
+            </header>
+            
+            <p>Article content goes here...</p>
+            
+            <footer>
+                <p>Tags: <a href="#tag1">Technology</a>, <a href="#tag2">Innovation</a></p>
+            </footer>
+        </article>
+
+        <!-- Sidebar content -->
+        <aside role="complementary">
+            <h3>Related Information</h3>
+            <ul>
+                <li><a href="#">Resource 1</a></li>
+                <li><a href="#">Resource 2</a></li>
+            </ul>
+        </aside>
+    </main>
+
+    <!-- Site footer -->
+    <footer role="contentinfo">
+        <p>&copy; 2024 Company Name. All rights reserved.</p>
+        <address>
+            Contact us at: <a href="mailto:info@company.com">info@company.com</a>
+        </address>
+    </footer>
+</body>
+</html>
+
+<!-- Benefits of Semantic HTML:
+1. Accessibility: Screen readers can navigate better
+2. SEO: Search engines understand content structure
+3. Maintainability: Code is more readable and organized
+4. Future-proof: Works better with new technologies
+-->`
+            }
+        ];
+
+        // Load questions when page loads
+        function loadQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            htmlQuestions.forEach(question => {
+                const questionElement = createQuestionElement(question);
+                container.appendChild(questionElement);
+            });
+        }
+
+        // Initialize questions on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestions();
+        });
+    </script>
+</body>
+</html>
