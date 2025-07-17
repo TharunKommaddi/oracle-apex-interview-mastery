@@ -102,19 +102,20 @@ pre {
 
 /* CSS Custom Properties */
 :root {
-    /* Colors */
-    --primary: #1a202c;
-    --primary-light: #2d3748;
-    --secondary: #3182ce;
-    --secondary-light: #4299e1;
-    --accent: #f56565;
+    /* Main Theme Colors */
+    --primary: #bb0a31;
+    --primary-light: #d12851;
+    --primary-dark: #8f0825;
+    --secondary: #bb0a31;
+    --secondary-light: #d12851;
+    --accent: #ff6b6b;
     --success: #48bb78;
     --warning: #ed8936;
     
     /* Backgrounds */
     --bg-primary: #ffffff;
-    --bg-secondary: #f7fafc;
-    --bg-tertiary: #edf2f7;
+    --bg-secondary: #fef7f7;
+    --bg-tertiary: #fed7d7;
     --bg-dark: #1a202c;
     
     /* Text Colors */
@@ -125,14 +126,14 @@ pre {
     --text-white: #ffffff;
     
     /* Borders */
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e0;
+    --border-light: #fed7d7;
+    --border-medium: #feb2b2;
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 2px 0 rgba(187, 10, 49, 0.05);
+    --shadow-md: 0 2px 4px -1px rgba(187, 10, 49, 0.1), 0 2px 4px -1px rgba(187, 10, 49, 0.06);
+    --shadow-lg: 0 4px 6px -1px rgba(187, 10, 49, 0.1), 0 2px 4px -1px rgba(187, 10, 49, 0.05);
+    --shadow-xl: 0 8px 15px -3px rgba(187, 10, 49, 0.1), 0 4px 6px -2px rgba(187, 10, 49, 0.05);
     
     /* Spacing - Reduced */
     --space-xs: 0.25rem;
@@ -246,8 +247,8 @@ p {
 
 .nav-item a:hover,
 .nav-item a.active {
-    color: var(--secondary);
-    background: rgba(49, 130, 206, 0.1);
+    color: var(--primary);
+    background: rgba(187, 10, 49, 0.1);
 }
 
 /* Dropdown */
@@ -942,7 +943,7 @@ pre {
 
     .nav-item a:hover,
     .nav-item a.active {
-        background: var(--secondary);
+        background: var(--primary);
         color: white;
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
