@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle SQL Interview Questions - APEX Interview Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
+                Oracle APEX Interview Mastery
+            </div>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html" class="active">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-j"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">Oracle SQL Interview Questions</h1>
+        <p class="page-subtitle">Master Oracle SQL with comprehensive questions from basic to advanced levels</p>
+    </section>
+
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fas fa-database"></i> Filter Questions
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
+                <button class="filter-tab" onclick="filterQuestions('basic')">Basic (1-30)</button>
+                <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate (31-60)</button>
+                <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced (61-82)</button>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search SQL questions..." 
+                       onkeyup="searchQuestions()" id="searchInput">
+            </div>
+        </div>
+
+        <div id="questionsContainer" class="questions-container">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Ready to Master Oracle SQL?</h3>
+            <p>Practice these questions to excel in your Oracle APEX interviews</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="oracle-apex.html">APEX Questions</a>
+                <a href="plsql.html">PL/SQL Questions</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // Oracle SQL Questions Data
+        const oracleSqlQuestions = [
+            {
+                id: 1,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'How can you find the Nth highest salary from a table in Oracle?',
+                answer: 'There are multiple approaches to find the Nth highest salary in Oracle:',
+                language: 'Oracle SQL',
+                code: `-- Method 1: Using ROW_NUMBER()
+SELECT salary 
+FROM (
+  SELECT salary, ROW_NUMBER() OVER (ORDER BY salary DESC) as rn
+  FROM employee
+)
+WHERE rn = :N;
+
+-- Method 2: Using DENSE_RANK()
+SELECT DISTINCT salary 
+FROM (
+  SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rnk
+  FROM employee
+)
+WHERE rnk = :N;
+
+-- Method 3: Using Subquery (for any N)
+SELECT DISTINCT salary 
+FROM employee e1 
+WHERE :N-1 = (
+  SELECT COUNT(DISTINCT salary) 
+  FROM employee e2 
+  WHERE e2.salary > e1.salary
+);`
+            },
+            {
+                id: 2,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'Explain JOIN and different types of JOIN in Oracle.',
+                answer: 'JOIN is used to combine rows from two or more tables based on a related column between them.',
+                language: 'Oracle SQL',
+                code: `-- INNER JOIN: Returns records with matching values in both tables
+SELECT e.employee_name, d.department_name
+FROM employees e
+INNER JOIN departments d ON e.department_id = d.department_id;
+
+-- LEFT JOIN: Returns all records from left table, matched records from right
+SELECT e.employee_name, d.department_name
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id;
+
+-- RIGHT JOIN: Returns all records from right table, matched records from left
+SELECT e.employee_name, d.department_name
+FROM employees e
+RIGHT JOIN departments d ON e.department_id = d.department_id;
+
+-- FULL OUTER JOIN: Returns all records when there's a match in either table
+SELECT e.employee_name, d.department_name
+FROM employees e
+FULL OUTER JOIN departments d ON e.department_id = d.department_id;
+
+-- CROSS JOIN: Cartesian product of both tables
+SELECT e.employee_name, d.department_name
+FROM employees e
+CROSS JOIN departments d;`
+            },
+            {
+                id: 3,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'How can you optimize an Oracle SQL query?',
+                answer: 'Oracle SQL query optimization involves multiple strategies:',
+                language: 'Oracle SQL',
+                code: `-- 1. Use indexes effectively
+CREATE INDEX idx_emp_dept ON employees(department_id);
+CREATE INDEX idx_emp_salary ON employees(salary);
+
+-- 2. Avoid SELECT *
+-- Bad:
+SELECT * FROM employees WHERE department_id = 10;
+-- Good:
+SELECT employee_id, employee_name, salary FROM employees WHERE department_id = 10;
+
+-- 3. Use EXPLAIN PLAN to analyze execution
+EXPLAIN PLAN FOR
+SELECT e.employee_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+WHERE e.salary > 50000;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+-- 4. Use bind variables
+SELECT * FROM employees WHERE department_id = :dept_id;
+
+-- 5. Limit result set
+SELECT * FROM employees 
+WHERE department_id = 10 
+AND ROWNUM <= 100;`
+            },
+            {
+                id: 4,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'Explain the difference between CHAR and VARCHAR2 data types in Oracle.',
+                answer: '<strong>CHAR:</strong> Fixed-length character data type<br><strong>VARCHAR2:</strong> Variable-length character data type',
+                language: 'Oracle SQL',
+                code: `-- CHAR - Fixed length (pads with spaces)
+CREATE TABLE test_char (
+  id NUMBER,
+  fixed_col CHAR(10)    -- Always uses 10 bytes
+);
+
+INSERT INTO test_char VALUES (1, 'ABC');  -- Stored as 'ABC       ' (7 spaces)
+
+-- VARCHAR2 - Variable length (only uses needed space)
+CREATE TABLE test_varchar (
+  id NUMBER,
+  variable_col VARCHAR2(10)  -- Uses only needed bytes (max 10)
+);
+
+INSERT INTO test_varchar VALUES (1, 'ABC');  -- Stored as 'ABC' (3 bytes)
+
+-- Comparison behavior
+SELECT * FROM test_char WHERE fixed_col = 'ABC';      -- May not match due to trailing spaces
+SELECT * FROM test_varchar WHERE variable_col = 'ABC';  -- Exact match`
+            },
+            {
+                id: 5,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'Write a query to retrieve duplicate records from a table without using DISTINCT.',
+                answer: 'Use GROUP BY with HAVING clause to find duplicates:',
+                language: 'Oracle SQL',
+                code: `-- Find duplicate values in a column
+SELECT column_name, COUNT(column_name) as duplicate_count
+FROM table_name 
+GROUP BY column_name 
+HAVING COUNT(column_name) > 1;
+
+-- Find all duplicate records (complete rows)
+SELECT *
+FROM employees e1
+WHERE EXISTS (
+  SELECT 1
+  FROM employees e2
+  WHERE e1.employee_name = e2.employee_name
+    AND e1.department_id = e2.department_id
+    AND e1.ROWID > e2.ROWID
+);
+
+-- Find employees with duplicate names
+SELECT employee_name, COUNT(*) as name_count
+FROM employees
+GROUP BY employee_name
+HAVING COUNT(*) > 1
+ORDER BY name_count DESC;`
+            },
+            {
+                id: 31,
+                category: 'intermediate',
+                difficulty: 'intermediate',
+                question: 'Write a query to get the monthly sales amount for the last 12 months.',
+                answer: 'Use date functions and GROUP BY to calculate monthly sales:',
+                language: 'Oracle SQL',
+                code: `SELECT 
+  TO_CHAR(sale_date, 'YYYY-MM') AS sales_month,
+  TO_CHAR(sale_date, 'Mon YYYY') AS month_name,
+  SUM(amount) AS monthly_sales,
+  COUNT(*) AS total_transactions,
+  AVG(amount) AS avg_transaction_amount
+FROM sales 
+WHERE sale_date >= ADD_MONTHS(SYSDATE, -12)
+  AND sale_date < SYSDATE
+GROUP BY TO_CHAR(sale_date, 'YYYY-MM'), TO_CHAR(sale_date, 'Mon YYYY')
+ORDER BY sales_month DESC;
+
+-- Alternative with EXTRACT
+SELECT 
+  EXTRACT(YEAR FROM sale_date) AS sale_year,
+  EXTRACT(MONTH FROM sale_date) AS sale_month,
+  SUM(amount) AS monthly_sales
+FROM sales 
+WHERE sale_date BETWEEN ADD_MONTHS(SYSDATE, -12) AND SYSDATE
+GROUP BY EXTRACT(YEAR FROM sale_date), EXTRACT(MONTH FROM sale_date)
+ORDER BY sale_year DESC, sale_month DESC;`
+            },
+            {
+                id: 61,
+                category: 'advanced',
+                difficulty: 'advanced',
+                question: 'Find employees who earn more than their respective department\'s median salary.',
+                answer: 'Use window functions to calculate department median and compare:',
+                language: 'Oracle SQL',
+                code: `-- Using PERCENTILE_CONT for exact median
+WITH dept_median AS (
+  SELECT 
+    department_id,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median_salary
+  FROM employees
+  GROUP BY department_id
+)
+SELECT 
+  e.employee_id,
+  e.employee_name,
+  e.salary,
+  e.department_id,
+  dm.median_salary,
+  ROUND(e.salary - dm.median_salary, 2) AS salary_diff
+FROM employees e
+JOIN dept_median dm ON e.department_id = dm.department_id
+WHERE e.salary > dm.median_salary
+ORDER BY e.department_id, e.salary DESC;
+
+-- Alternative using ROW_NUMBER for median calculation
+WITH ranked_salaries AS (
+  SELECT 
+    employee_id,
+    employee_name,
+    salary,
+    department_id,
+    ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary) AS rn,
+    COUNT(*) OVER (PARTITION BY department_id) AS dept_count
+  FROM employees
+),
+dept_medians AS (
+  SELECT 
+    department_id,
+    AVG(salary) AS median_salary
+  FROM ranked_salaries
+  WHERE rn IN (FLOOR((dept_count + 1) / 2), CEIL((dept_count + 1) / 2))
+  GROUP BY department_id
+)
+SELECT 
+  e.employee_name,
+  e.salary,
+  e.department_id,
+  dm.median_salary
+FROM employees e
+JOIN dept_medians dm ON e.department_id = dm.department_id
+WHERE e.salary > dm.median_salary;`
+            }
+        ];
+
+        // Load questions when page loads
+        function loadQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            oracleSqlQuestions.forEach(question => {
+                const questionElement = createQuestionElement(question);
+                container.appendChild(questionElement);
+            });
+        }
+
+        // Initialize questions on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestions();
+        });
+    </script>
+</body>
+</html>
