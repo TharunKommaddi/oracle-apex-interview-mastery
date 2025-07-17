@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle APEX Interview Questions - APEX Interview Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
+                Oracle APEX Interview Mastery
+            </div>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html" class="active">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-j"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">Oracle APEX Interview Questions</h1>
+        <p class="page-subtitle">Complete Oracle APEX preparation covering architecture, components, and development</p>
+    </section>
+
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fas fa-layer-group"></i> Filter Questions
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
+                <button class="filter-tab" onclick="filterQuestions('basic')">Basic (1-25)</button>
+                <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate (26-50)</button>
+                <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced (51-75)</button>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search APEX questions..." 
+                       onkeyup="searchQuestions()" id="searchInput">
+            </div>
+        </div>
+
+        <div id="questionsContainer" class="questions-container">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Ready to Master Oracle APEX?</h3>
+            <p>Practice these questions to excel in your Oracle APEX interviews</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="oracle-sql.html">SQL Questions</a>
+                <a href="plsql.html">PL/SQL Questions</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // Oracle APEX Questions Data
+        const oracleApexQuestions = [
+            {
+                id: 1,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What is Oracle Application Express (APEX)?',
+                answer: 'Oracle Application Express (APEX) is a low-code development platform that allows developers to build scalable web applications quickly and efficiently using SQL and PL/SQL. It runs in the Oracle Database and provides a web-based development environment.',
+                language: null,
+                code: null
+            },
+            {
+                id: 2,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What are the key components of Oracle APEX?',
+                answer: 'Oracle APEX consists of three primary components:<br>• <strong>Oracle APEX Builder:</strong> Web-based development environment<br>• <strong>Oracle APEX Runtime:</strong> Execution engine that processes applications<br>• <strong>Oracle REST Data Services (ORDS):</strong> Web server integration layer',
+                language: null,
+                code: null
+            },
+            {
+                id: 26,
+                category: 'intermediate',
+                difficulty: 'intermediate',
+                question: 'How can you implement cascading LOVs (List of Values) in Oracle APEX?',
+                answer: 'Cascading LOVs allow parent-child relationships where selecting a value in the parent LOV filters the child LOV options.',
+                language: 'APEX Configuration',
+                code: `-- Parent LOV SQL (P1_COUNTRY)
+SELECT country_name as display_value,
+       country_id as return_value
+FROM countries
+ORDER BY country_name;
+
+-- Child LOV SQL (P1_STATE) - Cascading based on parent
+SELECT state_name as display_value,
+       state_id as return_value
+FROM states
+WHERE country_id = :P1_COUNTRY
+ORDER BY state_name;
+
+-- Dynamic Action Configuration:
+-- Event: Change
+-- Selection Type: Item
+-- Item: P1_COUNTRY
+-- Action: Refresh
+-- Affected Elements: P1_STATE
+
+-- Set P1_STATE to "Cascading LOV Parent Item(s)": P1_COUNTRY`
+            },
+            {
+                id: 51,
+                category: 'advanced',
+                difficulty: 'advanced',
+                question: 'How can you use APEX Collections for temporary data storage during session?',
+                answer: 'APEX Collections provide temporary storage during user sessions for manipulating data before committing to database.',
+                language: 'PL/SQL',
+                code: `-- Create or truncate collection
+BEGIN
+  apex_collection.create_or_truncate_collection('SHOPPING_CART');
+END;
+
+-- Add members to collection
+BEGIN
+  apex_collection.add_member(
+    p_collection_name => 'SHOPPING_CART',
+    p_c001 => :P10_PRODUCT_ID,      -- Character column 1
+    p_c002 => :P10_PRODUCT_NAME,    -- Character column 2
+    p_c003 => :P10_QUANTITY,        -- Character column 3
+    p_n001 => :P10_UNIT_PRICE,      -- Number column 1
+    p_n002 => :P10_TOTAL_PRICE      -- Number column 2
+  );
+END;
+
+-- Query collection data
+SELECT 
+  seq_id,
+  c001 as product_id,
+  c002 as product_name,
+  TO_NUMBER(c003) as quantity,
+  n001 as unit_price,
+  n002 as total_price
+FROM apex_collections
+WHERE collection_name = 'SHOPPING_CART'
+ORDER BY seq_id;
+
+-- Update collection member
+BEGIN
+  apex_collection.update_member(
+    p_collection_name => 'SHOPPING_CART',
+    p_seq => :P10_SEQ_ID,
+    p_c003 => :P10_NEW_QUANTITY,
+    p_n002 => :P10_NEW_TOTAL
+  );
+END;
+
+-- Delete collection member
+BEGIN
+  apex_collection.delete_member(
+    p_collection_name => 'SHOPPING_CART',
+    p_seq => :P10_SEQ_ID
+  );
+END;
+
+-- Process all collection data (e.g., save to database)
+BEGIN
+  FOR rec IN (
+    SELECT * FROM apex_collections 
+    WHERE collection_name = 'SHOPPING_CART'
+  ) LOOP
+    INSERT INTO order_items (
+      product_id, quantity, unit_price, total_price
+    ) VALUES (
+      rec.c001, TO_NUMBER(rec.c003), rec.n001, rec.n002
+    );
+  END LOOP;
+  
+  -- Clear collection after processing
+  apex_collection.delete_collection('SHOPPING_CART');
+  COMMIT;
+END;`
+            }
+        ];
+
+        // Load questions when page loads
+        function loadQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            oracleApexQuestions.forEach(question => {
+                const questionElement = createQuestionElement(question);
+                container.appendChild(questionElement);
+            });
+        }
+
+        // Initialize questions on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestions();
+        });
+    </script>
+</body>
+</html>
