@@ -1,6 +1,98 @@
-/* Modern CSS Reset */
-*,
+/* Code Blocks */
+.code-block {
+    background: var(--bg-dark);
+    color: #e2e8f0;
+    border-radius: var(--radius-lg);
+    margin: var(--space-lg) 0;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);  /* Reduced shadow */
+}
 
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);  /* Reduced padding */
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.code-lang {
+    background: var(--secondary);
+    color: var(--text-white);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;  /* Reduced from 0.75rem */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.copy-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    padding: var(--space-xs) var(--space-md);  /* Reduced padding */
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.8rem;  /* Reduced from 0.875rem */
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    transition: all 0.3s ease;
+}
+
+pre {
+    margin: 0;
+    padding: var(--space-lg);  /* Reduced from larger padding */
+    font-family: var(--font-mono);
+    font-size: 0.8rem;  /* Reduced from 0.875rem */
+    line-height: 1.5;  /* Reduced from 1.6 */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+}
+
+/* Footer */
+.footer {
+    background: var(--primary);
+    color: var(--text-white);
+    padding: 2rem var(--space-lg);  /* Reduced from 3rem */
+    margin-top: 3rem;  /* Reduced from 4rem */
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-content h3 {
+    font-size: 1.25rem;  /* Reduced from 1.5rem */
+    margin-bottom: var(--space-md);
+}
+
+.footer-content p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: var(--space-lg);
+    font-size: 0.875rem;  /* Added smaller font size */
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);  /* Reduced from xl */
+    margin: var(--space-lg) 0;  /* Reduced from xl */
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;  /* Added smaller font size */
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}/* Modern CSS Reset */
+*,
 *::before,
 *::after {
     margin: 0;
@@ -37,24 +129,24 @@
     --border-medium: #cbd5e0;
     
     /* Shadows */
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     
-    /* Spacing */
+    /* Spacing - Reduced */
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-2xl: 3rem;
+    --space-md: 0.75rem;
+    --space-lg: 1rem;
+    --space-xl: 1.25rem;
+    --space-2xl: 1.5rem;
     
     /* Border Radius */
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
     --radius-full: 9999px;
     
     /* Typography */
@@ -78,21 +170,23 @@ body {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.25;
+    font-weight: 600;
+    line-height: 1.3;
     margin-bottom: var(--space-md);
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.75rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
-h6 { font-size: 1.125rem; }
+h1 { font-size: 1.875rem; }  /* Reduced from 2.5rem */
+h2 { font-size: 1.5rem; }    /* Reduced from 2rem */
+h3 { font-size: 1.25rem; }   /* Reduced from 1.75rem */
+h4 { font-size: 1.125rem; }  /* Reduced from 1.5rem */
+h5 { font-size: 1rem; }      /* Reduced from 1.25rem */
+h6 { font-size: 0.875rem; }  /* Reduced from 1.125rem */
 
 p {
     margin-bottom: var(--space-md);
     color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
 /* Header */
@@ -922,44 +1016,50 @@ pre {
     }
 
     /* Typography */
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.75rem; }
-    h3 { font-size: 1.5rem; }
+    h1 { font-size: 1.5rem; }   /* Further reduced for mobile */
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.125rem; }
 
     /* Spacing */
     .container {
-        padding: var(--space-lg) var(--space-md);
+        padding: var(--space-lg) var(--space-md);  /* Reduced mobile padding */
     }
 
     .hero {
-        padding: 3rem var(--space-md);
+        padding: 2rem var(--space-md);  /* Reduced mobile hero padding */
     }
 
     .page-header {
-        padding: 3rem var(--space-md) 2rem;
+        padding: 2rem var(--space-md) 1.5rem;  /* Reduced mobile page header padding */
     }
 
     /* Cards */
     .card-grid {
         grid-template-columns: 1fr;
-        gap: var(--space-lg);
+        gap: var(--space-lg);  /* Reduced gap */
     }
 
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-md);
+        gap: var(--space-md);  /* Reduced gap */
+    }
+
+    .card, .stat-card {
+        padding: var(--space-lg);  /* Reduced mobile card padding */
     }
 
     /* Buttons */
     .cta-buttons {
         flex-direction: column;
         align-items: center;
+        gap: var(--space-md);  /* Reduced gap */
     }
 
     .btn {
         width: 100%;
-        max-width: 280px;
+        max-width: 260px;  /* Reduced max width */
         justify-content: center;
+        padding: var(--space-md) var(--space-lg);  /* Adjusted mobile button padding */
     }
 
     /* Questions */
@@ -967,10 +1067,16 @@ pre {
         flex-direction: column;
         align-items: flex-start;
         gap: var(--space-md);
+        padding: var(--space-md);  /* Reduced mobile question padding */
+    }
+
+    .question-content {
+        padding: var(--space-lg);  /* Reduced mobile content padding */
     }
 
     .question-text {
         order: -1;
+        font-size: 0.9rem;  /* Smaller mobile font */
     }
 
     .filter-tabs {
@@ -979,20 +1085,31 @@ pre {
     }
 
     .filter-tab {
-        font-size: 0.875rem;
+        font-size: 0.8rem;  /* Smaller mobile filter tabs */
         padding: var(--space-sm) var(--space-md);
     }
 
+    .filter-section {
+        padding: var(--space-lg);  /* Reduced mobile filter padding */
+    }
+
     /* Footer */
+    .footer {
+        padding: 1.5rem var(--space-md);  /* Reduced mobile footer padding */
+    }
+
     .footer-links {
         flex-direction: column;
         gap: var(--space-md);
+        text-align: center;
     }
+}
 }
 
 @media (max-width: 480px) {
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: var(--space-md);  /* Reduced gap */
     }
 
     .card-header {
@@ -1001,16 +1118,43 @@ pre {
         gap: var(--space-md);
     }
 
+    .card-icon {
+        width: 40px;  /* Smaller icon for very small screens */
+        height: 40px;
+        font-size: 1rem;
+    }
+
     .question-content {
-        padding: var(--space-lg);
+        padding: var(--space-md);  /* Even smaller padding for tiny screens */
     }
 
     .filter-section {
-        padding: var(--space-lg);
+        padding: var(--space-md);  /* Reduced for tiny screens */
     }
 
     .search-container {
         max-width: 100%;
+    }
+
+    .hero h1 {
+        font-size: 1.375rem;  /* Smaller hero title */
+    }
+
+    .hero p {
+        font-size: 0.875rem;  /* Smaller hero subtitle */
+    }
+
+    .page-title {
+        font-size: 1.25rem;  /* Smaller page title */
+    }
+
+    .code-block {
+        font-size: 0.75rem;  /* Smaller code font */
+    }
+
+    pre {
+        padding: var(--space-md);  /* Reduced code padding */
+        font-size: 0.75rem;
     }
 }
 
