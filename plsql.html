@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PL/SQL Interview Questions - APEX Interview Mastery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
+                Oracle APEX Interview Mastery
+            </div>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html" class="active">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-j"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">PL/SQL Interview Questions</h1>
+        <p class="page-subtitle">Master PL/SQL programming with comprehensive questions on procedures, functions, and packages</p>
+    </section>
+
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fas fa-code-branch"></i> Filter Questions
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
+                <button class="filter-tab" onclick="filterQuestions('basic')">Basic</button>
+                <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate</button>
+                <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced</button>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search PL/SQL questions..." 
+                       onkeyup="searchQuestions()" id="searchInput">
+            </div>
+        </div>
+
+        <div id="questionsContainer" class="questions-container">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Ready to Master PL/SQL?</h3>
+            <p>Practice these questions to excel in your Oracle PL/SQL interviews</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="oracle-sql.html">SQL Questions</a>
+                <a href="oracle-apex.html">APEX Questions</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // PL/SQL Questions Data
+        const plsqlQuestions = [
+            {
+                id: 1,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'What is PL/SQL and what are its advantages?',
+                answer: 'PL/SQL (Procedural Language extension to SQL) is Oracle\'s procedural extension for SQL. It combines the data manipulation power of SQL with the processing power of procedural language.',
+                language: 'PL/SQL',
+                code: `-- Basic PL/SQL Block Structure
+DECLARE
+  -- Declaration section (optional)
+  v_employee_name VARCHAR2(100);
+  v_salary NUMBER;
+BEGIN
+  -- Executable section (mandatory)
+  SELECT employee_name, salary
+  INTO v_employee_name, v_salary
+  FROM employees
+  WHERE employee_id = 101;
+  
+  DBMS_OUTPUT.PUT_LINE('Employee: ' || v_employee_name);
+  DBMS_OUTPUT.PUT_LINE('Salary: ' || v_salary);
+EXCEPTION
+  -- Exception handling section (optional)
+  WHEN NO_DATA_FOUND THEN
+   DBMS_OUTPUT.PUT_LINE('Employee not found');
+ WHEN OTHERS THEN
+   DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+-- Advantages of PL/SQL:
+-- 1. Block structure for better organization
+-- 2. Exception handling
+-- 3. Procedural constructs (loops, conditions)
+-- 4. Better performance (compiled code)
+-- 5. Integration with SQL`
+           },
+           {
+               id: 2,
+               category: 'basic',
+               difficulty: 'basic',
+               question: 'What is the difference between stored procedures and functions in PL/SQL?',
+               answer: '<strong>Procedures:</strong> Can have IN, OUT, IN OUT parameters; may or may not return values; can be called independently<br><strong>Functions:</strong> Must return a value; can be used in SQL statements; typically used for calculations',
+               language: 'PL/SQL',
+               code: `-- Stored Procedure Example
+CREATE OR REPLACE PROCEDURE update_employee_salary(
+ p_employee_id IN NUMBER,
+ p_new_salary IN NUMBER,
+ p_status OUT VARCHAR2
+) IS
+BEGIN
+ UPDATE employees 
+ SET salary = p_new_salary 
+ WHERE employee_id = p_employee_id;
+ 
+ IF SQL%ROWCOUNT > 0 THEN
+   p_status := 'SUCCESS';
+   COMMIT;
+ ELSE
+   p_status := 'EMPLOYEE_NOT_FOUND';
+ END IF;
+EXCEPTION
+ WHEN OTHERS THEN
+   p_status := 'ERROR: ' || SQLERRM;
+   ROLLBACK;
+END;
+/
+
+-- Function Example
+CREATE OR REPLACE FUNCTION calculate_annual_bonus(
+ p_employee_id IN NUMBER
+) RETURN NUMBER IS
+ v_salary NUMBER;
+ v_performance_rating NUMBER;
+ v_bonus NUMBER;
+BEGIN
+ SELECT salary, performance_rating
+ INTO v_salary, v_performance_rating
+ FROM employees
+ WHERE employee_id = p_employee_id;
+ 
+ v_bonus := CASE v_performance_rating
+              WHEN 5 THEN v_salary * 0.20  -- 20% for excellent
+              WHEN 4 THEN v_salary * 0.15  -- 15% for good
+              WHEN 3 THEN v_salary * 0.10  -- 10% for average
+              ELSE 0
+            END;
+ 
+ RETURN v_bonus;
+EXCEPTION
+ WHEN NO_DATA_FOUND THEN
+   RETURN 0;
+ WHEN OTHERS THEN
+   RETURN -1;  -- Error indicator
+END;
+/
+
+-- Usage Examples
+DECLARE
+ v_status VARCHAR2(50);
+ v_bonus NUMBER;
+BEGIN
+ -- Call procedure
+ update_employee_salary(101, 75000, v_status);
+ DBMS_OUTPUT.PUT_LINE('Update Status: ' || v_status);
+ 
+ -- Call function
+ v_bonus := calculate_annual_bonus(101);
+ DBMS_OUTPUT.PUT_LINE('Annual Bonus: ' || v_bonus);
+ 
+ -- Function can be used in SQL
+ SELECT employee_name, 
+        salary,
+        calculate_annual_bonus(employee_id) as bonus
+ FROM employees
+ WHERE department_id = 10;
+END;
+/`
+           },
+           {
+               id: 3,
+               category: 'intermediate',
+               difficulty: 'intermediate',
+               question: 'Explain cursors in PL/SQL and provide examples of implicit and explicit cursors.',
+               answer: 'Cursors are memory areas that store the result set of a SQL query. They allow row-by-row processing of query results.',
+               language: 'PL/SQL',
+               code: `-- Implicit Cursor Example (automatic for DML statements)
+BEGIN
+ UPDATE employees 
+ SET salary = salary * 1.10 
+ WHERE department_id = 10;
+ 
+ -- SQL cursor attributes
+ DBMS_OUTPUT.PUT_LINE('Rows updated: ' || SQL%ROWCOUNT);
+ 
+ IF SQL%FOUND THEN
+   DBMS_OUTPUT.PUT_LINE('Update successful');
+   COMMIT;
+ ELSE
+   DBMS_OUTPUT.PUT_LINE('No rows updated');
+ END IF;
+END;
+/
+
+-- Explicit Cursor Example
+DECLARE
+ -- Cursor declaration
+ CURSOR emp_cursor IS
+   SELECT employee_id, employee_name, salary, department_id
+   FROM employees
+   WHERE department_id = 10
+   ORDER BY salary DESC;
+ 
+ -- Record type for cursor
+ v_emp_record emp_cursor%ROWTYPE;
+ v_counter NUMBER := 0;
+BEGIN
+ -- Open cursor
+ OPEN emp_cursor;
+ 
+ LOOP
+   -- Fetch data
+   FETCH emp_cursor INTO v_emp_record;
+   
+   -- Exit when no more rows
+   EXIT WHEN emp_cursor%NOTFOUND;
+   
+   v_counter := v_counter + 1;
+   
+   DBMS_OUTPUT.PUT_LINE(
+     'Employee ' || v_counter || ': ' ||
+     v_emp_record.employee_name || 
+     ' - Salary: ' || v_emp_record.salary
+   );
+ END LOOP;
+ 
+ DBMS_OUTPUT.PUT_LINE('Total employees processed: ' || v_counter);
+ 
+ -- Close cursor
+ CLOSE emp_cursor;
+END;
+/
+
+-- Cursor FOR Loop (Simplified syntax)
+BEGIN
+ FOR emp_rec IN (
+   SELECT employee_name, salary, hire_date
+   FROM employees
+   WHERE department_id = 20
+   ORDER BY hire_date
+ ) LOOP
+   DBMS_OUTPUT.PUT_LINE(
+     emp_rec.employee_name || ' hired on ' || 
+     TO_CHAR(emp_rec.hire_date, 'DD-MON-YYYY') ||
+     ' with salary ' || emp_rec.salary
+   );
+ END LOOP;
+END;
+/
+
+-- Parameterized Cursor
+DECLARE
+ CURSOR dept_emp_cursor(p_dept_id NUMBER, p_min_salary NUMBER) IS
+   SELECT employee_name, salary
+   FROM employees
+   WHERE department_id = p_dept_id
+     AND salary >= p_min_salary
+   ORDER BY salary DESC;
+BEGIN
+ DBMS_OUTPUT.PUT_LINE('High-paid employees in dept 10:');
+ FOR emp_rec IN dept_emp_cursor(10, 50000) LOOP
+   DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name || ': ' || emp_rec.salary);
+ END LOOP;
+ 
+ DBMS_OUTPUT.PUT_LINE('High-paid employees in dept 20:');
+ FOR emp_rec IN dept_emp_cursor(20, 60000) LOOP
+   DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name || ': ' || emp_rec.salary);
+ END LOOP;
+END;
+/`
+           }
+       ];
+
+       // Load questions when page loads
+       function loadQuestions() {
+           const container = document.getElementById('questionsContainer');
+           container.innerHTML = '';
+           
+           plsqlQuestions.forEach(question => {
+               const questionElement = createQuestionElement(question);
+               container.appendChild(questionElement);
+           });
+       }
+
+       // Initialize questions on page load
+       document.addEventListener('DOMContentLoaded', function() {
+           loadQuestions();
+       });
+   </script>
+</body>
+</html>
