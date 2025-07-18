@@ -111,113 +111,1677 @@
     <script src="assets/js/script.js"></script>
     <script>
         // Oracle SQL Questions Data (Minimal for testing)
-        const oracleSqlQuestions = [
-            {
-                id: 1,
-                category: 'basic',
-                difficulty: 'basic',
-                question: 'How can you find the Nth highest salary from a table in Oracle?',
-                answer: 'There are multiple approaches to find the Nth highest salary in Oracle using ranking functions:',
-                language: 'Oracle SQL',
-                code: `-- Method 1: Using ROW_NUMBER() - Most efficient
+
+const oracleSqlQuestions = [
+    {
+        id: 1,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'How can you find the Nth highest salary from a table in Oracle?',
+        answer: 'There are multiple approaches to find the Nth highest salary in Oracle using ranking functions, subqueries, and advanced analytical functions.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using ROW_NUMBER() - Most efficient for unique values
 SELECT salary 
 FROM (
-  SELECT salary, ROW_NUMBER() OVER (ORDER BY salary DESC) as rn
-  FROM employee
-  WHERE salary IS NOT NULL
+    SELECT salary, ROW_NUMBER() OVER (ORDER BY salary DESC) as rn
+    FROM employee
+    WHERE salary IS NOT NULL
 )
 WHERE rn = :N;
 
 -- Method 2: Using DENSE_RANK() - Handles duplicates better
 SELECT DISTINCT salary 
 FROM (
-  SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rnk
-  FROM employee
-  WHERE salary IS NOT NULL
+    SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rnk
+    FROM employee
+    WHERE salary IS NOT NULL
 )
 WHERE rnk = :N;
 
--- Method 3: Using RANK() - Standard ranking
+-- Method 3: Using RANK() - Standard ranking with gaps
 SELECT DISTINCT salary 
 FROM (
-  SELECT salary, RANK() OVER (ORDER BY salary DESC) as rank_num
-  FROM employee
-  WHERE salary IS NOT NULL
+    SELECT salary, RANK() OVER (ORDER BY salary DESC) as rank_num
+    FROM employee
+    WHERE salary IS NOT NULL
 )
-WHERE rank_num = :N;`
-            },
-            {
-                id: 2,
-                category: 'intermediate',
-                difficulty: 'intermediate',
-                question: 'Write a query to get the monthly sales amount for the last 12 months.',
-                answer: 'Use date functions and GROUP BY to calculate monthly sales with proper formatting:',
-                language: 'Oracle SQL',
-                code: `-- Comprehensive monthly sales query
+WHERE rank_num = :N;
+
+-- Method 4: Using ROWNUM (Oracle-specific)
+SELECT salary
+FROM (
+    SELECT DISTINCT salary
+    FROM employee
+    WHERE salary IS NOT NULL
+    ORDER BY salary DESC
+)
+WHERE ROWNUM = :N;
+
+-- Method 5: Using OFFSET and FETCH (Oracle 12c+)
+SELECT DISTINCT salary
+FROM employee
+WHERE salary IS NOT NULL
+ORDER BY salary DESC
+OFFSET (:N - 1) ROWS FETCH NEXT 1 ROWS ONLY;`
+    },
+    {
+        id: 2,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'What is the difference between UNION and UNION ALL in Oracle?',
+        answer: 'UNION removes duplicates and sorts the result, while UNION ALL preserves all rows including duplicates and is faster.',
+        language: 'Oracle SQL',
+        code: `-- UNION: Removes duplicates and sorts (slower)
+SELECT employee_id, first_name, 'ACTIVE' as status
+FROM employees
+WHERE hire_date > SYSDATE - 365
+UNION
+SELECT employee_id, first_name, 'INACTIVE' as status
+FROM former_employees
+WHERE termination_date > SYSDATE - 365;
+
+-- UNION ALL: Keeps all rows including duplicates (faster)
+SELECT employee_id, first_name, 'ACTIVE' as status
+FROM employees
+WHERE hire_date > SYSDATE - 365
+UNION ALL
+SELECT employee_id, first_name, 'INACTIVE' as status
+FROM former_employees
+WHERE termination_date > SYSDATE - 365;
+
+-- Performance comparison with execution plan
+SELECT /*+ GATHER_PLAN_STATISTICS */ COUNT(*) as union_count
+FROM (
+    SELECT department_id FROM employees
+    UNION
+    SELECT department_id FROM departments
+);
+
+SELECT /*+ GATHER_PLAN_STATISTICS */ COUNT(*) as union_all_count
+FROM (
+    SELECT department_id FROM employees
+    UNION ALL
+    SELECT department_id FROM departments
+);
+
+-- Real-world example: Combining current and historical data
+SELECT employee_id, salary, 'CURRENT' as record_type, SYSDATE as query_date
+FROM employees
+WHERE status = 'ACTIVE'
+UNION ALL
+SELECT employee_id, salary, 'HISTORICAL' as record_type, archive_date
+FROM employee_history
+WHERE archive_date > SYSDATE - 90
+ORDER BY employee_id, record_type;`
+    },
+    {
+        id: 3,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'How do you handle NULL values in Oracle SQL?',
+        answer: 'Oracle provides several functions to handle NULL values: NVL, NVL2, NULLIF, COALESCE, and IS NULL/IS NOT NULL operators.',
+        language: 'Oracle SQL',
+        code: `-- NVL: Replace NULL with a default value
+SELECT employee_id, 
+       first_name, 
+       NVL(middle_name, 'No Middle Name') as middle_name,
+       NVL(salary, 0) as salary
+FROM employees;
+
+-- NVL2: Different values based on NULL/NOT NULL
+SELECT employee_id,
+       first_name,
+       NVL2(commission_pct, 
+            salary + (salary * commission_pct), 
+            salary) as total_compensation
+FROM employees;
+
+-- COALESCE: Returns first non-NULL value
+SELECT employee_id,
+       COALESCE(work_phone, mobile_phone, home_phone, 'No Phone') as contact_number
+FROM employees;
+
+-- NULLIF: Returns NULL if values are equal
+SELECT employee_id,
+       salary,
+       NULLIF(salary, 0) as non_zero_salary
+FROM employees;
+
+-- IS NULL and IS NOT NULL operators
+SELECT COUNT(*) as employees_with_commission
+FROM employees
+WHERE commission_pct IS NOT NULL;
+
+SELECT COUNT(*) as employees_without_manager
+FROM employees
+WHERE manager_id IS NULL;
+
+-- Advanced NULL handling in calculations
+SELECT employee_id,
+       salary,
+       commission_pct,
+       -- NULL in arithmetic operations returns NULL
+       salary * commission_pct as commission_amount,
+       -- Using NVL to handle NULL in calculations
+       salary * NVL(commission_pct, 0) as safe_commission_amount,
+       -- Using CASE for complex NULL logic
+       CASE 
+           WHEN commission_pct IS NULL THEN salary
+           WHEN commission_pct = 0 THEN salary
+           ELSE salary + (salary * commission_pct)
+       END as total_compensation
+FROM employees;
+
+-- NULL in WHERE clause considerations
+SELECT employee_id, first_name, manager_id
+FROM employees
+WHERE manager_id != 100;  -- This will NOT return rows where manager_id is NULL
+
+-- Correct way to include NULL values
+SELECT employee_id, first_name, manager_id
+FROM employees
+WHERE manager_id != 100 OR manager_id IS NULL;
+
+-- Or using NVL in WHERE clause
+SELECT employee_id, first_name, manager_id
+FROM employees
+WHERE NVL(manager_id, -1) != 100;`
+    },
+    {
+        id: 4,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Write a query to get the monthly sales amount for the last 12 months in Oracle.',
+        answer: 'Use Oracle date functions, analytical functions, and GROUP BY to calculate monthly sales with proper date handling and formatting.',
+        language: 'Oracle SQL',
+        code: `-- Basic monthly sales for last 12 months
 SELECT 
-  TO_CHAR(sale_date, 'YYYY-MM') AS sales_month,
-  TO_CHAR(sale_date, 'Mon YYYY') AS month_name,
-  SUM(amount) AS monthly_sales,
-  COUNT(*) AS total_transactions,
-  AVG(amount) AS avg_transaction_amount,
-  MIN(amount) AS min_sale,
-  MAX(amount) AS max_sale
+    TO_CHAR(sale_date, 'YYYY-MM') AS sales_month,
+    TO_CHAR(sale_date, 'Mon YYYY') AS month_name,
+    SUM(amount) AS monthly_sales,
+    COUNT(*) AS total_transactions,
+    ROUND(AVG(amount), 2) AS avg_transaction_amount,
+    MIN(amount) AS min_sale,
+    MAX(amount) AS max_sale
 FROM sales 
 WHERE sale_date >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -12)
   AND sale_date < TRUNC(SYSDATE, 'MM')
 GROUP BY 
-  TO_CHAR(sale_date, 'YYYY-MM'), 
-  TO_CHAR(sale_date, 'Mon YYYY'),
-  EXTRACT(YEAR FROM sale_date),
-  EXTRACT(MONTH FROM sale_date)
+    TO_CHAR(sale_date, 'YYYY-MM'), 
+    TO_CHAR(sale_date, 'Mon YYYY'),
+    EXTRACT(YEAR FROM sale_date),
+    EXTRACT(MONTH FROM sale_date)
 ORDER BY 
-  EXTRACT(YEAR FROM sale_date) DESC,
-  EXTRACT(MONTH FROM sale_date) DESC;`
-            },
-            {
-                id: 3,
-                category: 'advanced',
-                difficulty: 'advanced',
-                question: 'Find employees who earn more than their department\'s median salary.',
-                answer: 'Use window functions to calculate department median and compare with employee salaries:',
-                language: 'Oracle SQL',
-                code: `-- Using PERCENTILE_CONT for exact median calculation
-WITH dept_median AS (
-  SELECT 
-    department_id,
-    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median_salary,
-    COUNT(*) as dept_emp_count,
-    AVG(salary) as avg_salary
-  FROM employees
-  WHERE salary IS NOT NULL
-  GROUP BY department_id
-),
-employee_analysis AS (
-  SELECT 
-    e.employee_id,
-    e.employee_name,
-    e.salary,
-    e.department_id,
-    dm.median_salary,
-    dm.avg_salary,
-    dm.dept_emp_count,
-    ROUND(e.salary - dm.median_salary, 2) AS salary_above_median,
-    ROUND((e.salary / dm.median_salary - 1) * 100, 2) AS pct_above_median
-  FROM employees e
-  JOIN dept_median dm ON e.department_id = dm.department_id
-  WHERE e.salary > dm.median_salary
+    TO_CHAR(sale_date, 'YYYY-MM') DESC;
+
+-- Advanced version with running totals and comparisons
+WITH monthly_sales AS (
+    SELECT 
+        TRUNC(sale_date, 'MM') AS month_start,
+        TO_CHAR(sale_date, 'YYYY-MM') AS sales_month,
+        TO_CHAR(sale_date, 'Mon YYYY') AS month_name,
+        SUM(amount) AS monthly_sales,
+        COUNT(*) AS total_transactions,
+        ROUND(AVG(amount), 2) AS avg_transaction_amount
+    FROM sales 
+    WHERE sale_date >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -12)
+      AND sale_date < TRUNC(SYSDATE, 'MM')
+    GROUP BY 
+        TRUNC(sale_date, 'MM'),
+        TO_CHAR(sale_date, 'YYYY-MM'), 
+        TO_CHAR(sale_date, 'Mon YYYY')
 )
 SELECT 
-  employee_id,
-  employee_name,
-  salary,
-  department_id,
-  median_salary,
-  salary_above_median,
-  pct_above_median || '%' as percentage_above_median
+    sales_month,
+    month_name,
+    monthly_sales,
+    total_transactions,
+    avg_transaction_amount,
+    -- Running total
+    SUM(monthly_sales) OVER (ORDER BY month_start) AS running_total,
+    -- Previous month comparison
+    LAG(monthly_sales, 1) OVER (ORDER BY month_start) AS prev_month_sales,
+    -- Month over month growth
+    ROUND(
+        (monthly_sales - LAG(monthly_sales, 1) OVER (ORDER BY month_start)) / 
+        NULLIF(LAG(monthly_sales, 1) OVER (ORDER BY month_start), 0) * 100, 2
+    ) AS mom_growth_pct,
+    -- 3-month moving average
+    ROUND(
+        AVG(monthly_sales) OVER (
+            ORDER BY month_start 
+            ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ), 2
+    ) AS three_month_avg,
+    -- Rank by sales amount
+    RANK() OVER (ORDER BY monthly_sales DESC) AS sales_rank
+FROM monthly_sales
+ORDER BY month_start DESC;
+
+-- Version with complete 12-month period (including months with no sales)
+WITH month_series AS (
+    SELECT 
+        ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -LEVEL) AS month_start,
+        TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -LEVEL), 'YYYY-MM') AS sales_month,
+        TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -LEVEL), 'Mon YYYY') AS month_name
+    FROM dual
+    CONNECT BY LEVEL <= 12
+),
+monthly_sales AS (
+    SELECT 
+        TRUNC(sale_date, 'MM') AS month_start,
+        SUM(amount) AS monthly_sales,
+        COUNT(*) AS total_transactions,
+        ROUND(AVG(amount), 2) AS avg_transaction_amount
+    FROM sales 
+    WHERE sale_date >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -12)
+      AND sale_date < TRUNC(SYSDATE, 'MM')
+    GROUP BY TRUNC(sale_date, 'MM')
+)
+SELECT 
+    ms.sales_month,
+    ms.month_name,
+    NVL(s.monthly_sales, 0) AS monthly_sales,
+    NVL(s.total_transactions, 0) AS total_transactions,
+    NVL(s.avg_transaction_amount, 0) AS avg_transaction_amount,
+    -- Year over year comparison if data exists
+    CASE 
+        WHEN NVL(s.monthly_sales, 0) > 0 THEN 'Has Sales'
+        ELSE 'No Sales'
+    END AS sales_status
+FROM month_series ms
+LEFT JOIN monthly_sales s ON ms.month_start = s.month_start
+ORDER BY ms.month_start DESC;`
+    },
+    {
+        id: 5,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What are Oracle analytical functions and how do you use them?',
+        answer: 'Oracle analytical functions perform calculations across a set of rows related to the current row, without collapsing the result set. Common functions include ROW_NUMBER(), RANK(), LAG(), LEAD(), etc.',
+        language: 'Oracle SQL',
+        code: `-- Comprehensive Oracle Analytical Functions Demo
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    department_id,
+    salary,
+    hire_date,
+    
+    -- RANKING FUNCTIONS
+    ROW_NUMBER() OVER (ORDER BY salary DESC) as row_num,
+    RANK() OVER (ORDER BY salary DESC) as salary_rank,
+    DENSE_RANK() OVER (ORDER BY salary DESC) as dense_salary_rank,
+    
+    -- RANKING within partitions
+    ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) as dept_row_num,
+    RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dept_salary_rank,
+    
+    -- PERCENTILE functions
+    PERCENT_RANK() OVER (ORDER BY salary) as salary_percentile,
+    CUME_DIST() OVER (ORDER BY salary) as salary_cumulative_dist,
+    NTILE(4) OVER (ORDER BY salary) as salary_quartile,
+    
+    -- LAG and LEAD functions
+    LAG(salary, 1) OVER (ORDER BY hire_date) as prev_hired_salary,
+    LEAD(salary, 1) OVER (ORDER BY hire_date) as next_hired_salary,
+    LAG(hire_date, 1) OVER (PARTITION BY department_id ORDER BY hire_date) as prev_dept_hire,
+    
+    -- FIRST_VALUE and LAST_VALUE
+    FIRST_VALUE(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY salary DESC 
+        ROWS UNBOUNDED PRECEDING
+    ) as highest_dept_salary,
+    
+    LAST_VALUE(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY salary DESC 
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) as lowest_dept_salary,
+    
+    -- NTH_VALUE
+    NTH_VALUE(salary, 2) OVER (
+        PARTITION BY department_id 
+        ORDER BY salary DESC 
+        ROWS UNBOUNDED PRECEDING
+    ) as second_highest_dept_salary,
+    
+    -- AGGREGATE functions as analytical functions
+    SUM(salary) OVER (PARTITION BY department_id) as total_dept_salary,
+    AVG(salary) OVER (PARTITION BY department_id) as avg_dept_salary,
+    COUNT(*) OVER (PARTITION BY department_id) as dept_employee_count,
+    
+    -- Running totals and moving averages
+    SUM(salary) OVER (ORDER BY hire_date) as running_salary_total,
+    AVG(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) as three_row_moving_avg,
+    
+    -- RATIO_TO_REPORT
+    RATIO_TO_REPORT(salary) OVER (PARTITION BY department_id) as salary_ratio_in_dept,
+    
+    -- Window frame examples
+    SUM(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY hire_date 
+        ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING
+    ) as salary_sum_3_rows,
+    
+    -- RANGE window frame
+    AVG(salary) OVER (
+        ORDER BY hire_date 
+        RANGE BETWEEN INTERVAL '1' YEAR PRECEDING AND CURRENT ROW
+    ) as avg_salary_last_year
+
+FROM employees
+ORDER BY department_id, salary DESC;
+
+-- Advanced analytical queries
+-- Example 1: Top N employees per department
+WITH ranked_employees AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        department_id,
+        salary,
+        RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dept_rank
+    FROM employees
+)
+SELECT *
+FROM ranked_employees
+WHERE dept_rank <= 3;
+
+-- Example 2: Running totals with reset
+SELECT 
+    department_id,
+    employee_id,
+    salary,
+    SUM(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY employee_id 
+        ROWS UNBOUNDED PRECEDING
+    ) as running_total,
+    -- Reset running total when department changes
+    SUM(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY employee_id 
+        ROWS UNBOUNDED PRECEDING
+    ) - LAG(SUM(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY employee_id 
+        ROWS UNBOUNDED PRECEDING
+    ), 1, 0) OVER (ORDER BY department_id, employee_id) as incremental_total
+FROM employees
+ORDER BY department_id, employee_id;
+
+-- Example 3: Gaps and Islands problem
+WITH salary_gaps AS (
+    SELECT 
+        employee_id,
+        salary,
+        LAG(salary) OVER (ORDER BY salary) as prev_salary,
+        salary - LAG(salary) OVER (ORDER BY salary) as salary_gap,
+        CASE 
+            WHEN salary - LAG(salary) OVER (ORDER BY salary) > 5000 THEN 1
+            ELSE 0
+        END as gap_indicator
+    FROM employees
+)
+SELECT 
+    employee_id,
+    salary,
+    prev_salary,
+    salary_gap,
+    SUM(gap_indicator) OVER (ORDER BY salary) as group_id
+FROM salary_gaps
+ORDER BY salary;`
+    },
+    {
+        id: 6,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'How do you write a query to find duplicate records in Oracle?',
+        answer: 'Use GROUP BY with HAVING clause, or analytical functions like ROW_NUMBER() to identify and handle duplicate records in Oracle.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using GROUP BY and HAVING (shows duplicate values only)
+SELECT first_name, last_name, email, COUNT(*) as duplicate_count
+FROM employees
+GROUP BY first_name, last_name, email
+HAVING COUNT(*) > 1;
+
+-- Method 2: Using ROW_NUMBER() to show all duplicate records
+SELECT employee_id, first_name, last_name, email, hire_date,
+       ROW_NUMBER() OVER (PARTITION BY first_name, last_name, email ORDER BY employee_id) as row_num
+FROM employees
+WHERE ROW_NUMBER() OVER (PARTITION BY first_name, last_name, email ORDER BY employee_id) > 1;
+
+-- Method 3: Complete duplicate analysis with details
+WITH duplicate_analysis AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        email,
+        hire_date,
+        salary,
+        ROW_NUMBER() OVER (PARTITION BY first_name, last_name, email ORDER BY employee_id) as row_num,
+        COUNT(*) OVER (PARTITION BY first_name, last_name, email) as duplicate_count
+    FROM employees
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    email,
+    hire_date,
+    salary,
+    duplicate_count,
+    CASE 
+        WHEN row_num = 1 THEN 'KEEP'
+        ELSE 'DUPLICATE'
+    END as record_status
+FROM duplicate_analysis
+WHERE duplicate_count > 1
+ORDER BY first_name, last_name, email, employee_id;
+
+-- Method 4: Using EXISTS to find records with duplicates
+SELECT e1.employee_id, e1.first_name, e1.last_name, e1.email
+FROM employees e1
+WHERE EXISTS (
+    SELECT 1
+    FROM employees e2
+    WHERE e1.first_name = e2.first_name
+      AND e1.last_name = e2.last_name
+      AND e1.email = e2.email
+      AND e1.employee_id != e2.employee_id
+);
+
+-- Method 5: Using MINUS to find unique records
+SELECT employee_id, first_name, last_name, email
+FROM employees
+MINUS
+SELECT employee_id, first_name, last_name, email
+FROM (
+    SELECT employee_id, first_name, last_name, email,
+           ROW_NUMBER() OVER (PARTITION BY first_name, last_name, email ORDER BY employee_id) as rn
+    FROM employees
+)
+WHERE rn = 1;
+
+-- Method 6: Advanced duplicate detection with multiple criteria
+WITH duplicate_detection AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        email,
+        phone_number,
+        -- Check for exact duplicates
+        COUNT(*) OVER (PARTITION BY first_name, last_name, email) as exact_duplicates,
+        -- Check for potential duplicates (same name, different email)
+        COUNT(*) OVER (PARTITION BY first_name, last_name) as name_duplicates,
+        -- Check for email duplicates
+        COUNT(*) OVER (PARTITION BY email) as email_duplicates,
+        -- Check for phone duplicates
+        COUNT(*) OVER (PARTITION BY phone_number) as phone_duplicates
+    FROM employees
+    WHERE email IS NOT NULL
+      AND phone_number IS NOT NULL
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    email,
+    phone_number,
+    CASE 
+        WHEN exact_duplicates > 1 THEN 'EXACT_DUPLICATE'
+        WHEN name_duplicates > 1 AND email_duplicates = 1 THEN 'NAME_DUPLICATE'
+        WHEN email_duplicates > 1 THEN 'EMAIL_DUPLICATE'
+        WHEN phone_duplicates > 1 THEN 'PHONE_DUPLICATE'
+        ELSE 'UNIQUE'
+    END as duplicate_type,
+    exact_duplicates,
+    name_duplicates,
+    email_duplicates,
+    phone_duplicates
+FROM duplicate_detection
+WHERE exact_duplicates > 1 
+   OR name_duplicates > 1 
+   OR email_duplicates > 1 
+   OR phone_duplicates > 1
+ORDER BY duplicate_type, first_name, last_name;
+
+-- Method 7: Delete duplicates keeping the first occurrence
+DELETE FROM employees
+WHERE ROWID NOT IN (
+    SELECT MIN(ROWID)
+    FROM employees
+    GROUP BY first_name, last_name, email
+);
+
+-- Method 8: Create a clean table without duplicates
+CREATE TABLE employees_clean AS
+SELECT * FROM (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        email,
+        hire_date,
+        salary,
+        ROW_NUMBER() OVER (PARTITION BY first_name, last_name, email ORDER BY employee_id) as rn
+    FROM employees
+)
+WHERE rn = 1;`
+    },
+    {
+        id: 7,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Find employees who earn more than their department\'s median salary.',
+        answer: 'Use Oracle analytical functions like PERCENTILE_CONT to calculate department medians and compare with employee salaries.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using PERCENTILE_CONT for exact median calculation
+WITH dept_median AS (
+    SELECT 
+        department_id,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median_salary,
+        COUNT(*) as dept_emp_count,
+        ROUND(AVG(salary), 2) as avg_salary,
+        MIN(salary) as min_salary,
+        MAX(salary) as max_salary
+    FROM employees
+    WHERE salary IS NOT NULL
+    GROUP BY department_id
+),
+employee_analysis AS (
+    SELECT 
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.salary,
+        e.department_id,
+        e.hire_date,
+        dm.median_salary,
+        dm.avg_salary,
+        dm.dept_emp_count,
+        dm.min_salary,
+        dm.max_salary,
+        ROUND(e.salary - dm.median_salary, 2) AS salary_above_median,
+        ROUND((e.salary / dm.median_salary - 1) * 100, 2) AS pct_above_median
+    FROM employees e
+    JOIN dept_median dm ON e.department_id = dm.department_id
+    WHERE e.salary > dm.median_salary
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id,
+    hire_date,
+    median_salary,
+    avg_salary,
+    salary_above_median,
+    pct_above_median || '%' as percentage_above_median,
+    CASE 
+        WHEN pct_above_median > 50 THEN 'Significantly Above Median'
+        WHEN pct_above_median > 25 THEN 'Well Above Median'
+        WHEN pct_above_median > 10 THEN 'Above Median'
+        ELSE 'Slightly Above Median'
+    END as salary_category
 FROM employee_analysis
-ORDER BY department_id, salary_above_median DESC;`
-            }
+ORDER BY department_id, salary_above_median DESC;
+
+-- Method 2: Using analytical functions with detailed statistics
+WITH salary_statistics AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        salary,
+        department_id,
+        hire_date,
+        -- Calculate median using PERCENTILE_CONT
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) 
+            OVER (PARTITION BY department_id) as median_salary,
+        -- Calculate quartiles
+        PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY salary) 
+            OVER (PARTITION BY department_id) as q1_salary,
+        PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY salary) 
+            OVER (PARTITION BY department_id) as q3_salary,
+        -- Calculate percentile rank
+        PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary) as percentile_rank,
+        -- Department statistics
+        AVG(salary) OVER (PARTITION BY department_id) as dept_avg_salary,
+        MIN(salary) OVER (PARTITION BY department_id) as dept_min_salary,
+        MAX(salary) OVER (PARTITION BY department_id) as dept_max_salary,
+        COUNT(*) OVER (PARTITION BY department_id) as dept_size,
+        -- Salary ranking within department
+        RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dept_salary_rank
+    FROM employees
+    WHERE salary IS NOT NULL
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id,
+    hire_date,
+    ROUND(median_salary, 2) as dept_median_salary,
+    ROUND(dept_avg_salary, 2) as dept_avg_salary,
+    ROUND(q1_salary, 2) as dept_q1_salary,
+    ROUND(q3_salary, 2) as dept_q3_salary,
+    dept_size,
+    dept_salary_rank,
+    ROUND(percentile_rank * 100, 1) || '%' as salary_percentile,
+    ROUND(salary - median_salary, 2) as amount_above_median,
+    ROUND((salary / median_salary - 1) * 100, 2) as pct_above_median,
+    CASE 
+        WHEN salary >= q3_salary THEN 'Top Quartile'
+        WHEN salary >= median_salary THEN 'Above Median'
+        WHEN salary >= q1_salary THEN 'Below Median'
+        ELSE 'Bottom Quartile'
+    END as salary_quartile_position
+FROM salary_statistics
+WHERE salary > median_salary
+ORDER BY department_id, salary DESC;
+
+-- Method 3: Comprehensive analysis with department comparisons
+WITH dept_salary_analysis AS (
+    SELECT 
+        department_id,
+        COUNT(*) as emp_count,
+        ROUND(AVG(salary), 2) as avg_salary,
+        ROUND(MEDIAN(salary), 2) as median_salary,
+        ROUND(STDDEV(salary), 2) as salary_stddev,
+        MIN(salary) as min_salary,
+        MAX(salary) as max_salary,
+        PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY salary) as q1_salary,
+        PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY salary) as q3_salary,
+        PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY salary) as p90_salary
+    FROM employees
+    WHERE salary IS NOT NULL
+    GROUP BY department_id
+),
+employee_with_stats AS (
+    SELECT 
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.salary,
+        e.department_id,
+        e.hire_date,
+        e.job_id,
+        d.department_name,
+        ds.emp_count,
+        ds.avg_salary,
+        ds.median_salary,
+        ds.salary_stddev,
+        ds.min_salary,
+        ds.max_salary,
+        ds.q1_salary,
+        ds.q3_salary,
+        ds.p90_salary
+    FROM employees e
+    JOIN departments d ON e.department_id = d.department_id
+    JOIN dept_salary_analysis ds ON e.department_id = ds.department_id
+    WHERE e.salary IS NOT NULL
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id,
+    department_name,
+    job_id,
+    hire_date,
+    median_salary as dept_median_salary,
+    avg_salary as dept_avg_salary,
+    emp_count as dept_employee_count,
+    ROUND(salary - median_salary, 2) as amount_above_median,
+    ROUND((salary / median_salary - 1) * 100, 2) as pct_above_median,
+    ROUND((salary - avg_salary) / salary_stddev, 2) as z_score,
+    CASE 
+        WHEN salary >= p90_salary THEN 'Top 10%'
+        WHEN salary >= q3_salary THEN 'Top 25%'
+        WHEN salary >= median_salary THEN 'Above Median'
+        ELSE 'Below Median'
+    END as salary_tier,
+    CASE 
+        WHEN ABS((salary - avg_salary) / salary_stddev) > 2 THEN 'Outlier'
+        WHEN ABS((salary - avg_salary) / salary_stddev) > 1.5 THEN 'Unusual'
+        ELSE 'Normal'
+    END as salary_distribution_status
+FROM employee_with_stats
+WHERE salary > median_salary
+ORDER BY department_id, (salary / median_salary - 1) DESC;
+
+-- Method 4: Include job title analysis
+WITH job_dept_medians AS (
+    SELECT 
+        department_id,
+        job_id,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) as job_median_salary,
+        COUNT(*) as job_emp_count
+    FROM employees
+    WHERE salary IS NOT NULL
+    GROUP BY department_id, job_id
+),
+dept_overall_median AS (
+    SELECT 
+        department_id,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) as dept_median_salary
+    FROM employees
+    WHERE salary IS NOT NULL
+    GROUP BY department_id
+)
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    e.salary,
+    e.department_id,
+    e.job_id,
+    d.department_name,
+    j.job_title,
+    dom.dept_median_salary,
+    jdm.job_median_salary,
+    jdm.job_emp_count,
+    ROUND(e.salary - dom.dept_median_salary, 2) as amount_above_dept_median,
+    ROUND(e.salary - jdm.job_median_salary, 2) as amount_above_job_median,
+    ROUND((e.salary / dom.dept_median_salary - 1) * 100, 2) as pct_above_dept_median,
+    ROUND((e.salary / jdm.job_median_salary - 1) * 100, 2) as pct_above_job_median
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+JOIN jobs j ON e.job_id = j.job_id
+JOIN dept_overall_median dom ON e.department_id = dom.department_id
+JOIN job_dept_medians jdm ON e.department_id = jdm.department_id AND e.job_id = jdm.job_id
+WHERE e.salary > dom.dept_median_salary
+ORDER BY e.department_id, (e.salary / dom.dept_median_salary - 1) DESC;`
+    },
+    {
+        id: 8,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Write a query to find the top 3 highest-paid employees in each department using Oracle analytical functions.',
+        answer: 'Use RANK() or ROW_NUMBER() with PARTITION BY to find top N employees per department, handling ties appropriately.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using RANK() - includes ties
+WITH ranked_employees AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        salary,
+        department_id,
+        hire_date,
+        job_id,
+        RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as salary_rank,
+        COUNT(*) OVER (PARTITION BY department_id) as dept_total_employees
+    FROM employees
+    WHERE salary IS NOT NULL
+)
+SELECT 
+    r.employee_id,
+    r.first_name,
+    r.last_name,
+    r.salary,
+    r.department_id,
+    d.department_name,
+    r.job_id,
+    j.job_title,
+    r.hire_date,
+    r.salary_rank,
+    r.dept_total_employees
+FROM ranked_employees r
+JOIN departments d ON r.department_id = d.department_id
+JOIN jobs j ON r.job_id = j.job_id
+WHERE r.salary_rank <= 3
+ORDER BY r.department_id, r.salary_rank;
+
+-- Method 2: Using ROW_NUMBER() - no ties, strict top 3
+WITH ranked_employees AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        salary,
+        department_id,
+        hire_date,
+        job_id,
+        ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC, hire_date ASC) as row_num
+    FROM employees
+    WHERE salary IS NOT NULL
+)
+SELECT 
+    r.employee_id,
+    r.first_name,
+    r.last_name,
+    r.salary,
+    r.department_id,
+    d.department_name,
+    r.job_id,
+    j.job_title,
+    r.hire_date,
+    r.row_num as position_in_dept
+FROM ranked_employees r
+JOIN departments d ON r.department_id = d.department_id
+JOIN jobs j ON r.job_id = j.job_id
+WHERE r.row_num <= 3
+ORDER BY r.department_id, r.row_num;
+
+-- Method 3: Using DENSE_RANK() - better for salary ties
+WITH ranked_employees AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        salary,
+        department_id,
+        hire_date,
+        job_id,
+        DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dense_rank,
+        RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as regular_rank,
+        ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC, employee_id) as row_num
+    FROM employees
+    WHERE salary IS NOT NULL
+)
+SELECT 
+    r.employee_id,
+    r.first_name,
+    r.last_name,
+    r.salary,
+    r.department_id,
+    d.department_name,
+    r.job_id,
+    j.job_title,
+    r.hire_date,
+    r.dense_rank,
+    r.regular_rank,
+    r.row_num
+FROM ranked_employees r
+JOIN departments d ON r.department_id = d.department_id
+JOIN jobs j ON r.job_id = j.job_id
+WHERE r.dense_rank <= 3
+ORDER BY r.department_id, r.dense_rank, r.row_num;
+
+-- Method 4: Advanced analysis with additional statistics
+WITH dept_salary_stats AS (
+    SELECT 
+        department_id,
+        COUNT(*) as total_employees,
+        ROUND(AVG(salary), 2) as avg_salary,
+        ROUND(MEDIAN(salary), 2) as median_salary,
+        MIN(salary) as min_salary,
+        MAX(salary) as max_salary,
+        ROUND(STDDEV(salary), 2) as salary_stddev
+    FROM employees
+    WHERE salary IS NOT NULL
+    GROUP BY department_id
+),
+ranked_employees_detailed AS (
+    SELECT 
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.salary,
+        e.department_id,
+        e.hire_date,
+        e.job_id,
+        e.manager_id,
+        RANK() OVER (PARTITION BY e.department_id ORDER BY e.salary DESC) as salary_rank,
+        ROUND(e.salary - AVG(e.salary) OVER (PARTITION BY e.department_id), 2) as salary_vs_dept_avg,
+        ROUND((e.salary / AVG(e.salary) OVER (PARTITION BY e.department_id) - 1) * 100, 2) as pct_vs_dept_avg,
+        ROUND(PERCENT_RANK() OVER (PARTITION BY e.department_id ORDER BY e.salary) * 100, 1) as salary_percentile
+    FROM employees e
+    WHERE e.salary IS NOT NULL
+)
+SELECT 
+    r.employee_id,
+    r.first_name,
+    r.last_name,
+    r.salary,
+    r.department_id,
+    d.department_name,
+    r.job_id,
+    j.job_title,
+    r.hire_date,
+    CASE 
+        WHEN r.manager_id IS NOT NULL THEN 
+            (SELECT first_name || ' ' || last_name FROM employees WHERE employee_id = r.manager_id)
+        ELSE 'No Manager'
+    END as manager_name,
+    r.salary_rank,
+    r.salary_vs_dept_avg,
+    r.pct_vs_dept_avg || '%' as percentage_vs_dept_avg,
+    r.salary_percentile || '%' as salary_percentile_in_dept,
+    s.total_employees as dept_total_employees,
+    s.avg_salary as dept_avg_salary,
+    s.median_salary as dept_median_salary,
+    s.min_salary as dept_min_salary,
+    s.max_salary as dept_max_salary,
+    CASE 
+        WHEN r.salary_rank = 1 THEN 'Highest Paid'
+        WHEN r.salary_rank = 2 THEN 'Second Highest'
+        WHEN r.salary_rank = 3 THEN 'Third Highest'
+    END as position_description
+FROM ranked_employees_detailed r
+JOIN departments d ON r.department_id = d.department_id
+JOIN jobs j ON r.job_id = j.job_id
+JOIN dept_salary_stats s ON r.department_id = s.department_id
+WHERE r.salary_rank <= 3
+ORDER BY r.department_id, r.salary_rank;
+
+-- Method 5: Include salary gaps analysis
+WITH salary_analysis AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        salary,
+        department_id,
+        hire_date,
+        job_id,
+        RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as salary_rank,
+        LAG(salary, 1) OVER (PARTITION BY department_id ORDER BY salary DESC) as next_highest_salary,
+        LEAD(salary, 1) OVER (PARTITION BY department_id ORDER BY salary DESC) as next_lowest_salary,
+        MAX(salary) OVER (PARTITION BY department_id) as dept_max_salary,
+        MIN(salary) OVER (PARTITION BY department_id) as dept_min_salary
+    FROM employees
+    WHERE salary IS NOT NULL
+)
+SELECT 
+    s.employee_id,
+    s.first_name,
+    s.last_name,
+    s.salary,
+    s.department_id,
+    d.department_name,
+    s.job_id,
+    j.job_title,
+    s.hire_date,
+    s.salary_rank,
+    s.next_highest_salary,
+    s.next_lowest_salary,
+    CASE 
+        WHEN s.next_highest_salary IS NOT NULL THEN 
+            s.next_highest_salary - s.salary
+        ELSE NULL
+    END as gap_to_higher_salary,
+    CASE 
+        WHEN s.next_lowest_salary IS NOT NULL THEN 
+            s.salary - s.next_lowest_salary
+        ELSE NULL
+    END as gap_to_lower_salary,
+    ROUND((s.salary / s.dept_max_salary) * 100, 2) as pct_of_dept_max
+FROM salary_analysis s
+JOIN departments d ON s.department_id = d.department_id
+JOIN jobs j ON s.job_id = j.job_id
+WHERE s.salary_rank <= 3
+ORDER BY s.department_id, s.salary_rank;`
+    },
+    {
+        id: 9,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Create a query to show hierarchical data (employee-manager relationships) in Oracle.',
+        answer: 'Use Oracle\'s CONNECT BY clause with START WITH to traverse hierarchical data, along with LEVEL and other hierarchical functions.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Basic hierarchical query using CONNECT BY
+SELECT 
+    LEVEL as hierarchy_level,
+    employee_id,
+    first_name,
+    last_name,
+    job_id,
+    manager_id,
+    salary,
+    LPAD(' ', (LEVEL - 1) * 4) || first_name || ' ' || last_name as hierarchy_display
+FROM employees
+START WITH manager_id IS NULL  -- Start with top-level managers
+CONNECT BY PRIOR employee_id = manager_id
+ORDER SIBLINGS BY first_name, last_name;
+
+-- Method 2: Comprehensive hierarchical analysis
+SELECT 
+    LEVEL as hierarchy_level,
+    employee_id,
+    first_name,
+    last_name,
+    job_id,
+    manager_id,
+    salary,
+    department_id,
+    hire_date,
+    -- Hierarchical display with indentation
+    LPAD(' ', (LEVEL - 1) * 2) || '└─ ' || first_name || ' ' || last_name as org_chart,
+    -- Path from root to current employee
+    SYS_CONNECT_BY_PATH(first_name || ' ' || last_name, ' → ') as hierarchy_path,
+    -- Is this a leaf node (no subordinates)?
+    CONNECT_BY_ISLEAF as is_leaf_node,
+    -- Root employee information
+    CONNECT_BY_ROOT employee_id as root_employee_id,
+    CONNECT_BY_ROOT (first_name || ' ' || last_name) as root_employee_name,
+    -- Prior employee (manager) information
+    PRIOR employee_id as immediate_manager_id,
+    PRIOR (first_name || ' ' || last_name) as immediate_manager_name,
+    -- Subordinate count
+    (SELECT COUNT(*) FROM employees e2 WHERE e2.manager_id = employees.employee_id) as direct_reports
+FROM employees
+START WITH manager_id IS NULL
+CONNECT BY PRIOR employee_id = manager_id
+ORDER SIBLINGS BY job_id, salary DESC;
+
+-- Method 3: Multi-level aggregation in hierarchy
+WITH hierarchy_data AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        salary,
+        manager_id,
+        department_id,
+        job_id,
+        LEVEL as emp_level,
+        CONNECT_BY_ROOT employee_id as root_id,
+        SYS_CONNECT_BY_PATH(employee_id, '/') as path
+    FROM employees
+    START WITH manager_id IS NULL
+    CONNECT BY PRIOR employee_id = manager_id
+)
+SELECT 
+    h.employee_id,
+    h.first_name,
+    h.last_name,
+    h.salary,
+    h.manager_id,
+    h.department_id,
+    d.department_name,
+    h.job_id,
+    j.job_title,
+    h.emp_level,
+    -- Manager information
+    m.first_name || ' ' || m.last_name as manager_name,
+    m.job_id as manager_job_id,
+    -- Hierarchy statistics
+    (SELECT COUNT(*) FROM hierarchy_data h2 WHERE h2.root_id = h.root_id) as total_in_hierarchy,
+    (SELECT COUNT(*) FROM hierarchy_data h2 WHERE h2.manager_id = h.employee_id) as direct_reports,
+    (SELECT COUNT(*) FROM hierarchy_data h2 WHERE h2.path LIKE h.path || '%' AND h2.employee_id != h.employee_id) as total_subordinates,
+    -- Salary statistics
+    (SELECT SUM(salary) FROM hierarchy_data h2 WHERE h2.path LIKE h.path || '%') as total_salary_responsibility,
+    (SELECT AVG(salary) FROM hierarchy_data h2 WHERE h2.manager_id = h.employee_id) as avg_direct_report_salary,
+    LPAD('  ', (h.emp_level - 1) * 2) || '├─ ' || h.first_name || ' ' || h.last_name as org_display
+FROM hierarchy_data h
+LEFT JOIN employees m ON h.manager_id = m.employee_id
+LEFT JOIN departments d ON h.department_id = d.department_id
+LEFT JOIN jobs j ON h.job_id = j.job_id
+ORDER BY h.root_id, h.emp_level, h.salary DESC;
+
+-- Method 4: Finding specific relationships
+-- Find all employees under a specific manager
+SELECT 
+    LEVEL as distance_from_manager,
+    employee_id,
+    first_name,
+    last_name,
+    job_id,
+    salary,
+    manager_id,
+    LPAD(' ', (LEVEL - 1) * 4) || first_name || ' ' || last_name as reporting_structure
+FROM employees
+START WITH employee_id = 100  -- Replace with specific manager ID
+CONNECT BY PRIOR employee_id = manager_id
+ORDER BY LEVEL, salary DESC;
+
+-- Method 5: Bottom-up hierarchy (from employee to CEO)
+SELECT 
+    LEVEL as levels_to_top,
+    employee_id,
+    first_name,
+    last_name,
+    job_id,
+    salary,
+    manager_id,
+    LPAD(' ', (LEVEL - 1) * 4) || first_name || ' ' || last_name as management_chain
+FROM employees
+START WITH employee_id = 107  -- Replace with specific employee ID
+CONNECT BY employee_id = PRIOR manager_id  -- Note: reversed relationship
+ORDER BY LEVEL;
+
+-- Method 6: Hierarchical aggregations and span of control
+WITH org_hierarchy AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        manager_id,
+        salary,
+        department_id,
+        job_id,
+        hire_date,
+        LEVEL as org_level,
+        CONNECT_BY_ROOT employee_id as ceo_id,
+        SYS_CONNECT_BY_PATH(employee_id, '/') as emp_path,
+        CONNECT_BY_ISLEAF as is_individual_contributor
+    FROM employees
+    START WITH manager_id IS NULL
+    CONNECT BY PRIOR employee_id = manager_id
+),
+manager_stats AS (
+    SELECT 
+        manager_id,
+        COUNT(*) as direct_reports,
+        AVG(salary) as avg_direct_salary,
+        MIN(salary) as min_direct_salary,
+        MAX(salary) as max_direct_salary,
+        SUM(salary) as total_direct_salary
+    FROM employees
+    WHERE manager_id IS NOT NULL
+    GROUP BY manager_id
+)
+SELECT 
+    oh.employee_id,
+    oh.first_name,
+    oh.last_name,
+    oh.salary,
+    oh.department_id,
+    oh.job_id,
+    oh.hire_date,
+    oh.org_level,
+    oh.manager_id,
+    -- Manager statistics
+    COALESCE(ms.direct_reports, 0) as direct_reports_count,
+    COALESCE(ms.avg_direct_salary, 0) as avg_direct_report_salary,
+    COALESCE(ms.total_direct_salary, 0) as total_direct_salary_managed,
+    -- Span of control analysis
+    CASE 
+        WHEN COALESCE(ms.direct_reports, 0) = 0 THEN 'Individual Contributor'
+        WHEN ms.direct_reports <= 3 THEN 'Small Team Manager'
+        WHEN ms.direct_reports <= 7 THEN 'Medium Team Manager'
+        WHEN ms.direct_reports <= 15 THEN 'Large Team Manager'
+        ELSE 'Very Large Team Manager'
+    END as management_category,
+    -- Subordinate count at all levels
+    (SELECT COUNT(*) 
+     FROM org_hierarchy oh2 
+     WHERE oh2.emp_path LIKE oh.emp_path || '%' 
+     AND oh2.employee_id != oh.employee_id) as total_subordinates,
+    -- Hierarchy display
+    LPAD(' ', (oh.org_level - 1) * 3) || 
+    CASE 
+        WHEN oh.is_individual_contributor = 1 THEN '└─ '
+        ELSE '├─ '
+    END || oh.first_name || ' ' || oh.last_name || 
+    ' (' || COALESCE(ms.direct_reports, 0) || ' reports)' as org_chart_display
+FROM org_hierarchy oh
+LEFT JOIN manager_stats ms ON oh.employee_id = ms.manager_id
+ORDER BY oh.org_level, oh.department_id, oh.salary DESC;
+
+-- Method 7: Find cycles in hierarchy (error detection)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    manager_id,
+    'Potential Cycle Detected' as issue
+FROM employees
+WHERE CONNECT_BY_ISCYCLE = 1
+START WITH manager_id IS NULL
+CONNECT BY NOCYCLE PRIOR employee_id = manager_id;`
+    },
+    {
+        id: 10,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Write a query to calculate running totals and moving averages in Oracle.',
+        answer: 'Use Oracle analytical functions with window frames to calculate running totals, moving averages, and other windowing calculations.',
+        language: 'Oracle SQL',
+        code: `-- Comprehensive Running Totals and Moving Averages
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    department_id,
+    salary,
+    hire_date,
+    
+    -- RUNNING TOTALS
+    -- Simple running total ordered by hire_date
+    SUM(salary) OVER (ORDER BY hire_date) as running_total_salary,
+    
+    -- Running total within department
+    SUM(salary) OVER (PARTITION BY department_id ORDER BY hire_date) as dept_running_total,
+    
+    -- Running total with specific window frame
+    SUM(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) as running_total_explicit,
+    
+    -- MOVING AVERAGES
+    -- 3-employee moving average
+    AVG(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) as moving_avg_3_employees,
+    
+    -- 5-employee moving average
+    AVG(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 4 PRECEDING AND CURRENT ROW
+    ) as moving_avg_5_employees,
+    
+    -- Centered moving average (2 before, current, 2 after)
+    AVG(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING
+    ) as centered_moving_avg,
+    
+    -- Moving average within department
+    AVG(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY hire_date 
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) as dept_moving_avg,
+    
+    -- RANGE-based windows (time-based)
+    -- Average salary for employees hired in the last 365 days
+    AVG(salary) OVER (
+        ORDER BY hire_date 
+        RANGE BETWEEN INTERVAL '365' DAY PRECEDING AND CURRENT ROW
+    ) as avg_salary_last_year,
+    
+    -- Sum of salaries for employees hired in the last 6 months
+    SUM(salary) OVER (
+        ORDER BY hire_date 
+        RANGE BETWEEN INTERVAL '6' MONTH PRECEDING AND CURRENT ROW
+    ) as sum_salary_last_6_months,
+    
+    -- RUNNING STATISTICS
+    -- Running count
+    COUNT(*) OVER (ORDER BY hire_date) as running_count,
+    
+    -- Running minimum and maximum
+    MIN(salary) OVER (ORDER BY hire_date) as running_min_salary,
+    MAX(salary) OVER (ORDER BY hire_date) as running_max_salary,
+    
+    -- Running standard deviation
+    STDDEV(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 4 PRECEDING AND CURRENT ROW
+    ) as running_stddev_5,
+    
+    -- FIRST_VALUE and LAST_VALUE in windows
+    FIRST_VALUE(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) as first_salary_in_window,
+    
+    LAST_VALUE(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING
+    ) as last_salary_in_window
+    
+FROM employees
+WHERE salary IS NOT NULL
+ORDER BY hire_date;
+
+-- Advanced example: Sales analysis with multiple window functions
+WITH daily_sales AS (
+    SELECT 
+        sale_date,
+        customer_id,
+        product_id,
+        quantity,
+        unit_price,
+        quantity * unit_price as total_amount,
+        region_id
+    FROM sales
+    WHERE sale_date >= SYSDATE - 90  -- Last 90 days
+),
+aggregated_daily AS (
+    SELECT 
+        sale_date,
+        region_id,
+        SUM(total_amount) as daily_sales,
+        COUNT(*) as daily_transactions,
+        AVG(total_amount) as avg_transaction_amount
+    FROM daily_sales
+    GROUP BY sale_date, region_id
+)
+SELECT 
+    sale_date,
+    region_id,
+    daily_sales,
+    daily_transactions,
+    avg_transaction_amount,
+    
+    -- Running totals
+    SUM(daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date
+    ) as running_total_sales,
+    
+    -- 7-day moving average
+    AVG(daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date 
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) as moving_avg_7_days,
+    
+    -- 30-day moving average
+    AVG(daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date 
+        ROWS BETWEEN 29 PRECEDING AND CURRENT ROW
+    ) as moving_avg_30_days,
+    
+    -- Exponential moving average (approximate)
+    AVG(daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date 
+        ROWS BETWEEN 13 PRECEDING AND CURRENT ROW
+    ) as ema_approx_14_days,
+    
+    -- Growth calculations
+    daily_sales - LAG(daily_sales, 1) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date
+    ) as daily_growth,
+    
+    -- 7-day growth
+    daily_sales - LAG(daily_sales, 7) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date
+    ) as weekly_growth,
+    
+    -- Percentage growth
+    ROUND(
+        (daily_sales - LAG(daily_sales, 1) OVER (
+            PARTITION BY region_id 
+            ORDER BY sale_date
+        )) / NULLIF(LAG(daily_sales, 1) OVER (
+            PARTITION BY region_id 
+            ORDER BY sale_date
+        ), 0) * 100, 2
+    ) as daily_growth_pct,
+    
+    -- Rolling minimum and maximum
+    MIN(daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date 
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) as rolling_min_7_days,
+    
+    MAX(daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date 
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) as rolling_max_7_days,
+    
+    -- Volatility (standard deviation)
+    STDDEV(daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date 
+        ROWS BETWEEN 29 PRECEDING AND CURRENT ROW
+    ) as volatility_30_days,
+    
+    -- Percentile calculations
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY daily_sales) OVER (
+        PARTITION BY region_id 
+        ORDER BY sale_date 
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) as median_7_days
+    
+FROM aggregated_daily
+ORDER BY region_id, sale_date;
+
+-- Employee salary analysis with advanced windowing
+WITH salary_analysis AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        department_id,
+        salary,
+        hire_date,
+        job_id,
+        -- Calculate years of service
+        ROUND(MONTHS_BETWEEN(SYSDATE, hire_date) / 12, 2) as years_of_service
+    FROM employees
+    WHERE salary IS NOT NULL
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    department_id,
+    salary,
+    hire_date,
+    years_of_service,
+    
+    -- Running statistics by hire date
+    COUNT(*) OVER (ORDER BY hire_date) as hire_sequence,
+    
+    AVG(salary) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 4 PRECEDING AND CURRENT ROW
+    ) as avg_salary_last_5_hires,
+    
+    -- Department-specific running statistics
+    COUNT(*) OVER (
+        PARTITION BY department_id 
+        ORDER BY hire_date
+    ) as dept_hire_sequence,
+    
+    AVG(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY hire_date
+    ) as dept_running_avg_salary,
+    
+    -- Salary percentile within department
+    PERCENT_RANK() OVER (
+        PARTITION BY department_id 
+        ORDER BY salary
+    ) as salary_percentile_in_dept,
+    
+    -- Years of service analysis
+    AVG(years_of_service) OVER (
+        ORDER BY hire_date 
+        ROWS BETWEEN 9 PRECEDING AND CURRENT ROW
+    ) as avg_tenure_last_10_hires,
+    
+    -- Salary growth potential (compared to senior employees)
+    AVG(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY years_of_service DESC
+        ROWS BETWEEN CURRENT ROW AND 4 FOLLOWING
+    ) as avg_salary_senior_5_in_dept,
+    
+    -- Historical context
+    FIRST_VALUE(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY hire_date 
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) as first_hire_salary_in_dept,
+    
+    LAST_VALUE(salary) OVER (
+        PARTITION BY department_id 
+        ORDER BY hire_date 
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) as latest_hire_salary_in_dept
+    
+FROM salary_analysis
+ORDER BY department_id, hire_date;`
+    },
+    {
+        id: 11,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'What are the different types of JOINs in Oracle and when to use them?',
+        answer: 'Oracle supports multiple JOIN types: INNER JOIN, LEFT/RIGHT/FULL OUTER JOIN, CROSS JOIN, and NATURAL JOIN. Each serves different purposes for combining data from multiple tables.',
+        language: 'Oracle SQL',
+        code: `-- INNER JOIN: Returns only matching records from both tables
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    j.job_title
+FROM employees e
+INNER JOIN departments d ON e.department_id = d.department_id
+INNER JOIN jobs j ON e.job_id = j.job_id;
+
+-- LEFT OUTER JOIN: Returns all records from left table, matching from right
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    COALESCE(d.department_name, 'No Department') as dept_display
+FROM employees e
+LEFT OUTER JOIN departments d ON e.department_id = d.department_id;
+
+-- RIGHT OUTER JOIN: Returns all records from right table, matching from left
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    d.location_id
+FROM employees e
+RIGHT OUTER JOIN departments d ON e.department_id = d.department_id;
+
+-- FULL OUTER JOIN: Returns all records from both tables
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    CASE 
+        WHEN e.employee_id IS NULL THEN 'Department with no employees'
+        WHEN d.department_id IS NULL THEN 'Employee with no department'
+        ELSE 'Matched record'
+    END as join_status
+FROM employees e
+FULL OUTER JOIN departments d ON e.department_id = d.department_id;
+
+-- CROSS JOIN: Cartesian product of both tables
+SELECT 
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    COUNT(*) OVER () as total_combinations
+FROM employees e
+CROSS JOIN departments d
+WHERE ROWNUM <= 20;  -- Limit results for demonstration
+
+-- NATURAL JOIN: Automatically joins on columns with same name
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    department_id,
+    department_name
+FROM employees
+NATURAL JOIN departments;
+
+-- SELF JOIN: Joining table with itself
+SELECT 
+    emp.employee_id,
+    emp.first_name || ' ' || emp.last_name as employee_name,
+    emp.job_id as employee_job,
+    mgr.employee_id as manager_id,
+    mgr.first_name || ' ' || mgr.last_name as manager_name,
+    mgr.job_id as manager_job
+FROM employees emp
+LEFT JOIN employees mgr ON emp.manager_id = mgr.employee_id
+ORDER BY emp.department_id, emp.employee_id;
+
+-- Advanced JOIN examples
+-- Multiple table joins with conditions
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    j.job_title,
+    l.city,
+    l.country_id,
+    c.country_name,
+    e.salary
+FROM employees e
+INNER JOIN departments d ON e.department_id = d.department_id
+INNER JOIN jobs j ON e.job_id = j.job_id
+INNER JOIN locations l ON d.location_id = l.location_id
+INNER JOIN countries c ON l.country_id = c.country_id
+WHERE e.salary > 50000
+ORDER BY c.country_name, d.department_name, e.salary DESC;
+
+-- JOIN with aggregation
+SELECT 
+    d.department_name,
+    COUNT(e.employee_id) as employee_count,
+    AVG(e.salary) as avg_salary,
+    MIN(e.salary) as min_salary,
+    MAX(e.salary) as max_salary,
+    SUM(e.salary) as total_salary
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name
+ORDER BY employee_count DESC;
+
+-- Complex JOIN with subqueries
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    e.salary,
+    d.department_name,
+    dept_stats.avg_dept_salary,
+    dept_stats.employee_count,
+    ROUND(e.salary - dept_stats.avg_dept_salary, 2) as salary_vs_dept_avg
+FROM employees e
+INNER JOIN departments d ON e.department_id = d.department_id
+INNER JOIN (
+    SELECT 
+        department_id,
+        AVG(salary) as avg_dept_salary,
+        COUNT(*) as employee_count
+    FROM employees
+    GROUP BY department_id
+) dept_stats ON e.department_id = dept_stats.department_id
+WHERE e.salary > dept_stats.avg_dept_salary
+ORDER BY e.department_id, e.salary DESC;
+
+-- JOIN with window functions
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    d.department_name,
+    e.salary,
+    AVG(e.salary) OVER (PARTITION BY d.department_id) as dept_avg_salary,
+    RANK() OVER (PARTITION BY d.department_id ORDER BY e.salary DESC) as salary_rank_in_dept,
+    COUNT(*) OVER (PARTITION BY d.department_id) as dept_employee_count
+FROM employees e
+INNER JOIN departments d ON e.department_id = d.department_id
+ORDER BY d.department_name, salary_rank_in_dept;`
+
+
+            
+
+
+
+       
         ];
 
         // Load questions when page loads
