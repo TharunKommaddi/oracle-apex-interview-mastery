@@ -1,6 +1,6 @@
 // Modern JavaScript for APEX Interview Mastery Platform
 'use strict';
-
+ 
 // Global state management
 const AppState = {
     currentFilters: { category: 'all' },
