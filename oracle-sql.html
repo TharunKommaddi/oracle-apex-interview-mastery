@@ -1778,7 +1778,1528 @@ ORDER BY d.department_name, salary_rank_in_dept;`
 
 
             
+},
+    {
+        id: 12,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'How do you use subqueries in Oracle SQL? Provide examples of correlated and non-correlated subqueries.',
+        answer: 'Subqueries are queries nested inside another query. They can be correlated (reference outer query) or non-correlated (independent). Used in SELECT, WHERE, FROM, and HAVING clauses.',
+        language: 'Oracle SQL',
+        code: `-- NON-CORRELATED SUBQUERIES
+-- Subquery in WHERE clause
+SELECT employee_id, first_name, last_name, salary
+FROM employees
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees
+);
 
+-- Subquery in FROM clause (inline view)
+SELECT 
+    dept_summary.department_name,
+    dept_summary.avg_salary,
+    dept_summary.employee_count,
+    dept_summary.total_salary
+FROM (
+    SELECT 
+        d.department_name,
+        AVG(e.salary) as avg_salary,
+        COUNT(e.employee_id) as employee_count,
+        SUM(e.salary) as total_salary
+    FROM departments d
+    LEFT JOIN employees e ON d.department_id = e.department_id
+    GROUP BY d.department_id, d.department_name
+) dept_summary
+WHERE dept_summary.employee_count > 5
+ORDER BY dept_summary.avg_salary DESC;
+
+-- Subquery in SELECT clause
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id,
+    (SELECT department_name FROM departments WHERE department_id = employees.department_id) as department_name,
+    (SELECT AVG(salary) FROM employees e2 WHERE e2.department_id = employees.department_id) as dept_avg_salary
+FROM employees
+ORDER BY department_id, salary DESC;
+
+-- CORRELATED SUBQUERIES
+-- Find employees earning more than average in their department
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id
+FROM employees e1
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees e2
+    WHERE e2.department_id = e1.department_id
+);
+
+-- Find employees with highest salary in each department
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id
+FROM employees e1
+WHERE salary = (
+    SELECT MAX(salary)
+    FROM employees e2
+    WHERE e2.department_id = e1.department_id
+);
+
+-- EXISTS subquery - find departments with employees
+SELECT 
+    department_id,
+    department_name
+FROM departments d
+WHERE EXISTS (
+    SELECT 1
+    FROM employees e
+    WHERE e.department_id = d.department_id
+);
+
+-- NOT EXISTS subquery - find departments without employees
+SELECT 
+    department_id,
+    department_name
+FROM departments d
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM employees e
+    WHERE e.department_id = d.department_id
+);
+
+-- Multiple column subquery
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id
+FROM employees
+WHERE (department_id, salary) IN (
+    SELECT department_id, MAX(salary)
+    FROM employees
+    GROUP BY department_id
+);
+
+-- Advanced correlated subquery with ranking
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id,
+    (SELECT COUNT(*) 
+     FROM employees e2 
+     WHERE e2.department_id = e1.department_id 
+     AND e2.salary >= e1.salary) as salary_rank
+FROM employees e1
+ORDER BY department_id, salary_rank;
+
+-- Subquery with analytical functions
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id,
+    hire_date
+FROM employees e1
+WHERE hire_date = (
+    SELECT MIN(hire_date)
+    FROM employees e2
+    WHERE e2.department_id = e1.department_id
+);
+
+-- Complex nested subqueries
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id
+FROM employees
+WHERE employee_id IN (
+    SELECT employee_id
+    FROM employees
+    WHERE department_id IN (
+        SELECT department_id
+        FROM departments
+        WHERE location_id IN (
+            SELECT location_id
+            FROM locations
+            WHERE country_id = 'US'
+        )
+    )
+    AND salary > (
+        SELECT AVG(salary)
+        FROM employees
+        WHERE department_id = employees.department_id
+    )
+);
+
+-- Using subqueries for data validation
+-- Find employees with invalid department references
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    department_id
+FROM employees
+WHERE department_id NOT IN (
+    SELECT department_id
+    FROM departments
+    WHERE department_id IS NOT NULL
+);
+
+-- Subquery with CASE statement
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    salary,
+    department_id,
+    CASE 
+        WHEN salary > (
+            SELECT AVG(salary)
+            FROM employees e2
+            WHERE e2.department_id = employees.department_id
+        ) THEN 'Above Average'
+        WHEN salary < (
+            SELECT AVG(salary)
+            FROM employees e2
+            WHERE e2.department_id = employees.department_id
+        ) THEN 'Below Average'
+        ELSE 'Average'
+    END as salary_category
+FROM employees
+ORDER BY department_id, salary DESC;
+
+-- Subquery in UPDATE statement
+UPDATE employees
+SET salary = salary * 1.1
+WHERE department_id IN (
+    SELECT department_id
+    FROM departments
+    WHERE department_name IN ('IT', 'Sales')
+);
+
+-- Subquery in DELETE statement
+DELETE FROM employees
+WHERE employee_id IN (
+    SELECT employee_id
+    FROM employees
+    WHERE hire_date < (
+        SELECT ADD_MONTHS(SYSDATE, -120)  -- 10 years ago
+        FROM dual
+    )
+    AND department_id IN (
+        SELECT department_id
+        FROM departments
+        WHERE department_name = 'Archive'
+    )
+);
+
+-- WITH clause (Common Table Expression) - alternative to subqueries
+WITH 
+dept_stats AS (
+    SELECT 
+        department_id,
+        AVG(salary) as avg_salary,
+        COUNT(*) as emp_count,
+        MAX(salary) as max_salary
+    FROM employees
+    GROUP BY department_id
+),
+high_performing_depts AS (
+    SELECT department_id
+    FROM dept_stats
+    WHERE avg_salary > 60000
+    AND emp_count > 3
+)
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    e.salary,
+    d.department_name,
+    ds.avg_salary as dept_avg_salary,
+    ds.emp_count as dept_employee_count
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+JOIN dept_stats ds ON e.department_id = ds.department_id
+WHERE e.department_id IN (SELECT department_id FROM high_performing_depts)
+ORDER BY e.department_id, e.salary DESC;`
+    },
+    {
+        id: 13,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What are Common Table Expressions (CTEs) in Oracle and how do they differ from subqueries?',
+        answer: 'CTEs use the WITH clause to create temporary named result sets that can be referenced multiple times in a query. They improve readability and can be recursive, unlike regular subqueries.',
+        language: 'Oracle SQL',
+        code: `-- Basic CTE example
+WITH high_salary_employees AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        salary,
+        department_id
+    FROM employees
+    WHERE salary > 50000
+)
+SELECT 
+    hse.employee_id,
+    hse.first_name,
+    hse.last_name,
+    hse.salary,
+    d.department_name
+FROM high_salary_employees hse
+JOIN departments d ON hse.department_id = d.department_id
+ORDER BY hse.salary DESC;
+
+-- Multiple CTEs in single query
+WITH 
+dept_stats AS (
+    SELECT 
+        department_id,
+        COUNT(*) as employee_count,
+        AVG(salary) as avg_salary,
+        MIN(salary) as min_salary,
+        MAX(salary) as max_salary,
+        SUM(salary) as total_salary
+    FROM employees
+    GROUP BY department_id
+),
+dept_rankings AS (
+    SELECT 
+        department_id,
+        employee_count,
+        avg_salary,
+        RANK() OVER (ORDER BY avg_salary DESC) as salary_rank,
+        RANK() OVER (ORDER BY employee_count DESC) as size_rank
+    FROM dept_stats
+),
+top_departments AS (
+    SELECT department_id
+    FROM dept_rankings
+    WHERE salary_rank <= 3 OR size_rank <= 3
+)
+SELECT 
+    d.department_name,
+    ds.employee_count,
+    ds.avg_salary,
+    ds.total_salary,
+    dr.salary_rank,
+    dr.size_rank,
+    CASE 
+        WHEN dr.salary_rank <= 3 AND dr.size_rank <= 3 THEN 'Top in Both'
+        WHEN dr.salary_rank <= 3 THEN 'Top by Salary'
+        WHEN dr.size_rank <= 3 THEN 'Top by Size'
+    END as ranking_category
+FROM departments d
+JOIN dept_stats ds ON d.department_id = ds.department_id
+JOIN dept_rankings dr ON d.department_id = dr.department_id
+WHERE d.department_id IN (SELECT department_id FROM top_departments)
+ORDER BY dr.salary_rank, dr.size_rank;
+
+-- Recursive CTE for hierarchical data
+WITH employee_hierarchy AS (
+    -- Anchor member: start with top-level managers
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        manager_id,
+        job_id,
+        salary,
+        1 as level,
+        first_name || ' ' || last_name as hierarchy_path
+    FROM employees
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    -- Recursive member: add subordinates
+    SELECT 
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.manager_id,
+        e.job_id,
+        e.salary,
+        eh.level + 1,
+        eh.hierarchy_path || ' -> ' || e.first_name || ' ' || e.last_name
+    FROM employees e
+    INNER JOIN employee_hierarchy eh ON e.manager_id = eh.employee_id
+    WHERE eh.level < 10  -- Prevent infinite recursion
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    manager_id,
+    job_id,
+    salary,
+    level,
+    hierarchy_path,
+    LPAD(' ', (level - 1) * 4) || first_name || ' ' || last_name as indented_name
+FROM employee_hierarchy
+ORDER BY hierarchy_path;
+
+-- CTE with window functions for advanced analytics
+WITH 
+monthly_sales AS (
+    SELECT 
+        EXTRACT(YEAR FROM order_date) as year,
+        EXTRACT(MONTH FROM order_date) as month,
+        SUM(order_total) as monthly_total,
+        COUNT(*) as order_count
+    FROM orders
+    WHERE order_date >= ADD_MONTHS(SYSDATE, -24)
+    GROUP BY EXTRACT(YEAR FROM order_date), EXTRACT(MONTH FROM order_date)
+),
+sales_with_trends AS (
+    SELECT 
+        year,
+        month,
+        monthly_total,
+        order_count,
+        LAG(monthly_total, 1) OVER (ORDER BY year, month) as prev_month_sales,
+        LAG(monthly_total, 12) OVER (ORDER BY year, month) as same_month_prev_year,
+        AVG(monthly_total) OVER (ORDER BY year, month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as three_month_avg,
+        SUM(monthly_total) OVER (ORDER BY year, month ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) as rolling_12_month_total
+    FROM monthly_sales
+)
+SELECT 
+    year,
+    month,
+    TO_CHAR(TO_DATE(month, 'MM'), 'Month') as month_name,
+    monthly_total,
+    order_count,
+    prev_month_sales,
+    same_month_prev_year,
+    three_month_avg,
+    rolling_12_month_total,
+    CASE 
+        WHEN prev_month_sales IS NOT NULL THEN
+            ROUND((monthly_total - prev_month_sales) / prev_month_sales * 100, 2)
+        ELSE NULL
+    END as mom_growth_pct,
+    CASE 
+        WHEN same_month_prev_year IS NOT NULL THEN
+            ROUND((monthly_total - same_month_prev_year) / same_month_prev_year * 100, 2)
+        ELSE NULL
+    END as yoy_growth_pct
+FROM sales_with_trends
+ORDER BY year, month;
+
+-- Complex CTE for employee performance analysis
+WITH 
+employee_metrics AS (
+    SELECT 
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.department_id,
+        e.job_id,
+        e.salary,
+        e.hire_date,
+        MONTHS_BETWEEN(SYSDATE, e.hire_date) / 12 as years_of_service,
+        -- Performance metrics (assuming these tables exist)
+        COALESCE(p.performance_rating, 3) as performance_rating,
+        COALESCE(p.goals_met, 0) as goals_met,
+        COALESCE(p.total_goals, 1) as total_goals
+    FROM employees e
+    LEFT JOIN performance_reviews p ON e.employee_id = p.employee_id 
+        AND p.review_year = EXTRACT(YEAR FROM SYSDATE)
+),
+department_benchmarks AS (
+    SELECT 
+        department_id,
+        AVG(salary) as avg_dept_salary,
+        AVG(years_of_service) as avg_tenure,
+        AVG(performance_rating) as avg_performance,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) as median_salary,
+        COUNT(*) as dept_size
+    FROM employee_metrics
+    GROUP BY department_id
+),
+employee_scores AS (
+    SELECT 
+        em.*,
+        db.avg_dept_salary,
+        db.avg_tenure,
+        db.avg_performance,
+        db.median_salary,
+        db.dept_size,
+        -- Scoring calculations
+        CASE 
+            WHEN em.salary >= db.median_salary THEN 1 ELSE 0
+        END as salary_score,
+        CASE 
+            WHEN em.performance_rating >= db.avg_performance THEN 1 ELSE 0
+        END as performance_score,
+        CASE 
+            WHEN em.years_of_service >= db.avg_tenure THEN 1 ELSE 0
+        END as tenure_score,
+        CASE 
+            WHEN em.goals_met / em.total_goals >= 0.8 THEN 1 ELSE 0
+        END as goals_score
+    FROM employee_metrics em
+    JOIN department_benchmarks db ON em.department_id = db.department_id
+)
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    department_id,
+    salary,
+    performance_rating,
+    years_of_service,
+    goals_met,
+    total_goals,
+    ROUND(goals_met / total_goals * 100, 1) as goals_completion_pct,
+    salary_score + performance_score + tenure_score + goals_score as total_score,
+    CASE 
+        WHEN salary_score + performance_score + tenure_score + goals_score >= 3 THEN 'High Performer'
+        WHEN salary_score + performance_score + tenure_score + goals_score >= 2 THEN 'Good Performer'
+        ELSE 'Needs Improvement'
+    END as performance_category,
+    RANK() OVER (PARTITION BY department_id ORDER BY salary_score + performance_score + tenure_score + goals_score DESC) as dept_rank
+FROM employee_scores
+ORDER BY department_id, total_score DESC;
+
+-- CTE vs Subquery Performance Comparison
+-- Using subquery (less readable, potentially less efficient)
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    e.salary,
+    (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id) as dept_avg,
+    (SELECT COUNT(*) FROM employees WHERE department_id = e.department_id) as dept_count
+FROM employees e
+WHERE e.salary > (
+    SELECT AVG(salary) 
+    FROM employees 
+    WHERE department_id = e.department_id
+);
+
+-- Same query using CTE (more readable, potentially more efficient)
+WITH dept_stats AS (
+    SELECT 
+        department_id,
+        AVG(salary) as avg_salary,
+        COUNT(*) as employee_count
+    FROM employees
+    GROUP BY department_id
+)
+SELECT 
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    e.salary,
+    ds.avg_salary as dept_avg,
+    ds.employee_count as dept_count
+FROM employees e
+JOIN dept_stats ds ON e.department_id = ds.department_id
+WHERE e.salary > ds.avg_salary;
+
+-- Recursive CTE for finding all paths in hierarchy
+WITH employee_paths AS (
+    -- Start with each employee
+    SELECT 
+        employee_id,
+        manager_id,
+        first_name || ' ' || last_name as employee_name,
+        first_name || ' ' || last_name as path,
+        1 as level
+    FROM employees
+    
+    UNION ALL
+    
+    -- Add each manager level
+    SELECT 
+        mp.employee_id,
+        e.manager_id,
+        mp.employee_name,
+        e.first_name || ' ' || e.last_name || ' -> ' || mp.path as path,
+        mp.level + 1
+    FROM employee_paths mp
+    JOIN employees e ON mp.manager_id = e.employee_id
+    WHERE mp.level < 10
+)
+SELECT 
+    employee_id,
+    employee_name,
+    path as management_chain,
+    level as chain_length
+FROM employee_paths
+WHERE manager_id IS NULL  -- Only show complete paths to top
+ORDER BY employee_id;`
+    },
+    {
+        id: 14,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'How do you optimize Oracle SQL queries for better performance?',
+        answer: 'Oracle constraints are rules that enforce data integrity. Types include NOT NULL, UNIQUE, PRIMARY KEY, FOREIGN KEY, and CHECK constraints.',
+        language: 'Oracle SQL',
+        code: `-- 1. NOT NULL CONSTRAINT
+-- Column-level NOT NULL constraint
+CREATE TABLE employees_demo (
+    employee_id NUMBER NOT NULL,
+    first_name VARCHAR2(50) NOT NULL,
+    last_name VARCHAR2(50) NOT NULL,
+    email VARCHAR2(100),
+    salary NUMBER
+);
+
+-- Add NOT NULL constraint to existing column
+ALTER TABLE employees_demo MODIFY email NOT NULL;
+
+-- 2. UNIQUE CONSTRAINT
+-- Column-level unique constraint
+CREATE TABLE departments_demo (
+    department_id NUMBER PRIMARY KEY,
+    department_name VARCHAR2(100) UNIQUE,
+    location_id NUMBER
+);
+
+-- Table-level unique constraint
+CREATE TABLE employees_demo2 (
+    employee_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    email VARCHAR2(100),
+    phone VARCHAR2(20),
+    CONSTRAINT uk_emp_email UNIQUE (email),
+    CONSTRAINT uk_emp_phone UNIQUE (phone)
+);
+
+-- Composite unique constraint
+ALTER TABLE employees_demo2 
+ADD CONSTRAINT uk_emp_name_dept UNIQUE (first_name, last_name, department_id);
+
+-- 3. PRIMARY KEY CONSTRAINT
+-- Single column primary key
+CREATE TABLE customers (
+    customer_id NUMBER PRIMARY KEY,
+    customer_name VARCHAR2(100) NOT NULL,
+    email VARCHAR2(100) UNIQUE
+);
+
+-- Composite primary key
+CREATE TABLE order_items (
+    order_id NUMBER,
+    product_id NUMBER,
+    quantity NUMBER,
+    unit_price NUMBER,
+    CONSTRAINT pk_order_items PRIMARY KEY (order_id, product_id)
+);
+
+-- Add primary key to existing table
+ALTER TABLE employees_demo 
+ADD CONSTRAINT pk_employees_demo PRIMARY KEY (employee_id);
+
+-- 4. FOREIGN KEY CONSTRAINT
+-- Basic foreign key
+CREATE TABLE orders (
+    order_id NUMBER PRIMARY KEY,
+    customer_id NUMBER,
+    order_date DATE,
+    CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) 
+        REFERENCES customers(customer_id)
+);
+
+-- Foreign key with cascade options
+CREATE TABLE employees_fk_demo (
+    employee_id NUMBER PRIMARY KEY,
+    department_id NUMBER,
+    manager_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    CONSTRAINT fk_emp_dept FOREIGN KEY (department_id) 
+        REFERENCES departments(department_id) ON DELETE CASCADE,
+    CONSTRAINT fk_emp_manager FOREIGN KEY (manager_id) 
+        REFERENCES employees_fk_demo(employee_id) ON DELETE SET NULL
+);
+
+-- 5. CHECK CONSTRAINT
+-- Simple check constraint
+CREATE TABLE products (
+    product_id NUMBER PRIMARY KEY,
+    product_name VARCHAR2(100) NOT NULL,
+    price NUMBER CHECK (price > 0),
+    category VARCHAR2(50) CHECK (category IN ('Electronics', 'Clothing', 'Books', 'Home')),
+    stock_quantity NUMBER DEFAULT 0 CHECK (stock_quantity >= 0)
+);
+
+-- Complex check constraint
+ALTER TABLE employees_demo 
+ADD CONSTRAINT chk_salary_range CHECK (salary BETWEEN 1000 AND 500000);
+
+-- Multi-column check constraint
+ALTER TABLE employees_demo 
+ADD hire_date DATE,
+ADD CONSTRAINT chk_hire_date CHECK (hire_date <= SYSDATE);
+
+-- 6. CONSTRAINT MANAGEMENT
+-- Enable/Disable constraints
+ALTER TABLE employees_demo DISABLE CONSTRAINT chk_salary_range;
+ALTER TABLE employees_demo ENABLE CONSTRAINT chk_salary_range;
+
+-- Drop constraints
+ALTER TABLE employees_demo DROP CONSTRAINT chk_salary_range;
+
+-- Rename constraints
+ALTER TABLE employees_demo RENAME CONSTRAINT pk_employees_demo TO pk_emp_demo_id;
+
+-- 7. CONSTRAINT VALIDATION
+-- Add constraint with NOVALIDATE (doesn't check existing data)
+ALTER TABLE employees_demo 
+ADD CONSTRAINT chk_email_format CHECK (email LIKE '%@%.%') NOVALIDATE;
+
+-- Validate constraint later
+ALTER TABLE employees_demo MODIFY CONSTRAINT chk_email_format VALIDATE;
+
+-- 8. DEFERRABLE CONSTRAINTS
+-- Create deferrable constraint
+CREATE TABLE parent_table (
+    id NUMBER PRIMARY KEY,
+    name VARCHAR2(100)
+);
+
+CREATE TABLE child_table (
+    id NUMBER PRIMARY KEY,
+    parent_id NUMBER,
+    name VARCHAR2(100),
+    CONSTRAINT fk_child_parent FOREIGN KEY (parent_id) 
+        REFERENCES parent_table(id) DEFERRABLE INITIALLY DEFERRED
+);
+
+-- Use deferred constraint checking
+SET CONSTRAINTS fk_child_parent DEFERRED;
+-- Perform operations that might temporarily violate constraint
+-- Constraints are checked at commit time
+
+-- 9. VIEW CONSTRAINT INFORMATION
+-- View all constraints for a table
+SELECT 
+    constraint_name,
+    constraint_type,
+    search_condition,
+    status,
+    validated,
+    deferrable,
+    deferred
+FROM user_constraints
+WHERE table_name = 'EMPLOYEES_DEMO';
+
+-- View constraint columns
+SELECT 
+    c.constraint_name,
+    c.constraint_type,
+    cc.column_name,
+    cc.position
+FROM user_constraints c
+JOIN user_cons_columns cc ON c.constraint_name = cc.constraint_name
+WHERE c.table_name = 'EMPLOYEES_DEMO'
+ORDER BY c.constraint_name, cc.position;
+
+-- View foreign key relationships
+SELECT 
+    a.table_name as child_table,
+    a.column_name as child_column,
+    a.constraint_name,
+    b.table_name as parent_table,
+    b.column_name as parent_column
+FROM user_cons_columns a
+JOIN user_constraints c ON a.constraint_name = c.constraint_name
+JOIN user_cons_columns b ON c.r_constraint_name = b.constraint_name
+WHERE c.constraint_type = 'R'
+ORDER BY a.table_name, a.constraint_name;
+
+-- 10. CONSTRAINT VIOLATIONS AND ERROR HANDLING
+-- Create table with various constraints for testing
+CREATE TABLE employee_test (
+    employee_id NUMBER CONSTRAINT pk_emp_test PRIMARY KEY,
+    first_name VARCHAR2(50) NOT NULL,
+    last_name VARCHAR2(50) NOT NULL,
+    email VARCHAR2(100) CONSTRAINT uk_emp_test_email UNIQUE,
+    department_id NUMBER CONSTRAINT fk_emp_test_dept 
+        REFERENCES departments(department_id),
+    salary NUMBER CONSTRAINT chk_emp_test_salary CHECK (salary > 0),
+    hire_date DATE DEFAULT SYSDATE,
+    status VARCHAR2(20) DEFAULT 'ACTIVE' 
+        CONSTRAINT chk_emp_test_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'TERMINATED'))
+);
+
+-- Examples of constraint violations
+-- This will fail due to NOT NULL constraint
+-- INSERT INTO employee_test (employee_id, last_name) VALUES (1, 'Smith');
+
+-- This will fail due to CHECK constraint
+-- INSERT INTO employee_test (employee_id, first_name, last_name, salary) 
+-- VALUES (1, 'John', 'Smith', -1000);
+
+-- This will fail due to UNIQUE constraint
+-- INSERT INTO employee_test (employee_id, first_name, last_name, email) 
+-- VALUES (1, 'John', 'Smith', 'john.smith@company.com');
+-- INSERT INTO employee_test (employee_id, first_name, last_name, email) 
+-- VALUES (2, 'Jane', 'Doe', 'john.smith@company.com');
+
+-- 11. CONSTRAINT PERFORMANCE CONSIDERATIONS
+-- Use indexes to support constraints
+CREATE INDEX idx_emp_test_dept ON employee_test(department_id);
+CREATE INDEX idx_emp_test_email ON employee_test(email);
+
+-- Composite constraints and indexes
+CREATE TABLE order_details (
+    order_id NUMBER,
+    line_number NUMBER,
+    product_id NUMBER,
+    quantity NUMBER CHECK (quantity > 0),
+    unit_price NUMBER CHECK (unit_price > 0),
+    CONSTRAINT pk_order_details PRIMARY KEY (order_id, line_number),
+    CONSTRAINT fk_order_details_order FOREIGN KEY (order_id) 
+        REFERENCES orders(order_id) ON DELETE CASCADE
+);
+
+-- 12. CONSTRAINT BEST PRACTICES
+/*
+Best Practices for Oracle Constraints:
+
+1. Always name your constraints explicitly
+2. Use meaningful constraint names (pk_, fk_, uk_, chk_)
+3. Create indexes on foreign key columns for performance
+4. Use CHECK constraints for business rules
+5. Consider using DEFERRABLE constraints for complex operations
+6. Use CASCADE options carefully with foreign keys
+7. Validate constraints during off-peak hours
+8. Monitor constraint violations in application logs
+9. Document constraint logic for complex business rules
+10. Use NOVALIDATE for adding constraints to large existing tables
+*/
+
+-- Example of well-designed table with proper constraints
+CREATE TABLE comprehensive_employee (
+    employee_id NUMBER 
+        CONSTRAINT pk_comp_emp PRIMARY KEY,
+    employee_number VARCHAR2(10) 
+        CONSTRAINT uk_comp_emp_number UNIQUE NOT NULL,
+    first_name VARCHAR2(50) 
+        CONSTRAINT nn_comp_emp_fname NOT NULL,
+    last_name VARCHAR2(50) 
+        CONSTRAINT nn_comp_emp_lname NOT NULL,
+    email VARCHAR2(100) 
+        CONSTRAINT uk_comp_emp_email UNIQUE
+        CONSTRAINT nn_comp_emp_email NOT NULL
+        CONSTRAINT chk_comp_emp_email CHECK (email LIKE '%@%.%'),
+    phone VARCHAR2(20)
+        CONSTRAINT chk_comp_emp_phone CHECK (REGEXP_LIKE(phone, '^[0-9-+ ()]+ SQL optimization involves proper indexing, query restructuring, hint usage, execution plan analysis, and understanding Oracle\'s cost-based optimizer.',
+        language: 'Oracle SQL',
+        code: `-- 1. EXECUTION PLAN ANALYSIS
+-- Always check execution plans before optimizing
+EXPLAIN PLAN FOR
+SELECT e.employee_id, e.first_name, e.last_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+WHERE e.salary > 50000;
+
+-- View the execution plan
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+-- Get actual execution statistics
+SELECT /*+ GATHER_PLAN_STATISTICS */ 
+    e.employee_id, e.first_name, e.last_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+WHERE e.salary > 50000;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(NULL, NULL, 'ALLSTATS LAST'));
+
+-- 2. INDEXING STRATEGIES
+-- Create composite index for common query patterns
+CREATE INDEX idx_emp_dept_salary ON employees(department_id, salary);
+CREATE INDEX idx_emp_name ON employees(last_name, first_name);
+CREATE INDEX idx_emp_hire_date ON employees(hire_date);
+
+-- Function-based index for case-insensitive searches
+CREATE INDEX idx_emp_upper_lastname ON employees(UPPER(last_name));
+
+-- Partial index for specific conditions
+CREATE INDEX idx_emp_active_high_salary ON employees(salary) 
+WHERE status = 'ACTIVE' AND salary > 50000;
+
+-- 3. QUERY OPTIMIZATION TECHNIQUES
+-- Bad: Using functions in WHERE clause prevents index usage
+SELECT * FROM employees 
+WHERE UPPER(last_name) = 'SMITH';
+
+-- Good: Use function-based index or avoid functions
+SELECT * FROM employees 
+WHERE last_name = 'Smith';
+
+-- Bad: Leading wildcard prevents index usage
+SELECT * FROM employees 
+WHERE last_name LIKE '%son';
+
+-- Good: Use proper wildcards
+SELECT * FROM employees 
+WHERE last_name LIKE 'John%';
+
+-- Bad: Using OR can be inefficient
+SELECT * FROM employees 
+WHERE department_id = 10 OR department_id = 20;
+
+-- Good: Use IN clause
+SELECT * FROM employees 
+WHERE department_id IN (10, 20);
+
+-- Even better: Use UNION ALL if selectivity is high
+SELECT * FROM employees WHERE department_id = 10
+UNION ALL
+SELECT * FROM employees WHERE department_id = 20;
+
+-- 4. HINT USAGE FOR PERFORMANCE TUNING
+-- Force index usage
+SELECT /*+ INDEX(e idx_emp_dept_salary) */
+    employee_id, first_name, last_name, salary
+FROM employees e
+WHERE department_id = 10 AND salary > 50000;
+
+-- Force specific join method
+SELECT /*+ USE_HASH(e d) */
+    e.employee_id, e.first_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id;
+
+-- Force parallel processing
+SELECT /*+ PARALLEL(e, 4) */
+    department_id, AVG(salary), COUNT(*)
+FROM employees e
+GROUP BY department_id;
+
+-- Optimize for first rows
+SELECT /*+ FIRST_ROWS(10) */
+    employee_id, first_name, last_name, salary
+FROM employees
+WHERE department_id = 10
+ORDER BY salary DESC;
+
+-- 5. SUBQUERY OPTIMIZATION
+-- Bad: Correlated subquery
+SELECT e1.employee_id, e1.first_name, e1.salary
+FROM employees e1
+WHERE e1.salary > (
+    SELECT AVG(e2.salary)
+    FROM employees e2
+    WHERE e2.department_id = e1.department_id
+);
+
+-- Good: Use window functions
+SELECT employee_id, first_name, salary
+FROM (
+    SELECT 
+        employee_id, 
+        first_name, 
+        salary,
+        department_id,
+        AVG(salary) OVER (PARTITION BY department_id) as avg_dept_salary
+    FROM employees
+)
+WHERE salary > avg_dept_salary;
+
+-- 6. EXISTS vs IN optimization
+-- Use EXISTS instead of IN with subqueries
+SELECT d.department_name
+FROM departments d
+WHERE EXISTS (
+    SELECT 1 FROM employees e 
+    WHERE e.department_id = d.department_id
+    AND e.salary > 50000
+);
+
+-- Better than:
+SELECT d.department_name
+FROM departments d
+WHERE d.department_id IN (
+    SELECT e.department_id FROM employees e 
+    WHERE e.salary > 50000
+);
+
+-- 7. PAGINATION OPTIMIZATION
+-- Bad: Using ROWNUM for large offsets
+SELECT * FROM (
+    SELECT a.*, ROWNUM rnum FROM (
+        SELECT * FROM employees ORDER BY salary DESC
+    ) a
+    WHERE ROWNUM <= 1000
+)
+WHERE rnum >= 991;
+
+-- Good: Use OFFSET/FETCH (Oracle 12c+)
+SELECT employee_id, first_name, last_name, salary
+FROM employees
+ORDER BY salary DESC
+OFFSET 990 ROWS FETCH NEXT 10 ROWS ONLY;
+
+-- 8. ANALYTICAL FUNCTIONS vs SELF-JOINS
+-- Bad: Self-join for ranking
+SELECT e1.employee_id, e1.first_name, e1.salary,
+       COUNT(e2.employee_id) as rank
+FROM employees e1
+LEFT JOIN employees e2 ON e1.department_id = e2.department_id 
+                       AND e1.salary <= e2.salary
+GROUP BY e1.employee_id, e1.first_name, e1.salary
+ORDER BY rank;
+
+-- Good: Use analytical functions
+SELECT employee_id, first_name, salary,
+       RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as rank
+FROM employees
+ORDER BY department_id, rank;
+
+-- 9. BULK OPERATIONS
+-- Bad: Row-by-row processing
+UPDATE employees SET salary = salary * 1.1 WHERE department_id = 10;
+UPDATE employees SET salary = salary * 1.05 WHERE department_id = 20;
+
+-- Good: Single statement with CASE
+UPDATE employees 
+SET salary = salary * 
+    CASE department_id
+        WHEN 10 THEN 1.1
+        WHEN 20 THEN 1.05
+        ELSE 1.0
+    END
+WHERE department_id IN (10, 20);
+
+-- 10. STATISTICS AND HISTOGRAMS
+-- Gather table statistics for better execution plans
+BEGIN
+    DBMS_STATS.GATHER_TABLE_STATS(
+        ownname => 'HR',
+        tabname => 'EMPLOYEES',
+        estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+        method_opt => 'FOR ALL COLUMNS SIZE AUTO',
+        cascade => TRUE
+    );
+END;
+/
+
+-- 11. MATERIALIZED VIEWS for complex aggregations
+CREATE MATERIALIZED VIEW mv_dept_summary
+BUILD IMMEDIATE
+REFRESH FAST ON COMMIT
+AS
+SELECT 
+    d.department_id,
+    d.department_name,
+    COUNT(e.employee_id) as employee_count,
+    AVG(e.salary) as avg_salary,
+    SUM(e.salary) as total_salary,
+    MAX(e.salary) as max_salary,
+    MIN(e.salary) as min_salary
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name;
+
+-- 12. PARTITIONING for large tables
+-- Range partitioning by date
+CREATE TABLE sales_partitioned (
+    sale_id NUMBER,
+    sale_date DATE,
+    customer_id NUMBER,
+    amount NUMBER
+)
+PARTITION BY RANGE (sale_date) (
+    PARTITION p_2023 VALUES LESS THAN (DATE '2024-01-01'),
+    PARTITION p_2024 VALUES LESS THAN (DATE '2025-01-01'),
+    PARTITION p_2025 VALUES LESS THAN (DATE '2026-01-01')
+);
+
+-- Hash partitioning for even distribution
+CREATE TABLE employees_partitioned (
+    employee_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    department_id NUMBER,
+    salary NUMBER
+)
+PARTITION BY HASH (employee_id) PARTITIONS 4;
+
+-- 13. QUERY REWRITING TECHNIQUES
+-- Use UNION ALL instead of UNION when duplicates are not an issue
+SELECT employee_id, 'CURRENT' as status FROM employees WHERE status = 'ACTIVE'
+UNION ALL
+SELECT employee_id, 'FORMER' as status FROM former_employees;
+
+-- Use CASE instead of multiple queries
+SELECT 
+    department_id,
+    COUNT(CASE WHEN salary > 50000 THEN 1 END) as high_salary_count,
+    COUNT(CASE WHEN salary <= 50000 THEN 1 END) as low_salary_count,
+    AVG(CASE WHEN salary > 50000 THEN salary END) as avg_high_salary,
+    AVG(CASE WHEN salary <= 50000 THEN salary END) as avg_low_salary
+FROM employees
+GROUP BY department_id;
+
+-- 14. MONITORING AND TUNING QUERIES
+-- Monitor long-running queries
+SELECT 
+    sql_id,
+    sql_text,
+    executions,
+    elapsed_time/1000000 as elapsed_seconds,
+    cpu_time/1000000 as cpu_seconds,
+    buffer_gets,
+    disk_reads,
+    rows_processed
+FROM v$sql
+WHERE elapsed_time > 5000000  -- More than 5 seconds
+ORDER BY elapsed_time DESC;
+
+-- Find queries with high logical reads
+SELECT 
+    sql_id,
+    sql_text,
+    executions,
+    buffer_gets,
+    buffer_gets/executions as gets_per_exec,
+    rows_processed
+FROM v$sql
+WHERE executions > 0
+ORDER BY buffer_gets/executions DESC;
+
+-- 15. ADVANCED OPTIMIZATION EXAMPLES
+-- Optimized hierarchical query
+WITH emp_hierarchy AS (
+    SELECT 
+        employee_id,
+        manager_id,
+        first_name,
+        last_name,
+        1 as level,
+        CAST(employee_id AS VARCHAR2(4000)) as path
+    FROM employees
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    SELECT 
+        e.employee_id,
+        e.manager_id,
+        e.first_name,
+        e.last_name,
+        eh.level + 1,
+        eh.path || ',' || e.employee_id
+    FROM employees e
+    JOIN emp_hierarchy eh ON e.manager_id = eh.employee_id
+    WHERE eh.level < 10
+)
+SELECT /*+ MATERIALIZE */ * FROM emp_hierarchy;
+
+-- Optimized pivot operation
+SELECT 
+    department_id,
+    SUM(CASE WHEN job_id = 'IT_PROG' THEN salary ELSE 0 END) as it_prog_total,
+    SUM(CASE WHEN job_id = 'SA_MAN' THEN salary ELSE 0 END) as sa_man_total,
+    SUM(CASE WHEN job_id = 'ST_CLERK' THEN salary ELSE 0 END) as st_clerk_total,
+    COUNT(CASE WHEN job_id = 'IT_PROG' THEN 1 END) as it_prog_count,
+    COUNT(CASE WHEN job_id = 'SA_MAN' THEN 1 END) as sa_man_count,
+    COUNT(CASE WHEN job_id = 'ST_CLERK' THEN 1 END) as st_clerk_count
+FROM employees
+GROUP BY department_id;
+
+-- 16. PERFORMANCE BEST PRACTICES SUMMARY
+/*
+1. Always analyze execution plans before and after changes
+2. Use appropriate indexes (B-tree, bitmap, function-based)
+3. Avoid functions in WHERE clauses
+4. Use bind variables to prevent hard parsing
+5. Choose the right join algorithm (NESTED LOOPS, HASH, SORT-MERGE)
+6. Use analytical functions instead of self-joins
+7. Prefer EXISTS over IN for subqueries
+8. Use UNION ALL instead of UNION when possible
+9. Implement proper partitioning for large tables
+10. Keep statistics current with DBMS_STATS
+11. Use materialized views for complex aggregations
+12. Consider parallel processing for large data sets
+13. Use bulk operations for DML
+14. Monitor and tune regularly using AWR and ASH reports
+15. Use hints judiciously, not as a first resort
+*/`
+    },
+    {
+        id: 15,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'What are Oracle constraints and how do you use them?',
+        answer: 'Oracle)),
+    hire_date DATE DEFAULT SYSDATE
+        CONSTRAINT nn_comp_emp_hire_date NOT NULL
+        CONSTRAINT chk_comp_emp_hire_date CHECK (hire_date <= SYSDATE),
+    salary NUMBER
+        CONSTRAINT chk_comp_emp_salary CHECK (salary BETWEEN 1000 AND 1000000),
+    department_id NUMBER
+        CONSTRAINT fk_comp_emp_dept REFERENCES departments(department_id),
+    manager_id NUMBER
+        CONSTRAINT fk_comp_emp_manager REFERENCES comprehensive_employee(employee_id),
+    status VARCHAR2(20) DEFAULT 'ACTIVE'
+        CONSTRAINT chk_comp_emp_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'TERMINATED')),
+    created_date DATE DEFAULT SYSDATE NOT NULL,
+    last_modified DATE DEFAULT SYSDATE NOT NULL,
+    CONSTRAINT chk_comp_emp_dates CHECK (last_modified >= created_date)
+);`
+    } SQL optimization involves proper indexing, query restructuring, hint usage, execution plan analysis, and understanding Oracle\'s cost-based optimizer.',
+        language: 'Oracle SQL',
+        code: `-- 1. EXECUTION PLAN ANALYSIS
+-- Always check execution plans before optimizing
+EXPLAIN PLAN FOR
+SELECT e.employee_id, e.first_name, e.last_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+WHERE e.salary > 50000;
+
+-- View the execution plan
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+-- Get actual execution statistics
+SELECT /*+ GATHER_PLAN_STATISTICS */ 
+    e.employee_id, e.first_name, e.last_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+WHERE e.salary > 50000;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(NULL, NULL, 'ALLSTATS LAST'));
+
+-- 2. INDEXING STRATEGIES
+-- Create composite index for common query patterns
+CREATE INDEX idx_emp_dept_salary ON employees(department_id, salary);
+CREATE INDEX idx_emp_name ON employees(last_name, first_name);
+CREATE INDEX idx_emp_hire_date ON employees(hire_date);
+
+-- Function-based index for case-insensitive searches
+CREATE INDEX idx_emp_upper_lastname ON employees(UPPER(last_name));
+
+-- Partial index for specific conditions
+CREATE INDEX idx_emp_active_high_salary ON employees(salary) 
+WHERE status = 'ACTIVE' AND salary > 50000;
+
+-- 3. QUERY OPTIMIZATION TECHNIQUES
+-- Bad: Using functions in WHERE clause prevents index usage
+SELECT * FROM employees 
+WHERE UPPER(last_name) = 'SMITH';
+
+-- Good: Use function-based index or avoid functions
+SELECT * FROM employees 
+WHERE last_name = 'Smith';
+
+-- Bad: Leading wildcard prevents index usage
+SELECT * FROM employees 
+WHERE last_name LIKE '%son';
+
+-- Good: Use proper wildcards
+SELECT * FROM employees 
+WHERE last_name LIKE 'John%';
+
+-- Bad: Using OR can be inefficient
+SELECT * FROM employees 
+WHERE department_id = 10 OR department_id = 20;
+
+-- Good: Use IN clause
+SELECT * FROM employees 
+WHERE department_id IN (10, 20);
+
+-- Even better: Use UNION ALL if selectivity is high
+SELECT * FROM employees WHERE department_id = 10
+UNION ALL
+SELECT * FROM employees WHERE department_id = 20;
+
+-- 4. HINT USAGE FOR PERFORMANCE TUNING
+-- Force index usage
+SELECT /*+ INDEX(e idx_emp_dept_salary) */
+    employee_id, first_name, last_name, salary
+FROM employees e
+WHERE department_id = 10 AND salary > 50000;
+
+-- Force specific join method
+SELECT /*+ USE_HASH(e d) */
+    e.employee_id, e.first_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id;
+
+-- Force parallel processing
+SELECT /*+ PARALLEL(e, 4) */
+    department_id, AVG(salary), COUNT(*)
+FROM employees e
+GROUP BY department_id;
+
+-- Optimize for first rows
+SELECT /*+ FIRST_ROWS(10) */
+    employee_id, first_name, last_name, salary
+FROM employees
+WHERE department_id = 10
+ORDER BY salary DESC;
+
+-- 5. SUBQUERY OPTIMIZATION
+-- Bad: Correlated subquery
+SELECT e1.employee_id, e1.first_name, e1.salary
+FROM employees e1
+WHERE e1.salary > (
+    SELECT AVG(e2.salary)
+    FROM employees e2
+    WHERE e2.department_id = e1.department_id
+);
+
+-- Good: Use window functions
+SELECT employee_id, first_name, salary
+FROM (
+    SELECT 
+        employee_id, 
+        first_name, 
+        salary,
+        department_id,
+        AVG(salary) OVER (PARTITION BY department_id) as avg_dept_salary
+    FROM employees
+)
+WHERE salary > avg_dept_salary;
+
+-- 6. EXISTS vs IN optimization
+-- Use EXISTS instead of IN with subqueries
+SELECT d.department_name
+FROM departments d
+WHERE EXISTS (
+    SELECT 1 FROM employees e 
+    WHERE e.department_id = d.department_id
+    AND e.salary > 50000
+);
+
+-- Better than:
+SELECT d.department_name
+FROM departments d
+WHERE d.department_id IN (
+    SELECT e.department_id FROM employees e 
+    WHERE e.salary > 50000
+);
+
+-- 7. PAGINATION OPTIMIZATION
+-- Bad: Using ROWNUM for large offsets
+SELECT * FROM (
+    SELECT a.*, ROWNUM rnum FROM (
+        SELECT * FROM employees ORDER BY salary DESC
+    ) a
+    WHERE ROWNUM <= 1000
+)
+WHERE rnum >= 991;
+
+-- Good: Use OFFSET/FETCH (Oracle 12c+)
+SELECT employee_id, first_name, last_name, salary
+FROM employees
+ORDER BY salary DESC
+OFFSET 990 ROWS FETCH NEXT 10 ROWS ONLY;
+
+-- 8. ANALYTICAL FUNCTIONS vs SELF-JOINS
+-- Bad: Self-join for ranking
+SELECT e1.employee_id, e1.first_name, e1.salary,
+       COUNT(e2.employee_id) as rank
+FROM employees e1
+LEFT JOIN employees e2 ON e1.department_id = e2.department_id 
+                       AND e1.salary <= e2.salary
+GROUP BY e1.employee_id, e1.first_name, e1.salary
+ORDER BY rank;
+
+-- Good: Use analytical functions
+SELECT employee_id, first_name, salary,
+       RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as rank
+FROM employees
+ORDER BY department_id, rank;
+
+-- 9. BULK OPERATIONS
+-- Bad: Row-by-row processing
+UPDATE employees SET salary = salary * 1.1 WHERE department_id = 10;
+UPDATE employees SET salary = salary * 1.05 WHERE department_id = 20;
+
+-- Good: Single statement with CASE
+UPDATE employees 
+SET salary = salary * 
+    CASE department_id
+        WHEN 10 THEN 1.1
+        WHEN 20 THEN 1.05
+        ELSE 1.0
+    END
+WHERE department_id IN (10, 20);
+
+-- 10. STATISTICS AND HISTOGRAMS
+-- Gather table statistics for better execution plans
+BEGIN
+    DBMS_STATS.GATHER_TABLE_STATS(
+        ownname => 'HR',
+        tabname => 'EMPLOYEES',
+        estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+        method_opt => 'FOR ALL COLUMNS SIZE AUTO',
+        cascade => TRUE
+    );
+END;
+/
+
+-- 11. MATERIALIZED VIEWS for complex aggregations
+CREATE MATERIALIZED VIEW mv_dept_summary
+BUILD IMMEDIATE
+REFRESH FAST ON COMMIT
+AS
+SELECT 
+    d.department_id,
+    d.department_name,
+    COUNT(e.employee_id) as employee_count,
+    AVG(e.salary) as avg_salary,
+    SUM(e.salary) as total_salary,
+    MAX(e.salary) as max_salary,
+    MIN(e.salary) as min_salary
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name;
+
+-- 12. PARTITIONING for large tables
+-- Range partitioning by date
+CREATE TABLE sales_partitioned (
+    sale_id NUMBER,
+    sale_date DATE,
+    customer_id NUMBER,
+    amount NUMBER
+)
+PARTITION BY RANGE (sale_date) (
+    PARTITION p_2023 VALUES LESS THAN (DATE '2024-01-01'),
+    PARTITION p_2024 VALUES LESS THAN (DATE '2025-01-01'),
+    PARTITION p_2025 VALUES LESS THAN (DATE '2026-01-01')
+);
+
+-- Hash partitioning for even distribution
+CREATE TABLE employees_partitioned (
+    employee_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    department_id NUMBER,
+    salary NUMBER
+)
+PARTITION BY HASH (employee_id) PARTITIONS 4;
+
+-- 13. QUERY REWRITING TECHNIQUES
+-- Use UNION ALL instead of UNION when duplicates are not an issue
+SELECT employee_id, 'CURRENT' as status FROM employees WHERE status = 'ACTIVE'
+UNION ALL
+SELECT employee_id, 'FORMER' as status FROM former_employees;
+
+-- Use CASE instead of multiple queries
+SELECT 
+    department_id,
+    COUNT(CASE WHEN salary > 50000 THEN 1 END) as high_salary_count,
+    COUNT(CASE WHEN salary <= 50000 THEN 1 END) as low_salary_count,
+    AVG(CASE WHEN salary > 50000 THEN salary END) as avg_high_salary,
+    AVG(CASE WHEN salary <= 50000 THEN salary END) as avg_low_salary
+FROM employees
+GROUP BY department_id;
+
+-- 14. MONITORING AND TUNING QUERIES
+-- Monitor long-running queries
+SELECT 
+    sql_id,
+    sql_text,
+    executions,
+    elapsed_time/1000000 as elapsed_seconds,
+    cpu_time/1000000 as cpu_seconds,
+    buffer_gets,
+    disk_reads,
+    rows_processed
+FROM v$sql
+WHERE elapsed_time > 5000000  -- More than 5 seconds
+ORDER BY elapsed_time DESC;
+
+-- Find queries with high logical reads
+SELECT 
+    sql_id,
+    sql_text,
+    executions,
+    buffer_gets,
+    buffer_gets/executions as gets_per_exec,
+    rows_processed
+FROM v$sql
+WHERE executions > 0
+ORDER BY buffer_gets/executions DESC;
+
+-- 15. ADVANCED OPTIMIZATION EXAMPLES
+-- Optimized hierarchical query
+WITH emp_hierarchy AS (
+    SELECT 
+        employee_id,
+        manager_id,
+        first_name,
+        last_name,
+        1 as level,
+        CAST(employee_id AS VARCHAR2(4000)) as path
+    FROM employees
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    SELECT 
+        e.employee_id,
+        e.manager_id,
+        e.first_name,
+        e.last_name,
+        eh.level + 1,
+        eh.path || ',' || e.employee_id
+    FROM employees e
+    JOIN emp_hierarchy eh ON e.manager_id = eh.employee_id
+    WHERE eh.level < 10
+)
+SELECT /*+ MATERIALIZE */ * FROM emp_hierarchy;
+
+-- Optimized pivot operation
+SELECT 
+    department_id,
+    SUM(CASE WHEN job_id = 'IT_PROG' THEN salary ELSE 0 END) as it_prog_total,
+    SUM(CASE WHEN job_id = 'SA_MAN' THEN salary ELSE 0 END) as sa_man_total,
+    SUM(CASE WHEN job_id = 'ST_CLERK' THEN salary ELSE 0 END) as st_clerk_total,
+    COUNT(CASE WHEN job_id = 'IT_PROG' THEN 1 END) as it_prog_count,
+    COUNT(CASE WHEN job_id = 'SA_MAN' THEN 1 END) as sa_man_count,
+    COUNT(CASE WHEN job_id = 'ST_CLERK' THEN 1 END) as st_clerk_count
+FROM employees
+GROUP BY department_id;
+
+-- 16. PERFORMANCE BEST PRACTICES SUMMARY
+/*
+1. Always analyze execution plans before and after changes
+2. Use appropriate indexes (B-tree, bitmap, function-based)
+3. Avoid functions in WHERE clauses
+4. Use bind variables to prevent hard parsing
+5. Choose the right join algorithm (NESTED LOOPS, HASH, SORT-MERGE)
+6. Use analytical functions instead of self-joins
+7. Prefer EXISTS over IN for subqueries
+8. Use UNION ALL instead of UNION when possible
+9. Implement proper partitioning for large tables
+10. Keep statistics current with DBMS_STATS
+11. Use materialized views for complex aggregations
+12. Consider parallel processing for large data sets
+13. Use bulk operations for DML
+14. Monitor and tune regularly using AWR and ASH reports
+15. Use hints judiciously, not as a first resort
+*/`
+    }
+    
 
 
        
