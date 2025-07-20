@@ -3891,6 +3891,2641 @@ median_positions AS (
               ELSE total_count / 2
           END as median_pos1,
 
+          CASE 
+              WHEN MOD(total_count, 2) = 1 THEN (total_count + 1) / 2
+              ELSE (total_count / 2) + 1
+          END as median_pos2
+   FROM ranked_salaries
+)
+SELECT department_id,
+      CASE 
+          WHEN total_count = 1 THEN 
+              MAX(CASE WHEN rn = median_pos1 THEN salary END)
+          WHEN MOD(total_count, 2) = 1 THEN 
+              MAX(CASE WHEN rn = median_pos1 THEN salary END)
+          ELSE 
+              (MAX(CASE WHEN rn = median_pos1 THEN salary END) + 
+               MAX(CASE WHEN rn = median_pos2 THEN salary END)) / 2
+      END as median_salary
+FROM median_positions
+GROUP BY department_id, total_count;
+
+-- Method 3: Using NTILE for approximate median
+WITH salary_quartiles AS (
+   SELECT department_id, salary,
+          NTILE(2) OVER (PARTITION BY department_id ORDER BY salary) as half
+   FROM employees
+)
+SELECT department_id,
+      AVG(salary) as approximate_median
+FROM salary_quartiles
+WHERE half = 1
+GROUP BY department_id;
+
+-- Method 4: Using analytical functions with proper median logic
+WITH ordered_salaries AS (
+   SELECT department_id, salary,
+          ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary ASC) as rn_asc,
+          ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) as rn_desc,
+          COUNT(*) OVER (PARTITION BY department_id) as cnt
+   FROM employees
+)
+SELECT department_id,
+      AVG(salary) as median_salary
+FROM ordered_salaries
+WHERE rn_asc IN (FLOOR((cnt + 1) / 2), CEIL((cnt + 1) / 2))
+GROUP BY department_id;`
+   },
+   {
+       id: 95,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you implement a slowly changing dimension (SCD) Type 2 in Oracle?',
+       answer: 'SCD Type 2 maintains historical data by creating new records for changes, using effective dates and flags to track current vs historical records.',
+       language: 'Oracle SQL',
+       code: `-- Create SCD Type 2 dimension table
+CREATE TABLE dim_customer (
+   customer_key NUMBER GENERATED ALWAYS AS IDENTITY,
+   customer_id NUMBER NOT NULL,
+   customer_name VARCHAR2(100),
+   email VARCHAR2(100),
+   phone VARCHAR2(20),
+   address VARCHAR2(200),
+   effective_start_date DATE DEFAULT SYSDATE,
+   effective_end_date DATE DEFAULT DATE '9999-12-31',
+   is_current_flag CHAR(1) DEFAULT 'Y',
+   created_date DATE DEFAULT SYSDATE,
+   PRIMARY KEY (customer_key)
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_dim_customer_id ON dim_customer(customer_id, is_current_flag);
+CREATE INDEX idx_dim_customer_dates ON dim_customer(effective_start_date, effective_end_date);
+
+-- SCD Type 2 Merge procedure
+CREATE OR REPLACE PROCEDURE update_customer_scd(
+   p_customer_id NUMBER,
+   p_customer_name VARCHAR2,
+   p_email VARCHAR2,
+   p_phone VARCHAR2,
+   p_address VARCHAR2
+) IS
+   v_current_record dim_customer%ROWTYPE;
+   v_record_changed BOOLEAN := FALSE;
+BEGIN
+   -- Get current record
+   SELECT * INTO v_current_record
+   FROM dim_customer
+   WHERE customer_id = p_customer_id
+     AND is_current_flag = 'Y';
+   
+   -- Check if any tracked attributes changed
+   IF NVL(v_current_record.customer_name, 'NULL') != NVL(p_customer_name, 'NULL') OR
+      NVL(v_current_record.email, 'NULL') != NVL(p_email, 'NULL') OR
+      NVL(v_current_record.phone, 'NULL') != NVL(p_phone, 'NULL') OR
+      NVL(v_current_record.address, 'NULL') != NVL(p_address, 'NULL') THEN
+       v_record_changed := TRUE;
+   END IF;
+   
+   IF v_record_changed THEN
+       -- Expire current record
+       UPDATE dim_customer
+       SET effective_end_date = SYSDATE - INTERVAL '1' SECOND,
+           is_current_flag = 'N'
+       WHERE customer_key = v_current_record.customer_key;
+       
+       -- Insert new current record
+       INSERT INTO dim_customer (
+           customer_id, customer_name, email, phone, address,
+           effective_start_date, effective_end_date, is_current_flag
+       ) VALUES (
+           p_customer_id, p_customer_name, p_email, p_phone, p_address,
+           SYSDATE, DATE '9999-12-31', 'Y'
+       );
+   END IF;
+   
+   COMMIT;
+EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+       -- Insert new customer
+       INSERT INTO dim_customer (
+           customer_id, customer_name, email, phone, address
+       ) VALUES (
+           p_customer_id, p_customer_name, p_email, p_phone, p_address
+       );
+       COMMIT;
+END;
+/
+
+-- Query current records only
+SELECT customer_id, customer_name, email, phone
+FROM dim_customer
+WHERE is_current_flag = 'Y';
+
+-- Query historical changes for a customer
+SELECT customer_id, customer_name, email,
+      effective_start_date, effective_end_date, is_current_flag
+FROM dim_customer
+WHERE customer_id = 12345
+ORDER BY effective_start_date;
+
+-- Point-in-time query (what did customer look like on specific date)
+SELECT customer_id, customer_name, email, phone, address
+FROM dim_customer
+WHERE customer_id = 12345
+ AND DATE '2023-06-15' BETWEEN effective_start_date AND effective_end_date;
+
+-- Bulk SCD processing using MERGE
+MERGE INTO dim_customer d
+USING (
+   SELECT customer_id, customer_name, email, phone, address
+   FROM staging_customer_updates
+) s ON (d.customer_id = s.customer_id AND d.is_current_flag = 'Y')
+WHEN MATCHED THEN
+   UPDATE SET 
+       effective_end_date = CASE 
+           WHEN (NVL(d.customer_name,'X') != NVL(s.customer_name,'X') OR
+                 NVL(d.email,'X') != NVL(s.email,'X') OR
+                 NVL(d.phone,'X') != NVL(s.phone,'X') OR
+                 NVL(d.address,'X') != NVL(s.address,'X'))
+           THEN SYSDATE - INTERVAL '1' SECOND
+           ELSE d.effective_end_date
+       END,
+       is_current_flag = CASE 
+           WHEN (NVL(d.customer_name,'X') != NVL(s.customer_name,'X') OR
+                 NVL(d.email,'X') != NVL(s.email,'X') OR
+                 NVL(d.phone,'X') != NVL(s.phone,'X') OR
+                 NVL(d.address,'X') != NVL(s.address,'X'))
+           THEN 'N'
+           ELSE 'Y'
+       END;
+
+-- Insert new versions for changed records
+INSERT INTO dim_customer (customer_id, customer_name, email, phone, address)
+SELECT s.customer_id, s.customer_name, s.email, s.phone, s.address
+FROM staging_customer_updates s
+JOIN dim_customer d ON s.customer_id = d.customer_id
+WHERE d.is_current_flag = 'N'
+ AND d.effective_end_date = SYSDATE - INTERVAL '1' SECOND;`
+   },
+   {
+       id: 96,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Write a query to detect and remove duplicate records while preserving the most recent version.',
+       answer: 'Use window functions to identify duplicates and remove older versions while keeping the most recent record based on timestamp or other criteria.',
+       language: 'Oracle SQL',
+       code: `-- Sample table with duplicates
+CREATE TABLE customer_records (
+   record_id NUMBER,
+   customer_id NUMBER,
+   customer_name VARCHAR2(100),
+   email VARCHAR2(100),
+   created_date DATE,
+   last_updated DATE
+);
+
+-- Method 1: Identify duplicates using ROW_NUMBER()
+WITH duplicate_analysis AS (
+   SELECT record_id, customer_id, customer_name, email, 
+          created_date, last_updated,
+          ROW_NUMBER() OVER (
+              PARTITION BY customer_id 
+              ORDER BY last_updated DESC, record_id DESC
+          ) as rn,
+          COUNT(*) OVER (PARTITION BY customer_id) as duplicate_count
+   FROM customer_records
+)
+SELECT record_id, customer_id, customer_name, 
+      CASE WHEN rn = 1 THEN 'KEEP' ELSE 'DELETE' END as action,
+      duplicate_count
+FROM duplicate_analysis
+WHERE duplicate_count > 1
+ORDER BY customer_id, rn;
+
+-- Method 2: Delete duplicates keeping most recent
+DELETE FROM customer_records
+WHERE record_id IN (
+   SELECT record_id
+   FROM (
+       SELECT record_id,
+              ROW_NUMBER() OVER (
+                  PARTITION BY customer_id 
+                  ORDER BY last_updated DESC, record_id DESC
+              ) as rn
+       FROM customer_records
+   )
+   WHERE rn > 1
+);
+
+-- Method 3: Using MERGE to handle duplicates during insert
+MERGE INTO customer_master cm
+USING (
+   SELECT customer_id, customer_name, email, last_updated,
+          ROW_NUMBER() OVER (
+              PARTITION BY customer_id 
+              ORDER BY last_updated DESC
+          ) as rn
+   FROM customer_staging
+) cs ON (cm.customer_id = cs.customer_id AND cs.rn = 1)
+WHEN MATCHED THEN
+   UPDATE SET 
+       customer_name = cs.customer_name,
+       email = cs.email,
+       last_updated = cs.last_updated
+   WHERE cs.last_updated > cm.last_updated
+WHEN NOT MATCHED THEN
+   INSERT (customer_id, customer_name, email, last_updated)
+   VALUES (cs.customer_id, cs.customer_name, cs.email, cs.last_updated);
+
+-- Method 4: Create deduplicated table
+CREATE TABLE customer_clean AS
+SELECT record_id, customer_id, customer_name, email, 
+      created_date, last_updated
+FROM (
+   SELECT record_id, customer_id, customer_name, email, 
+          created_date, last_updated,
+          ROW_NUMBER() OVER (
+              PARTITION BY customer_id 
+              ORDER BY last_updated DESC, record_id DESC
+          ) as rn
+   FROM customer_records
+)
+WHERE rn = 1;
+
+-- Method 5: Complex deduplication with business rules
+WITH advanced_dedup AS (
+   SELECT record_id, customer_id, customer_name, email, 
+          created_date, last_updated,
+          -- Priority: most recent update, then most complete record, then highest ID
+          ROW_NUMBER() OVER (
+              PARTITION BY customer_id 
+              ORDER BY 
+                  last_updated DESC,
+                  CASE WHEN email IS NOT NULL THEN 1 ELSE 2 END,
+                  LENGTH(customer_name) DESC,
+                  record_id DESC
+          ) as priority_rank,
+          COUNT(*) OVER (PARTITION BY customer_id) as total_duplicates
+   FROM customer_records
+)
+SELECT customer_id, customer_name, email, last_updated,
+      'KEEP - Priority: ' || priority_rank as status
+FROM advanced_dedup
+WHERE priority_rank = 1;
+
+-- Method 6: Duplicate detection with EXCEPTION handling
+CREATE OR REPLACE PROCEDURE clean_customer_duplicates IS
+   v_deleted_count NUMBER := 0;
+BEGIN
+   -- Create backup first
+   EXECUTE IMMEDIATE 'CREATE TABLE customer_backup_' || 
+                    TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') || 
+                    ' AS SELECT * FROM customer_records';
+   
+   -- Delete duplicates
+   DELETE FROM customer_records
+   WHERE record_id IN (
+       SELECT record_id
+       FROM (
+           SELECT record_id,
+                  ROW_NUMBER() OVER (
+                      PARTITION BY customer_id 
+                      ORDER BY last_updated DESC, record_id DESC
+                  ) as rn
+           FROM customer_records
+       )
+       WHERE rn > 1
+   );
+   
+   v_deleted_count := SQL%ROWCOUNT;
+   
+   DBMS_OUTPUT.PUT_LINE('Deleted ' || v_deleted_count || ' duplicate records');
+   
+   COMMIT;
+EXCEPTION
+   WHEN OTHERS THEN
+       ROLLBACK;
+       DBMS_OUTPUT.PUT_LINE('Error during deduplication: ' || SQLERRM);
+       RAISE;
+END;
+/
+
+-- Method 7: Report duplicate statistics before cleanup
+SELECT customer_id,
+      COUNT(*) as total_records,
+      COUNT(*) - 1 as duplicates_to_remove,
+      MIN(created_date) as first_created,
+      MAX(last_updated) as most_recent_update,
+      LISTAGG(record_id, ',') WITHIN GROUP (ORDER BY last_updated DESC) as all_record_ids
+FROM customer_records
+GROUP BY customer_id
+HAVING COUNT(*) > 1
+ORDER BY COUNT(*) DESC;`
+   },
+   {
+       id: 97,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you optimize queries involving multiple large table joins?',
+       answer: 'Use proper indexing strategies, join order optimization, hints, and query rewriting techniques to improve performance of complex joins.',
+       language: 'Oracle SQL',
+       code: `-- Problem: Slow query with multiple large table joins
+-- Original inefficient query
+SELECT o.order_id, c.customer_name, p.product_name, od.quantity, od.price
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN order_details od ON o.order_id = od.order_id
+JOIN products p ON od.product_id = p.product_id
+WHERE o.order_date BETWEEN DATE '2023-01-01' AND DATE '2023-12-31'
+ AND c.country = 'USA'
+ AND p.category = 'Electronics';
+
+-- Solution 1: Create appropriate indexes
+CREATE INDEX idx_orders_date_customer ON orders(order_date, customer_id);
+CREATE INDEX idx_customers_country ON customers(country, customer_id);
+CREATE INDEX idx_products_category ON products(category, product_id);
+CREATE INDEX idx_order_details_composite ON order_details(order_id, product_id);
+
+-- Solution 2: Optimized query with hints and better structure
+SELECT /*+ LEADING(c) USE_NL(o) USE_HASH(od p) */
+      o.order_id, c.customer_name, p.product_name, od.quantity, od.price
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN order_details od ON o.order_id = od.order_id
+JOIN products p ON od.product_id = p.product_id
+WHERE c.country = 'USA'
+ AND o.order_date BETWEEN DATE '2023-01-01' AND DATE '2023-12-31'
+ AND p.category = 'Electronics';
+
+-- Solution 3: Break into smaller queries with CTEs
+WITH filtered_customers AS (
+   SELECT customer_id, customer_name
+   FROM customers
+   WHERE country = 'USA'
+),
+filtered_orders AS (
+   SELECT o.order_id, o.customer_id
+   FROM orders o
+   JOIN filtered_customers c ON o.customer_id = c.customer_id
+   WHERE o.order_date BETWEEN DATE '2023-01-01' AND DATE '2023-12-31'
+),
+filtered_products AS (
+   SELECT product_id, product_name
+   FROM products
+   WHERE category = 'Electronics'
+)
+SELECT fo.order_id, fc.customer_name, fp.product_name, od.quantity, od.price
+FROM filtered_orders fo
+JOIN filtered_customers fc ON fo.customer_id = fc.customer_id
+JOIN order_details od ON fo.order_id = od.order_id
+JOIN filtered_products fp ON od.product_id = fp.product_id;
+
+-- Solution 4: Use EXISTS instead of JOINs when appropriate
+SELECT o.order_id, 
+      (SELECT customer_name FROM customers WHERE customer_id = o.customer_id) as customer_name
+FROM orders o
+WHERE o.order_date BETWEEN DATE '2023-01-01' AND DATE '2023-12-31'
+ AND EXISTS (SELECT 1 FROM customers c WHERE c.customer_id = o.customer_id AND c.country = 'USA')
+ AND EXISTS (
+     SELECT 1 FROM order_details od 
+     JOIN products p ON od.product_id = p.product_id
+     WHERE od.order_id = o.order_id AND p.category = 'Electronics'
+ );
+
+-- Solution 5: Materialized views for frequently joined data
+CREATE MATERIALIZED VIEW mv_customer_orders
+BUILD IMMEDIATE
+REFRESH FAST ON COMMIT
+AS
+SELECT o.order_id, o.order_date, o.customer_id, 
+      c.customer_name, c.country, c.city
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id;
+
+-- Create indexes on materialized view
+CREATE INDEX idx_mv_country_date ON mv_customer_orders(country, order_date);
+
+-- Use materialized view in queries
+SELECT mv.order_id, mv.customer_name, p.product_name, od.quantity
+FROM mv_customer_orders mv
+JOIN order_details od ON mv.order_id = od.order_id
+JOIN products p ON od.product_id = p.product_id
+WHERE mv.country = 'USA'
+ AND mv.order_date BETWEEN DATE '2023-01-01' AND DATE '2023-12-31'
+ AND p.category = 'Electronics';
+
+-- Solution 6: Parallel processing for large datasets
+SELECT /*+ PARALLEL(o, 4) PARALLEL(c, 4) PARALLEL(od, 4) PARALLEL(p, 4) */
+      o.order_id, c.customer_name, p.product_name, od.quantity
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN order_details od ON o.order_id = od.order_id
+JOIN products p ON od.product_id = p.product_id
+WHERE o.order_date BETWEEN DATE '2023-01-01' AND DATE '2023-12-31';
+
+-- Solution 7: Partitioning large tables
+-- Partition orders by year
+ALTER TABLE orders MODIFY
+PARTITION BY RANGE (order_date) (
+   PARTITION p_2022 VALUES LESS THAN (DATE '2023-01-01'),
+   PARTITION p_2023 VALUES LESS THAN (DATE '2024-01-01'),
+   PARTITION p_2024 VALUES LESS THAN (DATE '2025-01-01')
+);
+
+-- Solution 8: Query rewriting with aggregation pushdown
+-- Instead of joining then aggregating
+SELECT c.country, SUM(od.quantity * od.price) as total_sales
+FROM (
+   -- Pre-aggregate at order level
+   SELECT o.customer_id, SUM(od.quantity * od.price) as order_total
+   FROM orders o
+   JOIN order_details od ON o.order_id = od.order_id
+   WHERE o.order_date BETWEEN DATE '2023-01-01' AND DATE '2023-12-31'
+   GROUP BY o.customer_id
+) order_totals
+JOIN customers c ON order_totals.customer_id = c.customer_id
+GROUP BY c.country;
+
+-- Performance monitoring query
+SELECT sql_id, child_number, executions, elapsed_time/executions as avg_elapsed,
+      buffer_gets/executions as avg_buffer_gets,
+      sql_text
+FROM v$sql
+WHERE sql_text LIKE '%orders%customers%'
+ AND executions > 0
+ORDER BY elapsed_time/executions DESC;`
+   },
+   {
+       id: 98,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Write a query to calculate year-over-year growth percentage for sales data.',
+       answer: 'Use LAG window function or self-joins to compare current period values with previous period values and calculate growth percentages.',
+       language: 'Oracle SQL',
+       code: `-- Sample sales data setup
+CREATE TABLE monthly_sales (
+   year_month DATE,
+   sales_amount NUMBER,
+   region VARCHAR2(50)
+);
+
+-- Method 1: Using LAG window function
+SELECT year_month,
+      sales_amount,
+      LAG(sales_amount, 12) OVER (ORDER BY year_month) as previous_year_sales,
+      sales_amount - LAG(sales_amount, 12) OVER (ORDER BY year_month) as absolute_growth,
+      ROUND(
+          ((sales_amount - LAG(sales_amount, 12) OVER (ORDER BY year_month)) / 
+           LAG(sales_amount, 12) OVER (ORDER BY year_month)) * 100, 2
+      ) as yoy_growth_percentage
+FROM monthly_sales
+ORDER BY year_month;
+
+-- Method 2: YoY growth by region
+SELECT region, year_month, sales_amount,
+      LAG(sales_amount, 12) OVER (PARTITION BY region ORDER BY year_month) as prev_year_sales,
+      CASE 
+          WHEN LAG(sales_amount, 12) OVER (PARTITION BY region ORDER BY year_month) IS NOT NULL
+          THEN ROUND(
+              ((sales_amount - LAG(sales_amount, 12) OVER (PARTITION BY region ORDER BY year_month)) / 
+               LAG(sales_amount, 12) OVER (PARTITION BY region ORDER BY year_month)) * 100, 2
+          )
+          ELSE NULL
+      END as yoy_growth_pct
+FROM monthly_sales
+ORDER BY region, year_month;
+
+-- Method 3: Annual aggregated YoY growth
+WITH annual_sales AS (
+   SELECT EXTRACT(YEAR FROM year_month) as sales_year,
+          SUM(sales_amount) as total_sales
+   FROM monthly_sales
+   GROUP BY EXTRACT(YEAR FROM year_month)
+)
+SELECT sales_year,
+      total_sales,
+      LAG(total_sales) OVER (ORDER BY sales_year) as previous_year_total,
+      total_sales - LAG(total_sales) OVER (ORDER BY sales_year) as absolute_growth,
+      ROUND(
+          ((total_sales - LAG(total_sales) OVER (ORDER BY sales_year)) / 
+           LAG(total_sales) OVER (ORDER BY sales_year)) * 100, 2
+      ) as yoy_growth_percentage
+FROM annual_sales
+ORDER BY sales_year;
+
+-- Method 4: Quarterly YoY comparison
+WITH quarterly_sales AS (
+   SELECT EXTRACT(YEAR FROM year_month) as sales_year,
+          CEIL(EXTRACT(MONTH FROM year_month) / 3) as quarter,
+          SUM(sales_amount) as quarterly_sales
+   FROM monthly_sales
+   GROUP BY EXTRACT(YEAR FROM year_month), CEIL(EXTRACT(MONTH FROM year_month) / 3)
+)
+SELECT sales_year, quarter, quarterly_sales,
+      LAG(quarterly_sales, 4) OVER (PARTITION BY quarter ORDER BY sales_year) as prev_year_quarter,
+      ROUND(
+          CASE 
+              WHEN LAG(quarterly_sales, 4) OVER (PARTITION BY quarter ORDER BY sales_year) > 0
+              THEN ((quarterly_sales - LAG(quarterly_sales, 4) OVER (PARTITION BY quarter ORDER BY sales_year)) / 
+                    LAG(quarterly_sales, 4) OVER (PARTITION BY quarter ORDER BY sales_year)) * 100
+              ELSE NULL
+          END, 2
+      ) as yoy_quarter_growth_pct
+FROM quarterly_sales
+ORDER BY quarter, sales_year;
+
+-- Method 5: Self-join approach (alternative to LAG)
+SELECT this_year.year_month,
+      this_year.sales_amount as current_sales,
+      last_year.sales_amount as previous_year_sales,
+      ROUND(
+          ((this_year.sales_amount - last_year.sales_amount) / last_year.sales_amount) * 100, 2
+      ) as yoy_growth_percentage
+FROM monthly_sales this_year
+LEFT JOIN monthly_sales last_year 
+   ON ADD_MONTHS(last_year.year_month, 12) = this_year.year_month
+   AND this_year.region = last_year.region
+ORDER BY this_year.year_month;
+
+-- Method 6: Multi-period comparison (YoY, QoQ, MoM)
+SELECT year_month, sales_amount,
+      -- Year over Year
+      LAG(sales_amount, 12) OVER (ORDER BY year_month) as yoy_prev,
+      ROUND(((sales_amount - LAG(sales_amount, 12) OVER (ORDER BY year_month)) / 
+             NULLIF(LAG(sales_amount, 12) OVER (ORDER BY year_month), 0)) * 100, 2) as yoy_growth,
+      
+      -- Quarter over Quarter (3 months)
+      LAG(sales_amount, 3) OVER (ORDER BY year_month) as qoq_prev,
+      ROUND(((sales_amount - LAG(sales_amount, 3) OVER (ORDER BY year_month)) / 
+             NULLIF(LAG(sales_amount, 3) OVER (ORDER BY year_month), 0)) * 100, 2) as qoq_growth,
+      
+      -- Month over Month
+      LAG(sales_amount, 1) OVER (ORDER BY year_month) as mom_prev,
+      ROUND(((sales_amount - LAG(sales_amount, 1) OVER (ORDER BY year_month)) / 
+             NULLIF(LAG(sales_amount, 1) OVER (ORDER BY year_month), 0)) * 100, 2) as mom_growth
+FROM monthly_sales
+ORDER BY year_month;
+
+-- Method 7: Growth categorization
+WITH growth_analysis AS (
+   SELECT year_month, sales_amount, region,
+          LAG(sales_amount, 12) OVER (PARTITION BY region ORDER BY year_month) as prev_year_sales,
+          ROUND(
+              ((sales_amount - LAG(sales_amount, 12) OVER (PARTITION BY region ORDER BY year_month)) / 
+               NULLIF(LAG(sales_amount, 12) OVER (PARTITION BY region ORDER BY year_month), 0)) * 100, 2
+          ) as yoy_growth_pct
+   FROM monthly_sales
+)
+SELECT year_month, region, sales_amount, prev_year_sales, yoy_growth_pct,
+      CASE 
+          WHEN yoy_growth_pct IS NULL THEN 'No Prior Data'
+          WHEN yoy_growth_pct >= 20 THEN 'High Growth'
+          WHEN yoy_growth_pct >= 10 THEN 'Moderate Growth'
+          WHEN yoy_growth_pct >= 0 THEN 'Low Growth'
+          WHEN yoy_growth_pct >= -10 THEN 'Slight Decline'
+          ELSE 'Significant Decline'
+      END as growth_category
+FROM growth_analysis
+WHERE year_month >= ADD_MONTHS(SYSDATE, -24) -- Last 2 years
+ORDER BY region, year_month;`
+   },
+   {
+       id: 99,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you implement database triggers for audit trails in Oracle?',
+       answer: 'Create triggers that automatically capture DML operations (INSERT, UPDATE, DELETE) and store audit information in separate audit tables.',
+       language: 'Oracle SQL',
+       code: `-- Create audit table
+CREATE TABLE employee_audit (
+   audit_id NUMBER GENERATED ALWAYS AS IDENTITY,
+   table_name VARCHAR2(30),
+   operation VARCHAR2(10),
+   employee_id NUMBER,
+   old_values CLOB,
+   new_values CLOB,
+   changed_by VARCHAR2(100),
+   change_date TIMESTAMP DEFAULT SYSTIMESTAMP,
+   session_id NUMBER,
+   terminal VARCHAR2(100),
+   program VARCHAR2(100)
+);
+
+-- Create audit trigger for employees table
+CREATE OR REPLACE TRIGGER trg_employee_audit
+AFTER INSERT OR UPDATE OR DELETE ON employees
+FOR EACH ROW
+DECLARE
+   v_operation VARCHAR2(10);
+   v_old_values CLOB;
+   v_new_values CLOB;
+BEGIN
+   -- Determine operation type
+   IF INSERTING THEN
+       v_operation := 'INSERT';
+       v_old_values := NULL;
+       v_new_values := 'employee_id:' || :NEW.employee_id || 
+                      ',first_name:' || :NEW.first_name ||
+                      ',last_name:' || :NEW.last_name ||
+                      ',email:' || :NEW.email ||
+                      ',salary:' || :NEW.salary ||
+                      ',department_id:' || :NEW.department_id;
+   ELSIF UPDATING THEN
+       v_operation := 'UPDATE';
+       v_old_values := 'employee_id:' || :OLD.employee_id || 
+                      ',first_name:' || :OLD.first_name ||
+                      ',last_name:' || :OLD.last_name ||
+                      ',email:' || :OLD.email ||
+                      ',salary:' || :OLD.salary ||
+                      ',department_id:' || :OLD.department_id;
+       v_new_values := 'employee_id:' || :NEW.employee_id || 
+                      ',first_name:' || :NEW.first_name ||
+                      ',last_name:' || :NEW.last_name ||
+                      ',email:' || :NEW.email ||
+                      ',salary:' || :NEW.salary ||
+                      ',department_id:' || :NEW.department_id;
+   ELSIF DELETING THEN
+       v_operation := 'DELETE';
+       v_old_values := 'employee_id:' || :OLD.employee_id || 
+                      ',first_name:' || :OLD.first_name ||
+                      ',last_name:' || :OLD.last_name ||
+                      ',email:' || :OLD.email ||
+                      ',salary:' || :OLD.salary ||
+                      ',department_id:' || :OLD.department_id;
+       v_new_values := NULL;
+   END IF;
+   
+   -- Insert audit record
+   INSERT INTO employee_audit (
+       table_name, operation, employee_id, old_values, new_values,
+       changed_by, session_id, terminal, program
+   ) VALUES (
+       'EMPLOYEES', v_operation, 
+       COALESCE(:NEW.employee_id, :OLD.employee_id),
+       v_old_values, v_new_values,
+       USER, SYS_CONTEXT('USERENV', 'SESSIONID'),
+       SYS_CONTEXT('USERENV', 'TERMINAL'),
+       SYS_CONTEXT('USERENV', 'MODULE')
+   );
+END;
+/
+
+-- Advanced audit trigger with JSON format
+CREATE OR REPLACE TRIGGER trg_employee_audit_json
+AFTER INSERT OR UPDATE OR DELETE ON employees
+FOR EACH ROW
+DECLARE
+   v_operation VARCHAR2(10);
+   v_old_json CLOB;
+   v_new_json CLOB;
+BEGIN
+   IF INSERTING THEN
+       v_operation := 'INSERT';
+       v_new_json := JSON_OBJECT(
+           'employee_id' VALUE :NEW.employee_id,
+           'first_name' VALUE :NEW.first_name,
+           'last_name' VALUE :NEW.last_name,
+           'email' VALUE :NEW.email,
+           'salary' VALUE :NEW.salary,
+           'department_id' VALUE :NEW.department_id,
+           'hire_date' VALUE TO_CHAR(:NEW.hire_date, 'YYYY-MM-DD'),
+           'manager_id' VALUE :NEW.manager_id
+       );
+   ELSIF UPDATING THEN
+       v_operation := 'UPDATE';
+       v_old_json := JSON_OBJECT(
+           'employee_id' VALUE :OLD.employee_id,
+           'first_name' VALUE :OLD.first_name,
+           'last_name' VALUE :OLD.last_name,
+           'email' VALUE :OLD.email,
+           'salary' VALUE :OLD.salary,
+           'department_id' VALUE :OLD.department_id,
+           'hire_date' VALUE TO_CHAR(:OLD.hire_date, 'YYYY-MM-DD'),
+           'manager_id' VALUE :OLD.manager_id
+       );
+       v_new_json := JSON_OBJECT(
+           'employee_id' VALUE :NEW.employee_id,
+           'first_name' VALUE :NEW.first_name,
+           'last_name' VALUE :NEW.last_name,
+           'email' VALUE :NEW.email,
+           'salary' VALUE :NEW.salary,
+           'department_id' VALUE :NEW.department_id,
+           'hire_date' VALUE TO_CHAR(:NEW.hire_date, 'YYYY-MM-DD'),
+           'manager_id' VALUE :NEW.manager_id
+       );
+   ELSIF DELETING THEN
+       v_operation := 'DELETE';
+       v_old_json := JSON_OBJECT(
+           'employee_id' VALUE :OLD.employee_id,
+           'first_name' VALUE :OLD.first_name,
+           'last_name' VALUE :OLD.last_name,
+           'email' VALUE :OLD.email,
+           'salary' VALUE :OLD.salary,
+           'department_id' VALUE :OLD.department_id,
+           'hire_date' VALUE TO_CHAR(:OLD.hire_date, 'YYYY-MM-DD'),
+           'manager_id' VALUE :OLD.manager_id
+       );
+   END IF;
+   
+   INSERT INTO employee_audit (
+       table_name, operation, employee_id, old_values, new_values,
+       changed_by, session_id, terminal, program
+   ) VALUES (
+       'EMPLOYEES', v_operation, 
+       COALESCE(:NEW.employee_id, :OLD.employee_id),
+       v_old_json, v_new_json,
+       USER, SYS_CONTEXT('USERENV', 'SESSIONID'),
+       SYS_CONTEXT('USERENV', 'TERMINAL'),
+       SYS_CONTEXT('USERENV', 'MODULE')
+   );
+END;
+/
+
+-- Selective column audit trigger (only track specific changes)
+CREATE OR REPLACE TRIGGER trg_employee_salary_audit
+AFTER UPDATE OF salary, department_id ON employees
+FOR EACH ROW
+WHEN (OLD.salary != NEW.salary OR OLD.department_id != NEW.department_id)
+BEGIN
+   INSERT INTO employee_audit (
+       table_name, operation, employee_id, old_values, new_values, changed_by
+   ) VALUES (
+       'EMPLOYEES', 'UPDATE', :NEW.employee_id,
+       'salary:' || :OLD.salary || ',department_id:' || :OLD.department_id,
+       'salary:' || :NEW.salary || ',department_id:' || :NEW.department_id,
+       USER
+   );
+END;
+/
+
+-- Query audit trail
+SELECT audit_id, operation, employee_id, changed_by, change_date,
+      old_values, new_values
+FROM employee_audit
+WHERE employee_id = 101
+ORDER BY change_date DESC;
+
+-- Audit trail analysis queries
+-- Most active users
+SELECT changed_by, COUNT(*) as change_count,
+      COUNT(CASE WHEN operation = 'INSERT' THEN 1 END) as inserts,
+      COUNT(CASE WHEN operation = 'UPDATE' THEN 1 END) as updates,
+      COUNT(CASE WHEN operation = 'DELETE' THEN 1 END) as deletes
+FROM employee_audit
+WHERE change_date >= TRUNC(SYSDATE) - 30
+GROUP BY changed_by
+ORDER BY change_count DESC;
+
+-- Changes by time period
+SELECT TRUNC(change_date) as change_day,
+      COUNT(*) as total_changes,
+      COUNT(DISTINCT employee_id) as employees_affected
+FROM employee_audit
+WHERE change_date >= TRUNC(SYSDATE) - 7
+GROUP BY TRUNC(change_date)
+ORDER BY change_day;
+
+-- Salary change history for specific employee
+SELECT change_date, changed_by,
+      JSON_VALUE(old_values, '$.salary') as old_salary,
+      JSON_VALUE(new_values, '$.salary') as new_salary,
+      JSON_VALUE(new_values, '$.salary') - JSON_VALUE(old_values, '$.salary') as salary_increase
+FROM employee_audit
+WHERE employee_id = 101
+ AND operation = 'UPDATE'
+ AND JSON_EXISTS(old_values, '$.salary')
+ AND JSON_VALUE(old_values, '$.salary') != JSON_VALUE(new_values, '$.salary')
+ORDER BY change_date;`
+   },
+   {
+       id: 100,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Write a query to implement row-level security (RLS) in Oracle.',
+       answer: 'Use Oracle Virtual Private Database (VPD) policies to implement row-level security that automatically filters data based on user context.',
+       language: 'Oracle SQL',
+       code: `-- Create policy function for row-level security
+CREATE OR REPLACE FUNCTION employee_security_policy(
+   schema_var IN VARCHAR2,
+   table_var IN VARCHAR2
+) RETURN VARCHAR2 IS
+   v_user VARCHAR2(100);
+   v_predicate VARCHAR2(4000);
+BEGIN
+   v_user := SYS_CONTEXT('USERENV', 'SESSION_USER');
+   
+   -- Different access levels based on user
+   CASE 
+       WHEN v_user IN ('HR_ADMIN', 'SYSTEM') THEN
+           -- Full access
+           v_predicate := '1=1';
+       WHEN v_user LIKE 'MGR_%' THEN
+           -- Managers can see their department employees
+           v_predicate := 'department_id IN (
+               SELECT department_id FROM departments 
+               WHERE manager_id = (
+                   SELECT employee_id FROM employees 
+                   WHERE user_id = ''' || v_user || '''
+               )
+           )';
+       WHEN v_user LIKE 'EMP_%' THEN
+           -- Employees can only see their own record
+           v_predicate := 'employee_id = (
+               SELECT employee_id FROM employees 
+               WHERE user_id = ''' || v_user || '''
+           )';
+       ELSE
+           -- Default: no access
+           v_predicate := '1=0';
+   END CASE;
+   
+   RETURN v_predicate;
+END;
+/
+
+-- Apply the policy to employees table
+BEGIN
+   DBMS_RLS.ADD_POLICY(
+       object_schema => 'HR',
+       object_name => 'EMPLOYEES',
+       policy_name => 'EMPLOYEE_ACCESS_POLICY',
+       function_schema => 'HR',
+       policy_function => 'EMPLOYEE_SECURITY_POLICY',
+       statement_types => 'SELECT, INSERT, UPDATE, DELETE',
+       update_check => TRUE
+   );
+END;
+/
+
+-- Context-based security policy
+CREATE OR REPLACE FUNCTION dept_security_policy(
+   schema_var IN VARCHAR2,
+   table_var IN VARCHAR2
+) RETURN VARCHAR2 IS
+   v_dept_id NUMBER;
+   v_role VARCHAR2(100);
+BEGIN
+   -- Get user's department and role from application context
+   v_dept_id := SYS_CONTEXT('USER_CONTEXT', 'DEPARTMENT_ID');
+   v_role := SYS_CONTEXT('USER_CONTEXT', 'USER_ROLE');
+   
+   IF v_role = 'ADMIN' THEN
+       RETURN '1=1'; -- Full access
+   ELSIF v_role = 'MANAGER' THEN
+       RETURN 'department_id = ' || v_dept_id;
+   ELSIF v_role = 'EMPLOYEE' THEN
+       RETURN 'employee_id = ' || SYS_CONTEXT('USER_CONTEXT', 'EMPLOYEE_ID');
+   ELSE
+       RETURN '1=0'; -- No access
+   END IF;
+END;
+/
+
+-- Create application context
+CREATE OR REPLACE CONTEXT user_context USING security_pkg;
+
+-- Package to set context
+CREATE OR REPLACE PACKAGE security_pkg IS
+   PROCEDURE set_user_context(
+       p_user_id VARCHAR2,
+       p_department_id NUMBER,
+       p_employee_id NUMBER,
+       p_role VARCHAR2
+   );
+END;
+/
+
+CREATE OR REPLACE PACKAGE BODY security_pkg IS
+   PROCEDURE set_user_context(
+       p_user_id VARCHAR2,
+       p_department_id NUMBER,
+       p_employee_id NUMBER,
+       p_role VARCHAR2
+   ) IS
+   BEGIN
+       DBMS_SESSION.SET_CONTEXT('USER_CONTEXT', 'USER_ID', p_user_id);
+       DBMS_SESSION.SET_CONTEXT('USER_CONTEXT', 'DEPARTMENT_ID', p_department_id);
+       DBMS_SESSION.SET_CONTEXT('USER_CONTEXT', 'EMPLOYEE_ID', p_employee_id);
+       DBMS_SESSION.SET_CONTEXT('USER_CONTEXT', 'USER_ROLE', p_role);
+   END;
+END;
+/
+
+-- Column-level security policy
+CREATE OR REPLACE FUNCTION salary_security_policy(
+   schema_var IN VARCHAR2,
+   table_var IN VARCHAR2
+) RETURN VARCHAR2 IS
+   v_role VARCHAR2(100);
+BEGIN
+   v_role := SYS_CONTEXT('USER_CONTEXT', 'USER_ROLE');
+   
+   -- Only managers and HR can see salaries
+   IF v_role IN ('MANAGER', 'HR_ADMIN') THEN
+       RETURN '1=1';
+   ELSE
+       RETURN '1=0';
+   END IF;
+END;
+/
+
+-- Apply column-level policy
+BEGIN
+   DBMS_RLS.ADD_POLICY(
+       object_schema => 'HR',
+       object_name => 'EMPLOYEES',
+       policy_name => 'SALARY_COLUMN_POLICY',
+       function_schema => 'HR',
+       policy_function => 'SALARY_SECURITY_POLICY',
+       statement_types => 'SELECT',
+       sec_relevant_cols => 'SALARY,COMMISSION_PCT',
+       sec_relevant_cols_opt => DBMS_RLS.ALL_ROWS
+   );
+END;
+/
+
+-- Dynamic policy based on time and IP
+CREATE OR REPLACE FUNCTION time_ip_security_policy(
+   schema_var IN VARCHAR2,
+   table_var IN VARCHAR2
+) RETURN VARCHAR2 IS
+   v_current_hour NUMBER;
+   v_ip_address VARCHAR2(100);
+   v_allowed_networks SYS.ODCIVARCHAR2LIST;
+BEGIN
+   v_current_hour := EXTRACT(HOUR FROM SYSTIMESTAMP);
+   v_ip_address := SYS_CONTEXT('USERENV', 'IP_ADDRESS');
+   v_allowed_networks := SYS.ODCIVARCHAR2LIST('192.168.1.%', '10.0.0.%');
+   
+   -- Business hours check (9 AM to 6 PM)
+   IF v_current_hour < 9 OR v_current_hour > 18 THEN
+       RETURN '1=0'; -- No access outside business hours
+   END IF;
+   
+   -- IP address check
+   FOR i IN 1..v_allowed_networks.COUNT LOOP
+       IF v_ip_address LIKE v_allowed_networks(i) THEN
+           RETURN '1=1'; -- Allow access from trusted networks
+       END IF;
+   END LOOP;
+   
+   RETURN '1=0'; -- Default deny
+END;
+/
+
+-- View current policies
+SELECT object_owner, object_name, policy_name, function, 
+      enable_flag, sel, ins, upd, del
+FROM dba_policies
+WHERE object_name = 'EMPLOYEES';
+
+-- Test the security policy
+-- Set context for a manager user
+BEGIN
+   security_pkg.set_user_context('MGR_001', 10, 100, 'MANAGER');
+END;
+/
+
+-- This query will only return employees from department 10
+SELECT employee_id, first_name, last_name, department_id
+FROM employees;
+
+-- Drop policy if needed
+BEGIN
+   DBMS_RLS.DROP_POLICY(
+       object_schema => 'HR',
+       object_name => 'EMPLOYEES',
+       policy_name => 'EMPLOYEE_ACCESS_POLICY'
+   );
+END;
+/
+
+-- Audit policy usage
+SELECT policy_name, sql_text, timestamp, username
+FROM dba_fga_audit_trail
+WHERE object_name = 'EMPLOYEES'
+ORDER BY timestamp DESC;`
+   },
+   {
+       id: 101,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you implement custom aggregate functions in Oracle?',
+       answer: 'Create custom aggregate functions using PL/SQL object types with ODCIAggregate interface methods for complex aggregation logic.',
+       language: 'Oracle SQL',
+       code: `-- Create object type for custom aggregate
+CREATE OR REPLACE TYPE weighted_avg_type AS OBJECT (
+   total_weighted_value NUMBER,
+   total_weight NUMBER,
+   
+   -- Required methods for aggregate interface
+   STATIC FUNCTION ODCIAggregateInitialize(
+       ctx IN OUT weighted_avg_type
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateIterate(
+       self IN OUT weighted_avg_type,
+       value IN NUMBER,
+       weight IN NUMBER
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateMerge(
+       self IN OUT weighted_avg_type,
+       ctx IN weighted_avg_type
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateTerminate(
+       self IN weighted_avg_type,
+       returnValue OUT NUMBER,
+       flags IN NUMBER
+   ) RETURN NUMBER
+);
+/
+
+-- Implement the object type body
+CREATE OR REPLACE TYPE BODY weighted_avg_type IS
+   
+   STATIC FUNCTION ODCIAggregateInitialize(
+       ctx IN OUT weighted_avg_type
+   ) RETURN NUMBER IS
+   BEGIN
+       ctx := weighted_avg_type(0, 0);
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateIterate(
+       self IN OUT weighted_avg_type,
+       value IN NUMBER,
+       weight IN NUMBER
+   ) RETURN NUMBER IS
+   BEGIN
+       IF value IS NOT NULL AND weight IS NOT NULL THEN
+           self.total_weighted_value := self.total_weighted_value + (value * weight);
+           self.total_weight := self.total_weight + weight;
+       END IF;
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateMerge(
+       self IN OUT weighted_avg_type,
+       ctx IN weighted_avg_type
+   ) RETURN NUMBER IS
+   BEGIN
+       self.total_weighted_value := self.total_weighted_value + ctx.total_weighted_value;
+       self.total_weight := self.total_weight + ctx.total_weight;
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateTerminate(
+       self IN weighted_avg_type,
+       returnValue OUT NUMBER,
+       flags IN NUMBER
+   ) RETURN NUMBER IS
+   BEGIN
+       IF self.total_weight > 0 THEN
+           returnValue := self.total_weighted_value / self.total_weight;
+       ELSE
+           returnValue := NULL;
+       END IF;
+       RETURN ODCIConst.Success;
+   END;
+   
+END;
+/
+
+-- Create the aggregate function
+CREATE OR REPLACE FUNCTION weighted_average(
+   value NUMBER,
+   weight NUMBER
+) RETURN NUMBER
+AGGREGATE USING weighted_avg_type;
+/
+
+-- Test the custom aggregate function
+SELECT department_id,
+      AVG(salary) as simple_average,
+      weighted_average(salary, years_of_service) as weighted_avg_salary
+FROM (
+   SELECT department_id, salary,
+          EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM hire_date) as years_of_service
+   FROM employees
+)
+GROUP BY department_id;
+
+-- Advanced custom aggregate: String concatenation with separator
+CREATE OR REPLACE TYPE concat_type AS OBJECT (
+   result_string CLOB,
+   separator VARCHAR2(10),
+   
+   STATIC FUNCTION ODCIAggregateInitialize(
+       ctx IN OUT concat_type
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateIterate(
+       self IN OUT concat_type,
+       input_string IN VARCHAR2,
+       sep IN VARCHAR2 DEFAULT ','
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateMerge(
+       self IN OUT concat_type,
+       ctx IN concat_type
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateTerminate(
+       self IN concat_type,
+       returnValue OUT CLOB,
+       flags IN NUMBER
+   ) RETURN NUMBER
+);
+/
+
+CREATE OR REPLACE TYPE BODY concat_type IS
+   
+   STATIC FUNCTION ODCIAggregateInitialize(
+       ctx IN OUT concat_type
+   ) RETURN NUMBER IS
+   BEGIN
+       ctx := concat_type(EMPTY_CLOB(), ',');
+       DBMS_LOB.CREATETEMPORARY(ctx.result_string, TRUE);
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateIterate(
+       self IN OUT concat_type,
+       input_string IN VARCHAR2,
+       sep IN VARCHAR2 DEFAULT ','
+   ) RETURN NUMBER IS
+   BEGIN
+       IF input_string IS NOT NULL THEN
+           IF DBMS_LOB.GETLENGTH(self.result_string) > 0 THEN
+               DBMS_LOB.APPEND(self.result_string, NVL(sep, self.separator));
+           END IF;
+           DBMS_LOB.APPEND(self.result_string, input_string);
+           self.separator := NVL(sep, self.separator);
+       END IF;
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateMerge(
+       self IN OUT concat_type,
+       ctx IN concat_type
+   ) RETURN NUMBER IS
+   BEGIN
+       IF DBMS_LOB.GETLENGTH(ctx.result_string) > 0 THEN
+           IF DBMS_LOB.GETLENGTH(self.result_string) > 0 THEN
+               DBMS_LOB.APPEND(self.result_string, self.separator);
+           END IF;
+           DBMS_LOB.APPEND(self.result_string, ctx.result_string);
+       END IF;
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateTerminate(
+       self IN concat_type,
+       returnValue OUT CLOB,
+       flags IN NUMBER
+   ) RETURN NUMBER IS
+   BEGIN
+       returnValue := self.result_string;
+       RETURN ODCIConst.Success;
+   END;
+   
+END;
+/
+
+-- Create custom concatenate function
+CREATE OR REPLACE FUNCTION custom_concat(
+   input_string VARCHAR2,
+   separator VARCHAR2 DEFAULT ','
+) RETURN CLOB
+AGGREGATE USING concat_type;
+/
+
+-- Test custom concatenation
+SELECT department_id,
+      custom_concat(first_name || ' ' || last_name, '; ') as employee_list
+FROM employees
+GROUP BY department_id;
+
+-- Geometric mean aggregate function
+CREATE OR REPLACE TYPE geom_mean_type AS OBJECT (
+   product_log NUMBER,
+   count_values NUMBER,
+   
+   STATIC FUNCTION ODCIAggregateInitialize(
+       ctx IN OUT geom_mean_type
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateIterate(
+       self IN OUT geom_mean_type,
+       value IN NUMBER
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateMerge(
+       self IN OUT geom_mean_type,
+       ctx IN geom_mean_type
+   ) RETURN NUMBER,
+   
+   MEMBER FUNCTION ODCIAggregateTerminate(
+       self IN geom_mean_type,
+       returnValue OUT NUMBER,
+       flags IN NUMBER
+   ) RETURN NUMBER
+);
+/
+
+CREATE OR REPLACE TYPE BODY geom_mean_type IS
+   
+   STATIC FUNCTION ODCIAggregateInitialize(
+       ctx IN OUT geom_mean_type
+   ) RETURN NUMBER IS
+   BEGIN
+       ctx := geom_mean_type(0, 0);
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateIterate(
+       self IN OUT geom_mean_type,
+       value IN NUMBER
+   ) RETURN NUMBER IS
+   BEGIN
+       IF value IS NOT NULL AND value > 0 THEN
+           self.product_log := self.product_log + LN(value);
+           self.count_values := self.count_values + 1;
+       END IF;
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateMerge(
+       self IN OUT geom_mean_type,
+       ctx IN geom_mean_type
+   ) RETURN NUMBER IS
+   BEGIN
+       self.product_log := self.product_log + ctx.product_log;
+       self.count_values := self.count_values + ctx.count_values;
+       RETURN ODCIConst.Success;
+   END;
+   
+   MEMBER FUNCTION ODCIAggregateTerminate(
+       self IN geom_mean_type,
+       returnValue OUT NUMBER,
+       flags IN NUMBER
+   ) RETURN NUMBER IS
+   BEGIN
+       IF self.count_values > 0 THEN
+           returnValue := EXP(self.product_log / self.count_values);
+       ELSE
+           returnValue := NULL;
+       END IF;
+       RETURN ODCIConst.Success;
+   END;
+   
+END;
+/
+
+CREATE OR REPLACE FUNCTION geometric_mean(value NUMBER) 
+RETURN NUMBER AGGREGATE USING geom_mean_type;
+/
+
+-- Test geometric mean
+SELECT department_id,
+      ROUND(AVG(salary), 2) as arithmetic_mean,
+      ROUND(geometric_mean(salary), 2) as geometric_mean_salary
+FROM employees
+WHERE salary > 0
+GROUP BY department_id;`
+   },
+   {
+       id: 102,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Write a query to find overlapping date ranges in Oracle.',
+       answer: 'Use self-joins or window functions to identify records with overlapping start and end dates, commonly used for scheduling and booking systems.',
+       language: 'Oracle SQL',
+       code: `-- Sample table for bookings with date ranges
+CREATE TABLE room_bookings (
+   booking_id NUMBER,
+   room_id NUMBER,
+   guest_name VARCHAR2(100),
+   start_date DATE,
+   end_date DATE
+);
+
+-- Insert sample data
+INSERT ALL
+   INTO room_bookings VALUES (1, 101, 'John Doe', DATE '2024-01-10', DATE '2024-01-15')
+   INTO room_bookings VALUES (2, 101, 'Jane Smith', DATE '2024-01-12', DATE '2024-01-18')
+   INTO room_bookings VALUES (3, 101, 'Bob Wilson', DATE '2024-01-20', DATE '2024-01-25')
+   INTO room_bookings VALUES (4, 102, 'Alice Brown', DATE '2024-01-10', DATE '2024-01-15')
+   INTO room_bookings VALUES (5, 101, 'Tom Green', DATE '2024-01-14', DATE '2024-01-16')
+SELECT * FROM dual;
+
+-- Method 1: Self-join to find overlapping bookings
+SELECT b1.booking_id as booking1_id,
+      b1.guest_name as guest1,
+      b1.start_date as start1,
+      b1.end_date as end1,
+      b2.booking_id as booking2_id,
+      b2.guest_name as guest2,
+      b2.start_date as start2,
+      b2.end_date as end2,
+      -- Calculate overlap period
+      GREATEST(b1.start_date, b2.start_date) as overlap_start,
+      LEAST(b1.end_date, b2.end_date) as overlap_end,
+      LEAST(b1.end_date, b2.end_date) - GREATEST(b1.start_date, b2.start_date) + 1 as overlap_days
+FROM room_bookings b1
+JOIN room_bookings b2 ON b1.room_id = b2.room_id
+                     AND b1.booking_id < b2.booking_id
+WHERE b1.start_date <= b2.end_date
+ AND b1.end_date >= b2.start_date;
+
+-- Method 2: Using window functions to detect overlaps
+WITH booking_analysis AS (
+   SELECT booking_id, room_id, guest_name, start_date, end_date,
+          LAG(end_date) OVER (PARTITION BY room_id ORDER BY start_date) as prev_end_date,
+          LAG(guest_name) OVER (PARTITION BY room_id ORDER BY start_date) as prev_guest,
+          LAG(booking_id) OVER (PARTITION BY room_id ORDER BY start_date) as prev_booking_id
+   FROM room_bookings
+)
+SELECT booking_id, room_id, guest_name, start_date, end_date,
+      prev_booking_id, prev_guest, prev_end_date,
+      'OVERLAP DETECTED' as conflict_status
+FROM booking_analysis
+WHERE start_date <= prev_end_date;
+
+-- Method 3: Find all conflicts for a specific room
+SELECT DISTINCT b1.booking_id, b1.guest_name, b1.start_date, b1.end_date
+FROM room_bookings b1
+WHERE b1.room_id = 101
+ AND EXISTS (
+     SELECT 1 FROM room_bookings b2
+     WHERE b2.room_id = b1.room_id
+       AND b2.booking_id != b1.booking_id
+       AND b2.start_date <= b1.end_date
+       AND b2.end_date >= b1.start_date
+ )
+ORDER BY b1.start_date;
+
+-- Method 4: Advanced overlap analysis with conflict resolution
+WITH overlapping_groups AS (
+   SELECT booking_id, room_id, guest_name, start_date, end_date,
+          -- Create groups of overlapping bookings
+          SUM(CASE WHEN start_date <= LAG(end_date) OVER (PARTITION BY room_id ORDER BY start_date) 
+                   THEN 0 ELSE 1 END) 
+          OVER (PARTITION BY room_id ORDER BY start_date 
+                ROWS UNBOUNDED PRECEDING) as group_id
+   FROM room_bookings
+),
+conflict_summary AS (
+   SELECT room_id, group_id,
+          COUNT(*) as conflicting_bookings,
+          MIN(start_date) as group_start,
+          MAX(end_date) as group_end,
+          LISTAGG(guest_name, ', ') WITHIN GROUP (ORDER BY start_date) as affected_guests
+   FROM overlapping_groups
+   GROUP BY room_id, group_id
+   HAVING COUNT(*) > 1
+)
+SELECT room_id, 
+      'Room ' || room_id || ' has ' || conflicting_bookings || ' overlapping bookings' as conflict_description,
+      group_start, group_end,
+      affected_guests,
+      group_end - group_start + 1 as total_conflict_days
+FROM conflict_summary;
+
+-- Method 5: Check for gaps between bookings (opposite of overlaps)
+WITH booking_gaps AS (
+   SELECT room_id, booking_id, guest_name, start_date, end_date,
+          LAG(end_date) OVER (PARTITION BY room_id ORDER BY start_date) as prev_end,
+          start_date - LAG(end_date) OVER (PARTITION BY room_id ORDER BY start_date) - 1 as gap_days
+   FROM room_bookings
+)
+SELECT room_id, booking_id, guest_name,
+      prev_end + 1 as gap_start,
+      start_date - 1 as gap_end,
+      gap_days
+FROM booking_gaps
+WHERE gap_days > 0;
+
+-- Method 6: Prevent overlaps with validation function
+CREATE OR REPLACE FUNCTION check_booking_overlap(
+   p_room_id NUMBER,
+   p_start_date DATE,
+   p_end_date DATE,
+   p_exclude_booking_id NUMBER DEFAULT NULL
+) RETURN VARCHAR2 IS
+   v_overlap_count NUMBER;
+   v_conflicting_guest VARCHAR2(100);
+BEGIN
+   SELECT COUNT(*), MAX(guest_name)
+   INTO v_overlap_count, v_conflicting_guest
+   FROM room_bookings
+   WHERE room_id = p_room_id
+     AND (booking_id != p_exclude_booking_id OR p_exclude_booking_id IS NULL)
+     AND start_date <= p_end_date
+     AND end_date >= p_start_date;
+   
+   IF v_overlap_count > 0 THEN
+       RETURN 'CONFLICT: Overlaps with booking for ' || v_conflicting_guest;
+   ELSE
+       RETURN 'OK: No conflicts detected';
+   END IF;
+END;
+/
+
+-- Test the validation function
+SELECT check_booking_overlap(101, DATE '2024-01-13', DATE '2024-01-17') as validation_result
+FROM dual;
+
+-- Method 7: Timeline view of bookings
+SELECT room_id,
+      start_date,
+      end_date,
+      guest_name,
+      -- Show booking duration
+      end_date - start_date + 1 as booking_days,
+      -- Show overlapping periods
+      CASE 
+          WHEN start_date <= LAG(end_date) OVER (PARTITION BY room_id ORDER BY start_date)
+          THEN 'OVERLAPS WITH PREVIOUS'
+          ELSE 'NO CONFLICT'
+      END as overlap_status
+FROM room_bookings
+ORDER BY room_id, start_date;`
+   },
+   {
+       id: 103,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you implement database connection pooling and session management in Oracle?',
+       answer: 'Use Oracle connection pooling features, DRCP (Database Resident Connection Pooling), and proper session management techniques for optimal performance.',
+       language: 'Oracle SQL',
+       code: `-- Enable Database Resident Connection Pooling (DRCP)
+-- Run as SYSDBA
+EXECUTE DBMS_CONNECTION_POOL.START_POOL();
+
+-- Configure pool parameters
+EXECUTE DBMS_CONNECTION_POOL.CONFIGURE_POOL(
+   pool_name => 'SYS_DEFAULT_CONNECTION_POOL',
+   minpool_size => 4,
+   maxpool_size => 40,
+   incrpool_size => 2,
+   session_cached_cursors => 20,
+   inactivity_timeout => 300,
+   max_think_time => 600,
+   max_use_session => 500000,
+   max_lifetime_session => 86400
+);
+
+-- Check pool status
+SELECT connection_pool, status, minsize, maxsize, poolsize, num_requests
+FROM v$cpool_info;
+
+-- Monitor pool statistics
+SELECT * FROM v$cpool_stats;
+
+-- Session management queries
+-- Check current sessions
+SELECT s.sid, s.serial#, s.username, s.status, s.program, s.machine,
+      s.logon_time, s.last_call_et
+FROM v$session s
+WHERE s.username IS NOT NULL
+ORDER BY s.last_call_et DESC;
+
+-- Session resource usage
+SELECT s.sid, s.username, s.program,
+      st.value as cpu_used,
+      sm.value as memory_used,
+      si.value as logical_reads
+FROM v$session s
+LEFT JOIN v$sesstat st ON s.sid = st.sid AND st.statistic# = (SELECT statistic# FROM v$statname WHERE name = 'CPU used by this session')
+LEFT JOIN v$sesstat sm ON s.sid = sm.sid AND sm.statistic# = (SELECT statistic# FROM v$statname WHERE name = 'session memory')
+LEFT JOIN v$sesstat si ON s.sid = si.sid AND si.statistic# = (SELECT statistic# FROM v$statname WHERE name = 'session logical reads')
+WHERE s.username IS NOT NULL;
+
+-- Kill idle sessions
+CREATE OR REPLACE PROCEDURE kill_idle_sessions(
+   p_idle_minutes NUMBER DEFAULT 60,
+   p_exclude_users VARCHAR2 DEFAULT 'SYS,SYSTEM'
+) IS
+   CURSOR idle_sessions_cur IS
+       SELECT sid, serial#, username
+       FROM v$session
+       WHERE status = 'INACTIVE'
+         AND last_call_et > (p_idle_minutes * 60)
+         AND username IS NOT NULL
+         AND username NOT IN (SELECT TRIM(REGEXP_SUBSTR(p_exclude_users, '[^,]+', 1, LEVEL))
+                             FROM dual
+                             CONNECT BY LEVEL <= REGEXP_COUNT(p_exclude_users, ',') + 1);
+   
+   v_sql VARCHAR2(200);
+BEGIN
+   FOR rec IN idle_sessions_cur LOOP
+       v_sql := 'ALTER SYSTEM KILL SESSION ''' || rec.sid || ',' || rec.serial# || '''';
+       EXECUTE IMMEDIATE v_sql;
+       DBMS_OUTPUT.PUT_LINE('Killed session: ' || rec.username || ' (SID=' || rec.sid || ')');
+   END LOOP;
+END;
+/
+
+-- Connection pool monitoring procedure
+CREATE OR REPLACE PROCEDURE monitor_connection_pool IS
+   v_active_sessions NUMBER;
+   v_inactive_sessions NUMBER;
+   v_total_sessions NUMBER;
+   v_cpu_usage NUMBER;
+BEGIN
+   -- Get session counts
+   SELECT COUNT(CASE WHEN status = 'ACTIVE' THEN 1 END),
+          COUNT(CASE WHEN status = 'INACTIVE' THEN 1 END),
+          COUNT(*)
+   INTO v_active_sessions, v_inactive_sessions, v_total_sessions
+   FROM v$session
+   WHERE username IS NOT NULL;
+   
+   -- Get CPU usage
+   SELECT value INTO v_cpu_usage
+   FROM v$sysstat
+   WHERE name = 'CPU used by this session';
+   
+   -- Log statistics
+   INSERT INTO connection_pool_stats (
+       timestamp, active_sessions, inactive_sessions, 
+       total_sessions, cpu_usage
+   ) VALUES (
+       SYSTIMESTAMP, v_active_sessions, v_inactive_sessions,
+       v_total_sessions, v_cpu_usage
+   );
+   
+   -- Alert if thresholds exceeded
+   IF v_total_sessions > 100 THEN
+       DBMS_OUTPUT.PUT_LINE('WARNING: High session count: ' || v_total_sessions);
+   END IF;
+   
+   COMMIT;
+END;
+/
+
+-- Create monitoring table
+CREATE TABLE connection_pool_stats (
+   timestamp TIMESTAMP,
+   active_sessions NUMBER,
+   inactive_sessions NUMBER,
+   total_sessions NUMBER,
+   cpu_usage NUMBER
+);
+
+-- Application context for session management
+CREATE OR REPLACE CONTEXT app_context USING app_context_pkg;
+
+CREATE OR REPLACE PACKAGE app_context_pkg IS
+   PROCEDURE set_session_info(
+       p_user_id VARCHAR2,
+       p_app_name VARCHAR2,
+       p_module VARCHAR2
+   );
+   PROCEDURE clear_session_info;
+END;
+/
+
+CREATE OR REPLACE PACKAGE BODY app_context_pkg IS
+   PROCEDURE set_session_info(
+       p_user_id VARCHAR2,
+       p_app_name VARCHAR2,
+       p_module VARCHAR2
+   ) IS
+   BEGIN
+       DBMS_SESSION.SET_CONTEXT('APP_CONTEXT', 'USER_ID', p_user_id);
+       DBMS_SESSION.SET_CONTEXT('APP_CONTEXT', 'APP_NAME', p_app_name);
+       DBMS_SESSION.SET_CONTEXT('APP_CONTEXT', 'MODULE', p_module);
+       DBMS_APPLICATION_INFO.SET_MODULE(p_app_name, p_module);
+   END;
+   
+   PROCEDURE clear_session_info IS
+   BEGIN
+       DBMS_SESSION.CLEAR_CONTEXT('APP_CONTEXT');
+       DBMS_APPLICATION_INFO.SET_MODULE(NULL, NULL);
+   END;
+END;
+/
+
+-- Session pooling configuration for applications
+-- JDBC connection pooling example configuration
+/*
+-- HikariCP configuration
+maximumPoolSize=20
+minimumIdle=5
+connectionTimeout=30000
+idleTimeout=600000
+maxLifetime=1800000
+leakDetectionThreshold=60000
+
+-- Oracle UCP configuration
+oracle.ucp.ConnectionPoolName=MyPool
+oracle.ucp.InitialPoolSize=5
+oracle.ucp.MinPoolSize=5
+oracle.ucp.MaxPoolSize=20
+oracle.ucp.ConnectionWaitTimeout=3
+oracle.ucp.InactiveConnectionTimeout=30
+oracle.ucp.AbandonedConnectionTimeout=30
+*/
+
+-- Session resource limits
+ALTER PROFILE DEFAULT LIMIT
+   SESSIONS_PER_USER 10
+   CONNECT_TIME 480
+   IDLE_TIME 30
+   CPU_PER_SESSION UNLIMITED
+   LOGICAL_READS_PER_SESSION UNLIMITED;
+
+-- Monitor session waits
+SELECT s.sid, s.username, s.status, w.event, w.wait_time, w.seconds_in_wait
+FROM v$session s
+LEFT JOIN v$session_wait w ON s.sid = w.sid
+WHERE s.username IS NOT NULL
+ AND w.event NOT LIKE '%message%'
+ORDER BY w.seconds_in_wait DESC;
+
+-- Session cleanup procedure
+CREATE OR REPLACE PROCEDURE cleanup_sessions IS
+BEGIN
+   -- Kill sessions that have been inactive for more than 2 hours
+   FOR rec IN (
+       SELECT sid, serial#, username
+       FROM v$session
+       WHERE status = 'INACTIVE'
+         AND last_call_et > 7200
+         AND username NOT IN ('SYS', 'SYSTEM', 'DBSNMP')
+   ) LOOP
+       EXECUTE IMMEDIATE 'ALTER SYSTEM KILL SESSION ''' || rec.sid || ',' || rec.serial# || '''';
+   END LOOP;
+   
+   -- Log cleanup activity
+   INSERT INTO session_cleanup_log (cleanup_date, sessions_killed)
+   SELECT SYSDATE, SQL%ROWCOUNT FROM dual;
+   
+   COMMIT;
+END;
+/
+
+-- Create cleanup log table
+CREATE TABLE session_cleanup_log (
+   cleanup_date DATE,
+   sessions_killed NUMBER
+);
+
+-- Schedule session cleanup job
+BEGIN
+   DBMS_SCHEDULER.CREATE_JOB(
+       job_name => 'SESSION_CLEANUP_JOB',
+       job_type => 'PLSQL_BLOCK',
+       job_action => 'BEGIN cleanup_sessions; END;',
+       start_date => SYSTIMESTAMP,
+       repeat_interval => 'FREQ=HOURLY; INTERVAL=2',
+       enabled => TRUE,
+       comments => 'Cleanup idle sessions every 2 hours'
+   );
+END;
+/
+
+-- Connection pool health check
+CREATE OR REPLACE FUNCTION connection_pool_health_check RETURN VARCHAR2 IS
+   v_total_sessions NUMBER;
+   v_active_sessions NUMBER;
+   v_blocked_sessions NUMBER;
+   v_health_status VARCHAR2(100);
+BEGIN
+   SELECT COUNT(*) INTO v_total_sessions
+   FROM v$session WHERE username IS NOT NULL;
+   
+   SELECT COUNT(*) INTO v_active_sessions
+   FROM v$session WHERE status = 'ACTIVE' AND username IS NOT NULL;
+   
+   SELECT COUNT(*) INTO v_blocked_sessions
+   FROM v$session WHERE blocking_session IS NOT NULL;
+   
+   IF v_blocked_sessions > 5 THEN
+       v_health_status := 'CRITICAL: ' || v_blocked_sessions || ' blocked sessions';
+   ELSIF v_total_sessions > 80 THEN
+       v_health_status := 'WARNING: High session count ' || v_total_sessions;
+   ELSIF v_active_sessions < 5 THEN
+       v_health_status := 'INFO: Low activity ' || v_active_sessions || ' active';
+   ELSE
+       v_health_status := 'HEALTHY: ' || v_total_sessions || ' total, ' || v_active_sessions || ' active';
+   END IF;
+   
+   RETURN v_health_status;
+END;
+/
+
+-- Test health check
+SELECT connection_pool_health_check() as pool_status FROM dual;
+
+-- Advanced session monitoring query
+SELECT s.sid, s.serial#, s.username, s.program, s.machine,
+      s.status, s.last_call_et/60 as idle_minutes,
+      ss.value as logical_reads,
+      ROUND(ss.value / GREATEST(s.last_call_et, 1), 2) as reads_per_second
+FROM v$session s
+LEFT JOIN v$sesstat ss ON s.sid = ss.sid 
+   AND ss.statistic# = (SELECT statistic# FROM v$statname WHERE name = 'session logical reads')
+WHERE s.username IS NOT NULL
+ORDER BY ss.value DESC;`
+   },
+   {
+       id: 104,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Write a query to implement a data warehouse star schema with fact and dimension tables.',
+       answer: 'Design and query a star schema with fact tables containing measures and foreign keys to dimension tables containing descriptive attributes.',
+       language: 'Oracle SQL',
+       code: `-- Create dimension tables for star schema
+
+-- Time Dimension
+CREATE TABLE dim_time (
+   time_key NUMBER PRIMARY KEY,
+   date_value DATE NOT NULL,
+   year NUMBER,
+   quarter NUMBER,
+   month NUMBER,
+   month_name VARCHAR2(20),
+   day_of_month NUMBER,
+   day_of_week NUMBER,
+   day_name VARCHAR2(20),
+   week_of_year NUMBER,
+   is_weekend CHAR(1),
+   is_holiday CHAR(1),
+   fiscal_year NUMBER,
+   fiscal_quarter NUMBER
+);
+
+-- Product Dimension  
+CREATE TABLE dim_product (
+   product_key NUMBER PRIMARY KEY,
+   product_id VARCHAR2(20) UNIQUE,
+   product_name VARCHAR2(100),
+   brand VARCHAR2(50),
+   category VARCHAR2(50),
+   subcategory VARCHAR2(50),
+   unit_cost NUMBER(10,2),
+   unit_price NUMBER(10,2),
+   product_status VARCHAR2(20),
+   launch_date DATE
+);
+
+-- Customer Dimension
+CREATE TABLE dim_customer (
+   customer_key NUMBER PRIMARY KEY,
+   customer_id VARCHAR2(20) UNIQUE,
+   customer_name VARCHAR2(100),
+   customer_type VARCHAR2(20),
+   segment VARCHAR2(30),
+   region VARCHAR2(50),
+   country VARCHAR2(50),
+   city VARCHAR2(50),
+   zip_code VARCHAR2(10),
+   registration_date DATE,
+   credit_rating VARCHAR2(10)
+);
+
+-- Store Dimension
+CREATE TABLE dim_store (
+   store_key NUMBER PRIMARY KEY,
+   store_id VARCHAR2(20) UNIQUE,
+   store_name VARCHAR2(100),
+   store_type VARCHAR2(30),
+   store_size VARCHAR2(20),
+   region VARCHAR2(50),
+   district VARCHAR2(50),
+   city VARCHAR2(50),
+   state VARCHAR2(50),
+   country VARCHAR2(50),
+   open_date DATE,
+   manager_name VARCHAR2(100)
+);
+
+-- Fact Table - Sales Facts
+CREATE TABLE fact_sales (
+   sales_key NUMBER PRIMARY KEY,
+   time_key NUMBER REFERENCES dim_time(time_key),
+   product_key NUMBER REFERENCES dim_product(product_key),
+   customer_key NUMBER REFERENCES dim_customer(customer_key),
+   store_key NUMBER REFERENCES dim_store(store_key),
+   -- Measures
+   quantity_sold NUMBER,
+   unit_price NUMBER(10,2),
+   unit_cost NUMBER(10,2),
+   sales_amount NUMBER(12,2),
+   discount_amount NUMBER(10,2),
+   profit_amount NUMBER(12,2),
+   tax_amount NUMBER(10,2)
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_fact_sales_time ON fact_sales(time_key);
+CREATE INDEX idx_fact_sales_product ON fact_sales(product_key);
+CREATE INDEX idx_fact_sales_customer ON fact_sales(customer_key);
+CREATE INDEX idx_fact_sales_store ON fact_sales(store_key);
+
+-- Composite index for common query patterns
+CREATE INDEX idx_fact_sales_time_store ON fact_sales(time_key, store_key);
+CREATE INDEX idx_fact_sales_time_product ON fact_sales(time_key, product_key);
+
+-- Populate dimension tables with sample data
+-- Time dimension population
+INSERT INTO dim_time (time_key, date_value, year, quarter, month, month_name, 
+                    day_of_month, day_of_week, day_name, week_of_year, 
+                    is_weekend, is_holiday, fiscal_year, fiscal_quarter)
+SELECT ROWNUM as time_key,
+      date_value,
+      EXTRACT(YEAR FROM date_value) as year,
+      CEIL(EXTRACT(MONTH FROM date_value) / 3) as quarter,
+      EXTRACT(MONTH FROM date_value) as month,
+      TO_CHAR(date_value, 'Month') as month_name,
+      EXTRACT(DAY FROM date_value) as day_of_month,
+      TO_NUMBER(TO_CHAR(date_value, 'D')) as day_of_week,
+      TO_CHAR(date_value, 'Day') as day_name,
+      TO_NUMBER(TO_CHAR(date_value, 'WW')) as week_of_year,
+      CASE WHEN TO_CHAR(date_value, 'D') IN ('1', '7') THEN 'Y' ELSE 'N' END as is_weekend,
+      'N' as is_holiday, -- Simplified
+      CASE WHEN EXTRACT(MONTH FROM date_value) >= 4 
+           THEN EXTRACT(YEAR FROM date_value) 
+           ELSE EXTRACT(YEAR FROM date_value) - 1 END as fiscal_year,
+      CASE WHEN EXTRACT(MONTH FROM date_value) IN (4,5,6) THEN 1
+           WHEN EXTRACT(MONTH FROM date_value) IN (7,8,9) THEN 2
+           WHEN EXTRACT(MONTH FROM date_value) IN (10,11,12) THEN 3
+           ELSE 4 END as fiscal_quarter
+FROM (
+   SELECT DATE '2022-01-01' + LEVEL - 1 as date_value
+   FROM dual
+   CONNECT BY LEVEL <= 1095 -- 3 years of data
+);
+
+-- Star Schema Analytical Queries
+
+-- 1. Sales by Year and Quarter
+SELECT dt.year, dt.quarter,
+      SUM(fs.sales_amount) as total_sales,
+      SUM(fs.profit_amount) as total_profit,
+      COUNT(*) as transaction_count,
+      ROUND(AVG(fs.sales_amount), 2) as avg_transaction_value
+FROM fact_sales fs
+JOIN dim_time dt ON fs.time_key = dt.time_key
+GROUP BY dt.year, dt.quarter
+ORDER BY dt.year, dt.quarter;
+
+-- 2. Top Products by Sales in Each Category
+WITH product_sales AS (
+   SELECT dp.category, dp.product_name, dp.brand,
+          SUM(fs.sales_amount) as total_sales,
+          SUM(fs.quantity_sold) as total_quantity,
+          ROW_NUMBER() OVER (PARTITION BY dp.category ORDER BY SUM(fs.sales_amount) DESC) as rn
+   FROM fact_sales fs
+   JOIN dim_product dp ON fs.product_key = dp.product_key
+   JOIN dim_time dt ON fs.time_key = dt.time_key
+   WHERE dt.year = 2023
+   GROUP BY dp.category, dp.product_name, dp.brand
+)
+SELECT category, product_name, brand, total_sales, total_quantity
+FROM product_sales
+WHERE rn <= 3
+ORDER BY category, rn;
+
+-- 3. Customer Segmentation Analysis
+SELECT dc.segment, dc.region,
+      COUNT(DISTINCT dc.customer_key) as customer_count,
+      SUM(fs.sales_amount) as total_sales,
+      ROUND(AVG(fs.sales_amount), 2) as avg_order_value,
+      SUM(fs.quantity_sold) as total_units,
+      ROUND(SUM(fs.sales_amount) / COUNT(DISTINCT dc.customer_key), 2) as sales_per_customer
+FROM fact_sales fs
+JOIN dim_customer dc ON fs.customer_key = dc.customer_key
+JOIN dim_time dt ON fs.time_key = dt.time_key
+WHERE dt.year = 2023
+GROUP BY dc.segment, dc.region
+ORDER BY total_sales DESC;
+
+-- 4. Store Performance Analysis
+SELECT ds.region, ds.store_name, ds.store_type,
+      SUM(fs.sales_amount) as total_sales,
+      SUM(fs.profit_amount) as total_profit,
+      ROUND(SUM(fs.profit_amount) / SUM(fs.sales_amount) * 100, 2) as profit_margin_pct,
+      COUNT(DISTINCT fs.customer_key) as unique_customers,
+      COUNT(*) as transaction_count
+FROM fact_sales fs
+JOIN dim_store ds ON fs.store_key = ds.store_key
+JOIN dim_time dt ON fs.time_key = dt.time_key
+WHERE dt.year = 2023
+GROUP BY ds.region, ds.store_name, ds.store_type
+ORDER BY total_sales DESC;
+
+-- 5. Time Series Analysis - Monthly Trends
+SELECT dt.year, dt.month, dt.month_name,
+      SUM(fs.sales_amount) as monthly_sales,
+      LAG(SUM(fs.sales_amount)) OVER (ORDER BY dt.year, dt.month) as prev_month_sales,
+      ROUND(
+          (SUM(fs.sales_amount) - LAG(SUM(fs.sales_amount)) OVER (ORDER BY dt.year, dt.month)) /
+          LAG(SUM(fs.sales_amount)) OVER (ORDER BY dt.year, dt.month) * 100, 2
+      ) as mom_growth_pct,
+      SUM(SUM(fs.sales_amount)) OVER (PARTITION BY dt.year ORDER BY dt.month) as ytd_sales
+FROM fact_sales fs
+JOIN dim_time dt ON fs.time_key = dt.time_key
+GROUP BY dt.year, dt.month, dt.month_name
+ORDER BY dt.year, dt.month;
+
+-- 6. Complex Drill-Down Query
+SELECT dt.year, dt.quarter, dc.region, dp.category,
+      SUM(fs.sales_amount) as sales,
+      SUM(fs.profit_amount) as profit,
+      COUNT(*) as transactions,
+      -- Ranking within each time period
+      RANK() OVER (PARTITION BY dt.year, dt.quarter ORDER BY SUM(fs.sales_amount) DESC) as sales_rank,
+      -- Percentage of total sales
+      ROUND(SUM(fs.sales_amount) / SUM(SUM(fs.sales_amount)) OVER (PARTITION BY dt.year, dt.quarter) * 100, 2) as pct_of_period_sales
+FROM fact_sales fs
+JOIN dim_time dt ON fs.time_key = dt.time_key
+JOIN dim_customer dc ON fs.customer_key = dc.customer_key
+JOIN dim_product dp ON fs.product_key = dp.product_key
+WHERE dt.year BETWEEN 2022 AND 2023
+GROUP BY dt.year, dt.quarter, dc.region, dp.category
+HAVING SUM(fs.sales_amount) > 10000
+ORDER BY dt.year, dt.quarter, sales DESC;
+
+-- 7. Cube and Rollup Operations
+SELECT dt.year, dp.category, dc.segment,
+      SUM(fs.sales_amount) as total_sales,
+      COUNT(*) as transaction_count,
+      GROUPING_ID(dt.year, dp.category, dc.segment) as grouping_level
+FROM fact_sales fs
+JOIN dim_time dt ON fs.time_key = dt.time_key
+JOIN dim_product dp ON fs.product_key = dp.product_key
+JOIN dim_customer dc ON fs.customer_key = dc.customer_key
+WHERE dt.year = 2023
+GROUP BY CUBE(dt.year, dp.category, dc.segment)
+ORDER BY grouping_level, dt.year, dp.category, dc.segment;
+
+-- 8. Performance Optimization with Materialized Views
+CREATE MATERIALIZED VIEW mv_monthly_sales
+BUILD IMMEDIATE
+REFRESH FAST ON COMMIT
+AS
+SELECT dt.year, dt.month, dp.category, dc.region,
+      SUM(fs.sales_amount) as total_sales,
+      SUM(fs.profit_amount) as total_profit,
+      COUNT(*) as transaction_count,
+      COUNT(DISTINCT fs.customer_key) as unique_customers
+FROM fact_sales fs
+JOIN dim_time dt ON fs.time_key = dt.time_key
+JOIN dim_product dp ON fs.product_key = dp.product_key
+JOIN dim_customer dc ON fs.customer_key = dc.customer_key
+GROUP BY dt.year, dt.month, dp.category, dc.region;
+
+-- Create index on materialized view
+CREATE INDEX idx_mv_monthly_sales ON mv_monthly_sales(year, month, category, region);`
+   },
+   {
+       id: 105,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you implement temporal tables and track data changes over time in Oracle?',
+       answer: 'Use Oracle Temporal Validity and Flashback Data Archive features to track historical changes and implement temporal queries for time-based data analysis.',
+       language: 'Oracle SQL',
+       code: `-- Method 1: Using Temporal Validity (Oracle 12c+)
+CREATE TABLE employee_temporal (
+   employee_id NUMBER,
+   first_name VARCHAR2(50),
+   last_name VARCHAR2(50),
+   salary NUMBER,
+   department_id NUMBER,
+   -- Temporal validity columns
+   valid_from DATE,
+   valid_to DATE,
+   PERIOD FOR valid_time (valid_from, valid_to)
+);
+
+-- Enable temporal validity
+ALTER TABLE employee_temporal ADD (
+   CONSTRAINT emp_temporal_pk PRIMARY KEY (employee_id, valid_time WITHOUT OVERLAPS)
+);
+
+-- Insert temporal data
+INSERT INTO employee_temporal (employee_id, first_name, last_name, salary, department_id, valid_from, valid_to)
+VALUES (101, 'John', 'Doe', 50000, 10, DATE '2023-01-01', DATE '2023-06-30');
+
+INSERT INTO employee_temporal (employee_id, first_name, last_name, salary, department_id, valid_from, valid_to)
+VALUES (101, 'John', 'Doe', 55000, 10, DATE '2023-07-01', DATE '2023-12-31');
+
+INSERT INTO employee_temporal (employee_id, first_name, last_name, salary, department_id, valid_from, valid_to)
+VALUES (101, 'John', 'Doe', 60000, 20, DATE '2024-01-01', DATE '9999-12-31');
+
+-- Query temporal data for specific time point
+SELECT employee_id, first_name, last_name, salary, department_id
+FROM employee_temporal
+WHERE employee_id = 101
+ AND DATE '2023-08-15' BETWEEN valid_from AND valid_to;
+
+-- Query all changes for an employee
+SELECT employee_id, salary, department_id, valid_from, valid_to,
+      valid_to - valid_from + 1 as period_days
+FROM employee_temporal
+WHERE employee_id = 101
+ORDER BY valid_from;
+
+-- Method 2: Manual Temporal Implementation with Triggers
+CREATE TABLE employee_history (
+   history_id NUMBER GENERATED ALWAYS AS IDENTITY,
+   employee_id NUMBER,
+   first_name VARCHAR2(50),
+   last_name VARCHAR2(50),
+   salary NUMBER,
+   department_id NUMBER,
+   effective_date DATE DEFAULT SYSDATE,
+   end_date DATE DEFAULT DATE '9999-12-31',
+   operation_type VARCHAR2(10),
+   changed_by VARCHAR2(100) DEFAULT USER,
+   changed_timestamp TIMESTAMP DEFAULT SYSTIMESTAMP
+);
+
+-- Current employee table
+CREATE TABLE employees_current (
+   employee_id NUMBER PRIMARY KEY,
+   first_name VARCHAR2(50),
+   last_name VARCHAR2(50),
+   salary NUMBER,
+   department_id NUMBER,
+   last_updated TIMESTAMP DEFAULT SYSTIMESTAMP
+);
+
+-- Temporal trigger for history tracking
+CREATE OR REPLACE TRIGGER trg_employee_temporal
+AFTER INSERT OR UPDATE OR DELETE ON employees_current
+FOR EACH ROW
+BEGIN
+   IF INSERTING THEN
+       INSERT INTO employee_history (
+           employee_id, first_name, last_name, salary, department_id, operation_type
+       ) VALUES (
+           :NEW.employee_id, :NEW.first_name, :NEW.last_name, 
+           :NEW.salary, :NEW.department_id, 'INSERT'
+       );
+   ELSIF UPDATING THEN
+       -- End previous record
+       UPDATE employee_history
+       SET end_date = SYSDATE - INTERVAL '1' SECOND
+       WHERE employee_id = :OLD.employee_id
+         AND end_date = DATE '9999-12-31';
+       
+       -- Insert new record
+       INSERT INTO employee_history (
+           employee_id, first_name, last_name, salary, department_id, operation_type
+       ) VALUES (
+           :NEW.employee_id, :NEW.first_name, :NEW.last_name, 
+           :NEW.salary, :NEW.department_id, 'UPDATE'
+       );
+   ELSIF DELETING THEN
+       -- End current record
+       UPDATE employee_history
+       SET end_date = SYSDATE,
+           operation_type = 'DELETE'
+       WHERE employee_id = :OLD.employee_id
+         AND end_date = DATE '9999-12-31';
+   END IF;
+END;
+/
+
+-- Method 3: Using Flashback Data Archive (Total Recall)
+-- Enable Flashback Data Archive (requires DBA privileges)
+/*
+CREATE FLASHBACK ARCHIVE fla_employee
+TABLESPACE flashback_ts
+RETENTION 5 YEAR;
+
+ALTER TABLE employees_current FLASHBACK ARCHIVE fla_employee;
+*/
+
+-- Query historical data using Flashback
+SELECT employee_id, first_name, last_name, salary, department_id
+FROM employees_current
+AS OF TIMESTAMP TIMESTAMP '2023-06-15 10:00:00';
+
+-- Query all versions between two timestamps
+SELECT employee_id, salary, department_id,
+      versions_starttime, versions_endtime, versions_operation
+FROM employees_current
+VERSIONS BETWEEN TIMESTAMP 
+   TIMESTAMP '2023-01-01 00:00:00' AND TIMESTAMP '2023-12-31 23:59:59'
+WHERE employee_id = 101
+ORDER BY versions_starttime;
+
+-- Method 4: Temporal Analytics Functions
+-- Create view for easy temporal queries
+CREATE OR REPLACE VIEW v_employee_temporal_analysis AS
+SELECT h.*,
+      LAG(salary) OVER (PARTITION BY employee_id ORDER BY effective_date) as prev_salary,
+      salary - LAG(salary) OVER (PARTITION BY employee_id ORDER BY effective_date) as salary_change,
+      LAG(department_id) OVER (PARTITION BY employee_id ORDER BY effective_date) as prev_department,
+      end_date - effective_date + 1 as days_in_position,
+      ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY effective_date) as position_sequence
+FROM employee_history h;
+
+-- Salary progression analysis
+SELECT employee_id, first_name, last_name,
+      position_sequence, salary, prev_salary, salary_change,
+      ROUND((salary_change / prev_salary) * 100, 2) as salary_increase_pct,
+      days_in_position
+FROM v_employee_temporal_analysis
+WHERE employee_id = 101
+ AND prev_salary IS NOT NULL
+ORDER BY effective_date;
+
+-- Method 5: Temporal Queries for Business Analysis
+-- Employees by salary range over time
+WITH temporal_snapshot AS (
+   SELECT DATE '2023-01-01' + (LEVEL - 1) * 30 as snapshot_date
+   FROM dual
+   CONNECT BY LEVEL <= 12 -- Monthly snapshots
+),
+salary_ranges AS (
+   SELECT ts.snapshot_date,
+          COUNT(CASE WHEN h.salary < 40000 THEN 1 END) as low_salary,
+          COUNT(CASE WHEN h.salary BETWEEN 40000 AND 60000 THEN 1 END) as mid_salary,
+          COUNT(CASE WHEN h.salary > 60000 THEN 1 END) as high_salary,
+          COUNT(*) as total_employees
+   FROM temporal_snapshot ts
+   LEFT JOIN employee_history h ON ts.snapshot_date BETWEEN h.effective_date AND h.end_date
+   GROUP BY ts.snapshot_date
+)
+SELECT snapshot_date,
+      low_salary, mid_salary, high_salary, total_employees,
+      ROUND(low_salary / total_employees * 100, 1) as low_salary_pct,
+      ROUND(mid_salary / total_employees * 100, 1) as mid_salary_pct,
+      ROUND(high_salary / total_employees * 100, 1) as high_salary_pct
+FROM salary_ranges
+ORDER BY snapshot_date;
+
+-- Department movement analysis
+SELECT h1.employee_id, h1.first_name, h1.last_name,
+      h1.department_id as from_dept, h2.department_id as to_dept,
+      h1.end_date as move_date,
+      h2.effective_date - h1.end_date as gap_days
+FROM employee_history h1
+JOIN employee_history h2 ON h1.employee_id = h2.employee_id
+                        AND h2.effective_date = h1.end_date + 1
+WHERE h1.department_id != h2.department_id
+ORDER BY h1.employee_id, h1.end_date;
+
+-- Method 6: Temporal Data Validation
+CREATE OR REPLACE FUNCTION validate_temporal_data(
+   p_employee_id NUMBER
+) RETURN VARCHAR2 IS
+   v_overlaps NUMBER;
+   v_gaps NUMBER;
+BEGIN
+   -- Check for overlapping periods
+   SELECT COUNT(*)
+   INTO v_overlaps
+   FROM employee_history h1
+   JOIN employee_history h2 ON h1.employee_id = h2.employee_id
+                            AND h1.history_id != h2.history_id
+   WHERE h1.employee_id = p_employee_id
+     AND h1.effective_date <= h2.end_date
+     AND h1.end_date >= h2.effective_date;
+   
+   -- Check for gaps in timeline
+   SELECT COUNT(*)
+   INTO v_gaps
+   FROM employee_history h1
+   JOIN employee_history h2 ON h1.employee_id = h2.employee_id
+                            AND h2.effective_date = (
+                                SELECT MIN(effective_date)
+                                FROM employee_history
+                                WHERE employee_id = h1.employee_id
+                                  AND effective_date > h1.end_date
+                            )
+   WHERE h1.employee_id = p_employee_id
+     AND h1.end_date + 1 != h2.effective_date;
+   
+   IF v_overlaps > 0 THEN
+       RETURN 'ERROR: Overlapping periods detected';
+   ELSIF v_gaps > 0 THEN
+       RETURN 'WARNING: Gaps in timeline detected';
+   ELSE
+       RETURN 'OK: Timeline is valid';
+   END IF;
+END;
+/
+
+-- Test temporal validation
+SELECT validate_temporal_data(101) as validation_result FROM dual;
+
+-- Point-in-time reconstruction
+CREATE OR REPLACE FUNCTION get_employee_at_date(p_employee_id NUMBER,
+   p_date DATE
+) RETURN SYS_REFCURSOR IS
+   v_cursor SYS_REFCURSOR;
+BEGIN
+   OPEN v_cursor FOR
+       SELECT employee_id, first_name, last_name, salary, department_id,
+              effective_date, end_date
+       FROM employee_history
+       WHERE employee_id = p_employee_id
+         AND p_date BETWEEN effective_date AND end_date;
+   
+   RETURN v_cursor;
+END;
+/
+
+-- Usage example
+DECLARE
+   v_cursor SYS_REFCURSOR;
+   v_emp_id NUMBER;
+   v_name VARCHAR2(100);
+   v_salary NUMBER;
+   v_dept NUMBER;
+   v_start DATE;
+   v_end DATE;
+BEGIN
+   v_cursor := get_employee_at_date(101, DATE '2023-08-15');
+   
+   FETCH v_cursor INTO v_emp_id, v_name, v_name, v_salary, v_dept, v_start, v_end;
+   
+   IF v_cursor%FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('Employee ' || v_emp_id || ' on 2023-08-15:');
+       DBMS_OUTPUT.PUT_LINE('Salary: ' || v_salary);
+       DBMS_OUTPUT.PUT_LINE('Department: ' || v_dept);
+   ELSE
+       DBMS_OUTPUT.PUT_LINE('No data found for that date');
+   END IF;
+   
+   CLOSE v_cursor;
+END;
+/`
+   },
+   {
+       id: 106,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Write a query to implement real-time data synchronization between Oracle databases.',
+       answer: 'Use Oracle Streams, GoldenGate, or custom triggers and database links to implement real-time data replication and synchronization.',
+       language: 'Oracle SQL',
+       code: `-- Method 1: Database Link and Trigger-based Synchronization
+-- Create database link to target database
+CREATE DATABASE LINK target_db
+CONNECT TO sync_user IDENTIFIED BY password
+USING 'target_database_tns';
+
+-- Test database link
+SELECT * FROM dual@target_db;
+
+-- Create synchronization log table
+CREATE TABLE sync_log (
+   log_id NUMBER GENERATED ALWAYS AS IDENTITY,
+   table_name VARCHAR2(50),
+   operation VARCHAR2(10),
+   record_id VARCHAR2(100),
+   sync_status VARCHAR2(20) DEFAULT 'PENDING',
+   error_message VARCHAR2(4000),
+   created_date TIMESTAMP DEFAULT SYSTIMESTAMP,
+   processed_date TIMESTAMP
+);
+
+-- Synchronization trigger for employees table
+CREATE OR REPLACE TRIGGER trg_employee_sync
+AFTER INSERT OR UPDATE OR DELETE ON employees
+FOR EACH ROW
+DECLARE
+   v_operation VARCHAR2(10);
+   v_employee_id NUMBER;
+   v_sql VARCHAR2(4000);
+BEGIN
+   -- Determine operation and employee ID
+   IF INSERTING THEN
+       v_operation := 'INSERT';
+       v_employee_id := :NEW.employee_id;
+       
+       v_sql := 'INSERT INTO employees@target_db (employee_id, first_name, last_name, email, salary, department_id, hire_date) ' ||
+                'VALUES (' || :NEW.employee_id || ', ''' || :NEW.first_name || ''', ''' || :NEW.last_name || ''', ''' ||
+                :NEW.email || ''', ' || :NEW.salary || ', ' || :NEW.department_id || ', DATE ''' || 
+                TO_CHAR(:NEW.hire_date, 'YYYY-MM-DD') || ''')';
+                
+   ELSIF UPDATING THEN
+       v_operation := 'UPDATE';
+       v_employee_id := :NEW.employee_id;
+       
+       v_sql := 'UPDATE employees@target_db SET first_name = ''' || :NEW.first_name || 
+                ''', last_name = ''' || :NEW.last_name || ''', email = ''' || :NEW.email ||
+                ''', salary = ' || :NEW.salary || ', department_id = ' || :NEW.department_id ||
+                ', hire_date = DATE ''' || TO_CHAR(:NEW.hire_date, 'YYYY-MM-DD') || 
+                ''' WHERE employee_id = ' || :NEW.employee_id;
+                
+   ELSIF DELETING THEN
+       v_operation := 'DELETE';
+       v_employee_id := :OLD.employee_id;
+       
+       v_sql := 'DELETE FROM employees@target_db WHERE employee_id = ' || :OLD.employee_id;
+   END IF;
+   
+   -- Log synchronization request
+   INSERT INTO sync_log (table_name, operation, record_id, sync_status)
+   VALUES ('EMPLOYEES', v_operation, v_employee_id, 'PENDING');
+   
+   -- Execute synchronization
+   BEGIN
+       EXECUTE IMMEDIATE v_sql;
+       
+       -- Update log as successful
+       UPDATE sync_log 
+       SET sync_status = 'SUCCESS', processed_date = SYSTIMESTAMP
+       WHERE log_id = (SELECT MAX(log_id) FROM sync_log WHERE record_id = v_employee_id);
+       
+   EXCEPTION
+       WHEN OTHERS THEN
+           -- Log error
+           UPDATE sync_log 
+           SET sync_status = 'ERROR', 
+               error_message = SQLERRM,
+               processed_date = SYSTIMESTAMP
+           WHERE log_id = (SELECT MAX(log_id) FROM sync_log WHERE record_id = v_employee_id);
+   END;
+END;
+/
+
+-- Method 2: Batch Synchronization Procedure
+CREATE OR REPLACE PROCEDURE sync_employees_batch IS
+   CURSOR unsync_records IS
+       SELECT log_id, table_name, operation, record_id
+       FROM sync_log
+       WHERE sync_status = 'PENDING'
+         AND table_name = 'EMPLOYEES'
+       ORDER BY created_date;
+   
+   v_sql VARCHAR2(4000);
+   v_employee_rec employees%ROWTYPE;
+BEGIN
+   FOR rec IN unsync_records LOOP
+       BEGIN
+           -- Get current employee data
+           SELECT * INTO v_employee_rec
+           FROM employees
+           WHERE employee_id = rec.record_id;
+           
+           -- Build sync SQL based on operation
+           CASE rec.operation
+               WHEN 'INSERT' THEN
+                   v_sql := 'INSERT INTO employees@target_db VALUES (' ||
+                            v_employee_rec.employee_id || ', ''' ||
+                            v_employee_rec.first_name || ''', ''' ||
+                            v_employee_rec.last_name || ''', ''' ||
+                            v_employee_rec.email || ''', ' ||
+                            v_employee_rec.salary || ', ' ||
+                            v_employee_rec.department_id || ', DATE ''' ||
+                            TO_CHAR(v_employee_rec.hire_date, 'YYYY-MM-DD') || ''')';
+                            
+               WHEN 'UPDATE' THEN
+                   v_sql := 'UPDATE employees@target_db SET ' ||
+                            'first_name = ''' || v_employee_rec.first_name || ''', ' ||
+                            'last_name = ''' || v_employee_rec.last_name || ''', ' ||
+                            'email = ''' || v_employee_rec.email || ''', ' ||
+                            'salary = ' || v_employee_rec.salary || ', ' ||
+                            'department_id = ' || v_employee_rec.department_id || ', ' ||
+                            'hire_date = DATE ''' || TO_CHAR(v_employee_rec.hire_date, 'YYYY-MM-DD') ||
+                            ''' WHERE employee_id = ' || v_employee_rec.employee_id;
+                            
+               WHEN 'DELETE' THEN
+                   v_sql := 'DELETE FROM employees@target_db WHERE employee_id = ' || rec.record_id;
+           END CASE;
+           
+           -- Execute synchronization
+           EXECUTE IMMEDIATE v_sql;
+           
+           -- Update sync status
+           UPDATE sync_log
+           SET sync_status = 'SUCCESS', processed_date = SYSTIMESTAMP
+           WHERE log_id = rec.log_id;
+           
+       EXCEPTION
+           WHEN NO_DATA_FOUND THEN
+               -- Handle deleted records
+               IF rec.operation != 'DELETE' THEN
+                   UPDATE sync_log
+                   SET sync_status = 'ERROR',
+                       error_message = 'Record not found in source table',
+                       processed_date = SYSTIMESTAMP
+                   WHERE log_id = rec.log_id;
+               END IF;
+               
+           WHEN OTHERS THEN
+               UPDATE sync_log
+               SET sync_status = 'ERROR',
+                   error_message = SQLERRM,
+                   processed_date = SYSTIMESTAMP
+               WHERE log_id = rec.log_id;
+       END;
+       
+       COMMIT;
+   END LOOP;
+END;
+/
+
+-- Method 3: Conflict Resolution for Bi-directional Sync
+CREATE TABLE sync_conflicts (
+   conflict_id NUMBER GENERATED ALWAYS AS IDENTITY,
+   table_name VARCHAR2(50),
+   record_id VARCHAR2(100),
+   source_database VARCHAR2(50),
+   target_database VARCHAR2(50),
+   conflict_type VARCHAR2(50),
+   source_data CLOB,
+   target_data CLOB,
+   resolution_status VARCHAR2(20) DEFAULT 'UNRESOLVED',
+   created_date TIMESTAMP DEFAULT SYSTIMESTAMP,
+   resolved_date TIMESTAMP
+);
+
+-- Conflict detection procedure
+CREATE OR REPLACE PROCEDURE detect_sync_conflicts IS
+   CURSOR source_records IS
+       SELECT employee_id, first_name, last_name, email, salary, 
+              department_id, hire_date
+       FROM employees;
+   
+   v_target_rec employees%ROWTYPE;
+   v_conflict_detected BOOLEAN;
+BEGIN
+   FOR src_rec IN source_records LOOP
+       v_conflict_detected := FALSE;
+       
+       BEGIN
+           -- Get corresponding target record
+           SELECT * INTO v_target_rec
+           FROM employees@target_db
+           WHERE employee_id = src_rec.employee_id;
+           
+           -- Check for data conflicts
+           IF src_rec.first_name != v_target_rec.first_name OR
+              src_rec.last_name != v_target_rec.last_name OR
+              src_rec.email != v_target_rec.email OR
+              src_rec.salary != v_target_rec.salary OR
+              src_rec.department_id != v_target_rec.department_id THEN
+               
+               v_conflict_detected := TRUE;
+               
+               -- Log conflict
+               INSERT INTO sync_conflicts (
+                   table_name, record_id, source_database, target_database,
+                   conflict_type, source_data, target_data
+               ) VALUES (
+                   'EMPLOYEES', src_rec.employee_id, 'SOURCE_DB', 'TARGET_DB',
+                   'DATA_MISMATCH',
+                   JSON_OBJECT(
+                       'first_name' VALUE src_rec.first_name,
+                       'last_name' VALUE src_rec.last_name,
+                       'email' VALUE src_rec.email,
+                       'salary' VALUE src_rec.salary,
+                       'department_id' VALUE src_rec.department_id
+                   ),
+                   JSON_OBJECT(
+                       'first_name' VALUE v_target_rec.first_name,
+                       'last_name' VALUE v_target_rec.last_name,
+                       'email' VALUE v_target_rec.email,
+                       'salary' VALUE v_target_rec.salary,
+                       'department_id' VALUE v_target_rec.department_id
+                   )
+               );
+           END IF;
+           
+       EXCEPTION
+           WHEN NO_DATA_FOUND THEN
+               -- Record exists in source but not in target
+               INSERT INTO sync_conflicts (
+                   table_name, record_id, source_database, target_database,
+                   conflict_type, source_data
+               ) VALUES (
+                   'EMPLOYEES', src_rec.employee_id, 'SOURCE_DB', 'TARGET_DB',
+                   'MISSING_IN_TARGET',
+                   JSON_OBJECT(
+                       'first_name' VALUE src_rec.first_name,
+                       'last_name' VALUE src_rec.last_name,
+                       'email' VALUE src_rec.email,
+                       'salary' VALUE src_rec.salary,
+                       'department_id' VALUE src_rec.department_id
+                   )
+               );
+       END;
+   END LOOP;
+   
+   COMMIT;
+END;
+/
+
+-- Method 4: Monitoring and Alerting
+CREATE OR REPLACE PROCEDURE monitor_sync_health IS
+   v_pending_count NUMBER;
+   v_error_count NUMBER;
+   v_old_errors NUMBER;
+   v_alert_message VARCHAR2(4000);
+BEGIN
+   -- Count pending synchronizations
+   SELECT COUNT(*) INTO v_pending_count
+   FROM sync_log
+   WHERE sync_status = 'PENDING'
+     AND created_date >= SYSTIMESTAMP - INTERVAL '1' HOUR;
+   
+   -- Count recent errors
+   SELECT COUNT(*) INTO v_error_count
+   FROM sync_log
+   WHERE sync_status = 'ERROR'
+     AND created_date >= SYSTIMESTAMP - INTERVAL '1' HOUR;
+   
+   -- Count old unresolved errors
+   SELECT COUNT(*) INTO v_old_errors
+   FROM sync_log
+   WHERE sync_status = 'ERROR'
+     AND created_date < SYSTIMESTAMP - INTERVAL '24' HOUR;
+   
+   -- Generate alerts
+   IF v_pending_count > 100 THEN
+       v_alert_message := 'HIGH: ' || v_pending_count || ' pending sync operations';
+       -- Send alert (implement your alerting mechanism)
+       DBMS_OUTPUT.PUT_LINE(v_alert_message);
+   END IF;
+   
+   IF v_error_count > 10 THEN
+       v_alert_message := 'CRITICAL: ' || v_error_count || ' sync errors in last hour';
+       DBMS_OUTPUT.PUT_LINE(v_alert_message);
+   END IF;
+   
+   IF v_old_errors > 0 THEN
+       v_alert_message := 'WARNING: ' || v_old_errors || ' unresolved sync errors older than 24 hours';
+       DBMS_OUTPUT.PUT_LINE(v_alert_message);
+   END IF;
+   
+   -- Log health check
+   INSERT INTO sync_health_log (
+       check_date, pending_count, error_count, old_error_count
+   ) VALUES (
+       SYSTIMESTAMP, v_pending_count, v_error_count, v_old_errors
+   );
+   
+   COMMIT;
+END;
+/
+
+-- Create health monitoring table
+CREATE TABLE sync_health_log (
+   check_date TIMESTAMP,
+   pending_count NUMBER,
+   error_count NUMBER,
+   old_error_count NUMBER
+);
+
+-- Schedule health monitoring job
+BEGIN
+   DBMS_SCHEDULER.CREATE_JOB(
+       job_name => 'SYNC_HEALTH_MONITOR',
+       job_type => 'PLSQL_BLOCK',
+       job_action => 'BEGIN monitor_sync_health; END;',
+       start_date => SYSTIMESTAMP,
+       repeat_interval => 'FREQ=MINUTELY; INTERVAL=15',
+       enabled => TRUE,
+       comments => 'Monitor synchronization health every 15 minutes'
+   );
+END;
+/
+
+-- Sync status queries
+-- Overall sync performance
+SELECT sync_status, COUNT(*) as count,
+      MIN(created_date) as oldest_request,
+      MAX(created_date) as newest_request
+FROM sync_log
+WHERE created_date >= TRUNC(SYSDATE)
+GROUP BY sync_status;
+
+-- Error analysis
+SELECT error_message, COUNT(*) as frequency
+FROM sync_log
+WHERE sync_status = 'ERROR'
+ AND created_date >= TRUNC(SYSDATE) - 7
+GROUP BY error_message
+ORDER BY COUNT(*) DESC;
+
+-- Sync latency analysis
+SELECT table_name,
+      AVG(EXTRACT(SECOND FROM (processed_date - created_date))) as avg_latency_seconds,
+      MAX(EXTRACT(SECOND FROM (processed_date - created_date))) as max_latency_seconds,
+      COUNT(*) as total_operations
+FROM sync_log
+WHERE sync_status = 'SUCCESS'
+ AND created_date >= TRUNC(SYSDATE) - 1
+GROUP BY table_name;`
+   }
+];
+
+           
+
 
           
 
