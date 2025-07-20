@@ -3056,7 +3056,852 @@ JOIN (
     GROUP BY manager_id
 ) mgr_reports ON emp.manager_id = mgr_reports.manager_id
 WHERE emp_reports.direct_reports > mgr_reports.direct_reports;`
-            }
+            },
+
+
+            // ADVANCED ORACLE SQL QUESTIONS (83-120) - From Internet Research
+   {
+       id: 83,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you write recursive CTEs to handle hierarchical data in Oracle?',
+       answer: 'Recursive CTEs allow you to query hierarchical data by defining an anchor member (base case) and recursive member that references itself until a termination condition is met.',
+       language: 'Oracle SQL',
+       code: `-- Basic recursive CTE structure
+WITH RECURSIVE hierarchy_cte AS (
+   -- Anchor member (base case)
+   SELECT employee_id, name, manager_id, 1 as level
+   FROM employees 
+   WHERE manager_id IS NULL
+   
+   UNION ALL
+   
+   -- Recursive member
+   SELECT e.employee_id, e.name, e.manager_id, h.level + 1
+   FROM employees e
+   INNER JOIN hierarchy_cte h ON e.manager_id = h.employee_id
+)
+SELECT * FROM hierarchy_cte;
+
+-- Employee hierarchy with path
+WITH RECURSIVE emp_hierarchy AS (
+   SELECT employee_id, name, manager_id, name as path, 1 as level
+   FROM employees
+   WHERE manager_id IS NULL
+   
+   UNION ALL
+   
+   SELECT e.employee_id, e.name, e.manager_id, 
+          h.path || ' -> ' || e.name as path, h.level + 1
+   FROM employees e
+   JOIN emp_hierarchy h ON e.manager_id = h.employee_id
+   WHERE h.level < 10 -- Prevent infinite recursion
+)
+SELECT employee_id, name, level, path
+FROM emp_hierarchy
+ORDER BY level, name;
+
+-- Alternative Oracle CONNECT BY syntax
+SELECT employee_id, name, manager_id, LEVEL,
+      SYS_CONNECT_BY_PATH(name, ' -> ') as hierarchy_path
+FROM employees
+START WITH manager_id IS NULL
+CONNECT BY PRIOR employee_id = manager_id
+ORDER SIBLINGS BY name;`
+   },
+   {
+       id: 84,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Explain the difference between RANK(), DENSE_RANK(), and ROW_NUMBER() with practical examples.',
+       answer: 'These ranking functions handle ties differently: ROW_NUMBER() assigns unique sequential numbers, RANK() skips ranks after ties, DENSE_RANK() assigns consecutive ranks without gaps.',
+       language: 'Oracle SQL',
+       code: `-- Sample data with ties
+WITH sample_scores AS (
+   SELECT 'Alice' as name, 95 as score FROM dual UNION ALL
+   SELECT 'Bob', 87 FROM dual UNION ALL
+   SELECT 'Carol', 95 FROM dual UNION ALL
+   SELECT 'David', 82 FROM dual UNION ALL
+   SELECT 'Eve', 87 FROM dual
+)
+SELECT name, score,
+      ROW_NUMBER() OVER (ORDER BY score DESC) as row_num,
+      RANK() OVER (ORDER BY score DESC) as rank_val,
+      DENSE_RANK() OVER (ORDER BY score DESC) as dense_rank_val
+FROM sample_scores;
+
+-- Results:
+-- Alice    95    1    1    1
+-- Carol    95    2    1    1  (tie handling difference)
+-- Bob      87    3    3    2  (RANK skips 2, DENSE_RANK doesn't)
+-- Eve      87    4    3    2
+-- David    82    5    5    3
+
+-- Practical use case: Top N per group
+SELECT department_id, employee_id, salary, salary_rank
+FROM (
+   SELECT department_id, employee_id, salary,
+          DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as salary_rank
+   FROM employees
+)
+WHERE salary_rank <= 3;
+
+-- When to use which:
+-- ROW_NUMBER(): When you need unique ranking (pagination, unique identifiers)
+-- RANK(): When gaps in ranking are acceptable (sports rankings)
+-- DENSE_RANK(): When you need continuous ranking (grade classifications)`
+   },
+   {
+       id: 85,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you calculate running totals and moving averages using window functions?',
+       answer: 'Use window functions with frame specifications (ROWS/RANGE BETWEEN) to calculate cumulative values and moving averages over ordered datasets.',
+       language: 'Oracle SQL',
+       code: `-- Running totals and moving averages
+SELECT month_date, sales_amount,
+      -- Running total (cumulative sum)
+      SUM(sales_amount) OVER (ORDER BY month_date 
+                             ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as running_total,
+      
+      -- 3-month moving average
+      AVG(sales_amount) OVER (ORDER BY month_date 
+                             ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as moving_avg_3m,
+      
+      -- 6-month moving total
+      SUM(sales_amount) OVER (ORDER BY month_date 
+                             ROWS BETWEEN 5 PRECEDING AND CURRENT ROW) as moving_total_6m,
+      
+      -- Year-to-date calculation
+      SUM(sales_amount) OVER (PARTITION BY EXTRACT(YEAR FROM month_date) 
+                             ORDER BY month_date) as ytd_sales,
+      
+      -- Percentage of running total
+      ROUND(sales_amount / SUM(sales_amount) OVER (ORDER BY month_date 
+                                                  ROWS UNBOUNDED PRECEDING) * 100, 2) as pct_running_total
+FROM monthly_sales
+ORDER BY month_date;
+
+-- Advanced frame specifications
+SELECT employee_id, salary, hire_date,
+      -- Centered moving average (previous, current, next)
+      AVG(salary) OVER (ORDER BY hire_date 
+                       ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as centered_avg,
+      
+      -- Range-based frame (salary within 5000 range)
+      AVG(salary) OVER (ORDER BY salary 
+                       RANGE BETWEEN 2500 PRECEDING AND 2500 FOLLOWING) as range_avg
+FROM employees;`
+   },
+   {
+       id: 86,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Write a query to find employees who earn more than their manager using correlated subqueries.',
+       answer: 'Use correlated subqueries or self-joins to compare employee salaries with their manager\'s salaries.',
+       language: 'Oracle SQL',
+       code: `-- Method 1: Using correlated subquery
+SELECT e.employee_id, e.first_name, e.last_name, e.salary, e.manager_id
+FROM employees e
+WHERE e.salary > (
+   SELECT m.salary
+   FROM employees m
+   WHERE m.employee_id = e.manager_id
+);
+
+-- Method 2: Using self-join
+SELECT e.employee_id, e.first_name, e.last_name, e.salary as emp_salary,
+      m.employee_id as mgr_id, m.first_name as mgr_name, m.salary as mgr_salary
+FROM employees e
+JOIN employees m ON e.manager_id = m.employee_id
+WHERE e.salary > m.salary;
+
+-- Method 3: Using window functions (more efficient for large datasets)
+SELECT employee_id, first_name, last_name, salary, manager_salary
+FROM (
+   SELECT employee_id, first_name, last_name, salary, manager_id,
+          LAG(salary) OVER (PARTITION BY manager_id ORDER BY employee_id) as manager_salary
+   FROM employees
+)
+WHERE salary > manager_salary;
+
+-- Method 4: Include additional analysis
+SELECT e.employee_id, e.first_name, e.salary as emp_salary,
+      m.salary as mgr_salary,
+      e.salary - m.salary as salary_difference,
+      ROUND((e.salary - m.salary) / m.salary * 100, 2) as pct_higher
+FROM employees e
+JOIN employees m ON e.manager_id = m.employee_id
+WHERE e.salary > m.salary
+ORDER BY salary_difference DESC;`
+   },
+   {
+       id: 87,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you pivot and unpivot data in Oracle SQL?',
+       answer: 'Oracle provides PIVOT and UNPIVOT operators to transform rows to columns and vice versa, useful for reporting and data analysis.',
+       language: 'Oracle SQL',
+       code: `-- Sample data for pivot example
+CREATE TABLE quarterly_sales (
+   year NUMBER,
+   quarter VARCHAR2(2),
+   sales_amount NUMBER
+);
+
+-- PIVOT: Transform rows to columns
+SELECT year, Q1, Q2, Q3, Q4
+FROM (
+   SELECT year, quarter, sales_amount
+   FROM quarterly_sales
+)
+PIVOT (
+   SUM(sales_amount)
+   FOR quarter IN ('Q1' as Q1, 'Q2' as Q2, 'Q3' as Q3, 'Q4' as Q4)
+);
+
+-- Dynamic PIVOT with XML
+SELECT year, 
+      EXTRACTVALUE(xml_data, '/PivotSet/item[1]/@val') as Q1,
+      EXTRACTVALUE(xml_data, '/PivotSet/item[2]/@val') as Q2,
+      EXTRACTVALUE(xml_data, '/PivotSet/item[3]/@val') as Q3,
+      EXTRACTVALUE(xml_data, '/PivotSet/item[4]/@val') as Q4
+FROM (
+   SELECT year,
+          XMLAGG(XMLELEMENT("item", XMLATTRIBUTES(quarter as "key", sales_amount as "val"))) as xml_data
+   FROM quarterly_sales
+   GROUP BY year
+);
+
+-- UNPIVOT: Transform columns to rows
+CREATE TABLE yearly_summary (
+   year NUMBER,
+   Q1 NUMBER,
+   Q2 NUMBER, 
+   Q3 NUMBER,
+   Q4 NUMBER
+);
+
+SELECT year, quarter, sales_amount
+FROM yearly_summary
+UNPIVOT (
+   sales_amount FOR quarter IN (Q1, Q2, Q3, Q4)
+);
+
+-- Alternative method using UNION ALL
+SELECT year, 'Q1' as quarter, Q1 as sales_amount FROM yearly_summary
+UNION ALL
+SELECT year, 'Q2' as quarter, Q2 as sales_amount FROM yearly_summary
+UNION ALL
+SELECT year, 'Q3' as quarter, Q3 as sales_amount FROM yearly_summary
+UNION ALL
+SELECT year, 'Q4' as quarter, Q4 as sales_amount FROM yearly_summary;`
+   },
+   {
+       id: 88,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Explain Oracle execution plans and how to optimize slow queries.',
+       answer: 'Execution plans show how Oracle processes SQL statements. Use EXPLAIN PLAN, AUTOTRACE, and SQL tuning techniques to optimize performance.',
+       language: 'Oracle SQL',
+       code: `-- Generate and view execution plan
+EXPLAIN PLAN FOR
+SELECT e.first_name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+WHERE e.salary > 50000;
+
+-- View the execution plan
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+-- Alternative: Use AUTOTRACE
+SET AUTOTRACE ON EXPLAIN;
+SELECT COUNT(*) FROM employees WHERE salary > 50000;
+SET AUTOTRACE OFF;
+
+-- Analyze execution plan components
+SELECT operation, options, object_name, cost, cardinality, bytes
+FROM plan_table
+WHERE plan_id = (SELECT MAX(plan_id) FROM plan_table);
+
+-- Common optimization techniques
+-- 1. Add appropriate indexes
+CREATE INDEX idx_emp_salary ON employees(salary);
+CREATE INDEX idx_emp_dept_join ON employees(department_id, salary);
+
+-- 2. Use hints when necessary (use sparingly)
+SELECT /*+ USE_INDEX(e, idx_emp_salary) */ 
+      e.first_name, e.salary
+FROM employees e
+WHERE e.salary > 50000;
+
+-- 3. Rewrite inefficient queries
+-- Bad: Using functions in WHERE clause
+SELECT * FROM employees WHERE UPPER(first_name) = 'JOHN';
+
+-- Good: Use function-based index or avoid function
+CREATE INDEX idx_emp_upper_name ON employees(UPPER(first_name));
+-- or
+SELECT * FROM employees WHERE first_name = 'John';
+
+-- 4. Optimize JOIN order and conditions
+-- Ensure proper JOIN conditions and consider driving table
+SELECT /*+ LEADING(d) USE_NL(e) */
+      e.first_name, d.department_name
+FROM departments d
+JOIN employees e ON d.department_id = e.department_id
+WHERE d.department_name = 'Sales';
+
+-- 5. Use EXISTS instead of IN for better performance
+-- Less efficient
+SELECT * FROM departments 
+WHERE department_id IN (SELECT department_id FROM employees);
+
+-- More efficient  
+SELECT * FROM departments d
+WHERE EXISTS (SELECT 1 FROM employees e WHERE e.department_id = d.department_id);`
+   },
+   {
+       id: 89,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you handle large datasets and implement pagination efficiently in Oracle?',
+       answer: 'Use ROWNUM, ROW_NUMBER(), or OFFSET/FETCH for pagination. Consider performance implications and use appropriate indexing strategies.',
+       language: 'Oracle SQL',
+       code: `-- Method 1: OFFSET/FETCH (Oracle 12c+) - Recommended
+SELECT employee_id, first_name, last_name, salary
+FROM employees
+ORDER BY salary DESC
+OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY;
+
+-- Method 2: ROW_NUMBER() with subquery
+SELECT employee_id, first_name, last_name, salary
+FROM (
+   SELECT employee_id, first_name, last_name, salary,
+          ROW_NUMBER() OVER (ORDER BY salary DESC) as rn
+   FROM employees
+)
+WHERE rn BETWEEN 21 AND 30;
+
+-- Method 3: ROWNUM (Oracle 11g and earlier)
+SELECT employee_id, first_name, last_name, salary
+FROM (
+   SELECT employee_id, first_name, last_name, salary, ROWNUM rn
+   FROM (
+       SELECT employee_id, first_name, last_name, salary
+       FROM employees
+       ORDER BY salary DESC
+   )
+   WHERE ROWNUM <= 30
+)
+WHERE rn >= 21;
+
+-- Efficient pagination with seek method (for large datasets)
+-- First page
+SELECT employee_id, first_name, last_name, salary
+FROM employees
+WHERE salary IS NOT NULL
+ORDER BY salary DESC, employee_id
+FETCH NEXT 10 ROWS ONLY;
+
+-- Subsequent pages (using last row from previous page)
+SELECT employee_id, first_name, last_name, salary
+FROM employees
+WHERE (salary < :last_salary OR (salary = :last_salary AND employee_id > :last_employee_id))
+ AND salary IS NOT NULL
+ORDER BY salary DESC, employee_id
+FETCH NEXT 10 ROWS ONLY;
+
+-- Performance optimization for pagination
+-- Create appropriate indexes
+CREATE INDEX idx_emp_salary_id ON employees(salary DESC, employee_id);
+
+-- Count total rows efficiently (for pagination info)
+SELECT COUNT(*) OVER() as total_count,
+      employee_id, first_name, salary
+FROM employees
+WHERE salary > 50000
+ORDER BY salary DESC
+OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
+
+-- Batch processing for large datasets
+DECLARE
+   CURSOR emp_cursor IS
+       SELECT employee_id, salary
+       FROM employees
+       ORDER BY employee_id;
+   
+   TYPE emp_array IS TABLE OF emp_cursor%ROWTYPE;
+   emp_batch emp_array;
+   
+   batch_size CONSTANT NUMBER := 1000;
+BEGIN
+   OPEN emp_cursor;
+   LOOP
+       FETCH emp_cursor BULK COLLECT INTO emp_batch LIMIT batch_size;
+       
+       -- Process batch
+       FOR i IN 1..emp_batch.COUNT LOOP
+           -- Update salary logic here
+           UPDATE employees 
+           SET salary = emp_batch(i).salary * 1.1 
+           WHERE employee_id = emp_batch(i).employee_id;
+       END LOOP;
+       
+       COMMIT; -- Commit each batch
+       
+       EXIT WHEN emp_cursor%NOTFOUND;
+   END LOOP;
+   CLOSE emp_cursor;
+END;
+/`
+   },
+   {
+       id: 90,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Write a query to find gaps and islands in sequential data.',
+       answer: 'Use window functions and analytical techniques to identify missing sequences (gaps) and continuous sequences (islands) in data.',
+       language: 'Oracle SQL',
+       code: `-- Sample data: employee badge access logs
+CREATE TABLE badge_access (
+   employee_id NUMBER,
+   access_date DATE
+);
+
+-- Finding gaps in sequential dates
+WITH date_sequence AS (
+   SELECT employee_id, access_date,
+          LAG(access_date) OVER (PARTITION BY employee_id ORDER BY access_date) as prev_date,
+          access_date - LAG(access_date) OVER (PARTITION BY employee_id ORDER BY access_date) as day_diff
+   FROM badge_access
+),
+gaps AS (
+   SELECT employee_id, prev_date + 1 as gap_start, access_date - 1 as gap_end
+   FROM date_sequence
+   WHERE day_diff > 1
+)
+SELECT employee_id, gap_start, gap_end, gap_end - gap_start + 1 as gap_days
+FROM gaps;
+
+-- Finding islands (consecutive sequences)
+WITH numbered_sequence AS (
+   SELECT employee_id, access_date,
+          ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY access_date) as rn,
+          access_date - ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY access_date) as island_group
+   FROM badge_access
+),
+islands AS (
+   SELECT employee_id, island_group, 
+          MIN(access_date) as island_start,
+          MAX(access_date) as island_end,
+          COUNT(*) as consecutive_days
+   FROM numbered_sequence
+   GROUP BY employee_id, island_group
+)
+SELECT employee_id, island_start, island_end, consecutive_days
+FROM islands
+WHERE consecutive_days >= 5 -- Islands of 5+ consecutive days
+ORDER BY employee_id, island_start;
+
+-- Finding gaps in numeric sequences (like order numbers)
+WITH order_gaps AS (
+   SELECT order_id,
+          LAG(order_id) OVER (ORDER BY order_id) as prev_order_id,
+          order_id - LAG(order_id) OVER (ORDER BY order_id) - 1 as gap_size
+   FROM orders
+)
+SELECT prev_order_id + 1 as missing_start,
+      order_id - 1 as missing_end,
+      gap_size as missing_count
+FROM order_gaps
+WHERE gap_size > 0;
+
+-- Generate missing sequence numbers
+WITH RECURSIVE missing_orders AS (
+   SELECT prev_order_id + 1 as missing_id, order_id - 1 as max_missing
+   FROM order_gaps
+   WHERE gap_size > 0
+   
+   UNION ALL
+   
+   SELECT missing_id + 1, max_missing
+   FROM missing_orders
+   WHERE missing_id < max_missing
+)
+SELECT missing_id as missing_order_id
+FROM missing_orders
+ORDER BY missing_id;`
+   },
+   {
+       id: 91,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you work with JSON data in Oracle Database?',
+       answer: 'Oracle provides JSON functions and operators to store, query, and manipulate JSON data efficiently using SQL.',
+       language: 'Oracle SQL',
+       code: `-- Create table with JSON column
+CREATE TABLE customer_data (
+   customer_id NUMBER,
+   customer_info JSON
+);
+
+-- Insert JSON data
+INSERT INTO customer_data VALUES (
+   1, 
+   JSON_OBJECT(
+       'name' VALUE 'John Doe',
+       'age' VALUE 30,
+       'email' VALUE 'john@email.com',
+       'address' VALUE JSON_OBJECT(
+           'street' VALUE '123 Main St',
+           'city' VALUE 'New York',
+           'zipcode' VALUE '10001'
+       ),
+       'orders' VALUE JSON_ARRAY(101, 102, 103)
+   )
+);
+
+-- Query JSON data using dot notation
+SELECT customer_id,
+      customer_info.name as customer_name,
+      customer_info.age as age,
+      customer_info.address.city as city
+FROM customer_data;
+
+-- Query JSON arrays
+SELECT customer_id,
+      customer_info.name as customer_name,
+      jo.order_id
+FROM customer_data c,
+    JSON_TABLE(c.customer_info, '$.orders[*]' 
+               COLUMNS (order_id NUMBER PATH '$')) jo;
+
+-- Complex JSON queries with JSON_TABLE
+SELECT customer_id, name, age, street, city, order_id
+FROM customer_data,
+    JSON_TABLE(customer_info, '$'
+               COLUMNS (
+                   name VARCHAR2(100) PATH '$.name',
+                   age NUMBER PATH '$.age',
+                   street VARCHAR2(200) PATH '$.address.street',
+                   city VARCHAR2(100) PATH '$.address.city',
+                   NESTED PATH '$.orders[*]' COLUMNS (
+                       order_id NUMBER PATH '$'
+                   )
+               ));
+
+-- JSON aggregation
+SELECT JSON_OBJECT(
+   'total_customers' VALUE COUNT(*),
+   'avg_age' VALUE AVG(customer_info.age.number()),
+   'cities' VALUE JSON_ARRAYAGG(DISTINCT customer_info.address.city.string())
+) as summary
+FROM customer_data;
+
+-- Update JSON data
+UPDATE customer_data
+SET customer_info = JSON_MERGEPATCH(
+   customer_info,
+   JSON_OBJECT('phone' VALUE '555-1234')
+)
+WHERE customer_id = 1;
+
+-- Search within JSON
+SELECT customer_id, customer_info.name
+FROM customer_data
+WHERE JSON_EXISTS(customer_info, '$.address.city?(@ == "New York")');
+
+-- Create indexes on JSON data
+CREATE INDEX idx_customer_name ON customer_data (JSON_VALUE(customer_info, '$.name'));
+CREATE INDEX idx_customer_city ON customer_data (JSON_VALUE(customer_info, '$.address.city'));`
+   },
+   {
+       id: 92,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Explain Oracle partitioning and write queries for partitioned tables.',
+       answer: 'Oracle partitioning divides large tables into smaller, manageable pieces based on partition keys, improving performance and maintenance.',
+       language: 'Oracle SQL',
+       code: `-- Range partitioning by date
+CREATE TABLE sales_data (
+   sale_id NUMBER,
+   sale_date DATE,
+   customer_id NUMBER,
+   amount NUMBER
+)
+PARTITION BY RANGE (sale_date) (
+   PARTITION p_2022 VALUES LESS THAN (DATE '2023-01-01'),
+   PARTITION p_2023 VALUES LESS THAN (DATE '2024-01-01'),
+   PARTITION p_2024 VALUES LESS THAN (DATE '2025-01-01'),
+   PARTITION p_future VALUES LESS THAN (MAXVALUE)
+);
+
+-- List partitioning by region
+CREATE TABLE customer_regional (
+   customer_id NUMBER,
+   name VARCHAR2(100),
+   region VARCHAR2(50),
+   signup_date DATE
+)
+PARTITION BY LIST (region) (
+   PARTITION p_north VALUES ('North', 'Northeast'),
+   PARTITION p_south VALUES ('South', 'Southeast'),
+   PARTITION p_west VALUES ('West', 'Northwest'),
+   PARTITION p_other VALUES (DEFAULT)
+);
+
+-- Hash partitioning for even distribution
+CREATE TABLE user_sessions (
+   session_id VARCHAR2(50),
+   user_id NUMBER,
+   start_time TIMESTAMP,
+   end_time TIMESTAMP
+)
+PARTITION BY HASH (user_id) PARTITIONS 8;
+
+-- Composite partitioning (Range-Hash)
+CREATE TABLE order_details (
+   order_id NUMBER,
+   order_date DATE,
+   customer_id NUMBER,
+   product_id NUMBER,
+   quantity NUMBER
+)
+PARTITION BY RANGE (order_date)
+SUBPARTITION BY HASH (customer_id) SUBPARTITIONS 4 (
+   PARTITION p_2023_q1 VALUES LESS THAN (DATE '2023-04-01'),
+   PARTITION p_2023_q2 VALUES LESS THAN (DATE '2023-07-01'),
+   PARTITION p_2023_q3 VALUES LESS THAN (DATE '2023-10-01'),
+   PARTITION p_2023_q4 VALUES LESS THAN (DATE '2024-01-01')
+);
+
+-- Query specific partitions
+SELECT * FROM sales_data PARTITION (p_2023)
+WHERE amount > 1000;
+
+-- Cross-partition queries
+SELECT EXTRACT(YEAR FROM sale_date) as year,
+      SUM(amount) as total_sales
+FROM sales_data
+WHERE sale_date BETWEEN DATE '2022-01-01' AND DATE '2024-12-31'
+GROUP BY EXTRACT(YEAR FROM sale_date);
+
+-- Partition maintenance operations
+-- Add new partition
+ALTER TABLE sales_data ADD PARTITION p_2025 VALUES LESS THAN (DATE '2026-01-01');
+
+-- Drop old partition
+ALTER TABLE sales_data DROP PARTITION p_2022;
+
+-- Split partition
+ALTER TABLE sales_data SPLIT PARTITION p_future 
+AT (DATE '2026-01-01') INTO (PARTITION p_2025, PARTITION p_future);
+
+-- Partition-wise joins (both tables partitioned on same key)
+SELECT s.sale_date, s.amount, c.name
+FROM sales_data s
+JOIN customer_regional c ON s.customer_id = c.customer_id
+WHERE s.sale_date >= DATE '2023-01-01';
+
+-- Check partition information
+SELECT table_name, partition_name, high_value, num_rows
+FROM user_tab_partitions
+WHERE table_name = 'SALES_DATA'
+ORDER BY partition_position;
+
+-- Partition pruning examples
+-- This query will only scan p_2023 partition
+SELECT COUNT(*) FROM sales_data 
+WHERE sale_date BETWEEN DATE '2023-06-01' AND DATE '2023-06-30';
+
+-- Parallel operations on partitions
+SELECT /*+ PARALLEL(s, 4) */ 
+      EXTRACT(MONTH FROM sale_date) as month,
+      SUM(amount) as monthly_sales
+FROM sales_data s
+WHERE EXTRACT(YEAR FROM sale_date) = 2023
+GROUP BY EXTRACT(MONTH FROM sale_date);`
+   },
+   {
+       id: 93,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you handle transactions and locking in Oracle?',
+       answer: 'Oracle uses automatic transaction management with COMMIT/ROLLBACK and provides various locking mechanisms to ensure data consistency.',
+       language: 'Oracle SQL',
+       code: `-- Basic transaction control
+BEGIN
+   -- Start implicit transaction
+   UPDATE employees SET salary = salary * 1.1 WHERE department_id = 10;
+   INSERT INTO salary_audit (employee_id, old_salary, new_salary, change_date)
+   SELECT employee_id, salary/1.1, salary, SYSDATE 
+   FROM employees WHERE department_id = 10;
+   
+   -- Commit all changes
+   COMMIT;
+EXCEPTION
+   WHEN OTHERS THEN
+       -- Rollback on error
+       ROLLBACK;
+       RAISE;
+END;
+/
+
+-- Savepoints for partial rollback
+BEGIN
+   UPDATE employees SET salary = salary + 1000 WHERE employee_id = 101;
+   SAVEPOINT after_first_update;
+   
+   UPDATE employees SET salary = salary + 500 WHERE employee_id = 102;
+   SAVEPOINT after_second_update;
+   
+   -- Some error condition
+   IF SQL%ROWCOUNT = 0 THEN
+       ROLLBACK TO after_first_update; -- Partial rollback
+   END IF;
+   
+   COMMIT;
+END;
+/
+
+-- Explicit locking with SELECT FOR UPDATE
+-- Lock specific rows for update
+SELECT employee_id, salary
+FROM employees
+WHERE department_id = 10
+FOR UPDATE;
+
+-- Update the locked rows
+UPDATE employees 
+SET salary = salary * 1.1 
+WHERE department_id = 10;
+
+COMMIT; -- Releases locks
+
+-- Row-level locking with NOWAIT
+BEGIN
+   SELECT employee_id, salary
+   FROM employees
+   WHERE employee_id = 101
+   FOR UPDATE NOWAIT; -- Don't wait if row is locked
+   
+   -- Perform updates
+   UPDATE employees SET salary = 75000 WHERE employee_id = 101;
+   COMMIT;
+EXCEPTION
+   WHEN RESOURCE_BUSY THEN
+       DBMS_OUTPUT.PUT_LINE('Row is locked by another session');
+END;
+/
+
+-- Lock specific columns
+SELECT employee_id, salary, commission_pct
+FROM employees
+WHERE department_id = 20
+FOR UPDATE OF salary; -- Only lock salary column
+
+-- Check current locks
+SELECT s.sid, s.serial#, s.username, s.status,
+      l.type, l.mode_held, l.mode_requested,
+      o.object_name
+FROM v$session s
+JOIN v$lock l ON s.sid = l.sid
+JOIN dba_objects o ON l.id1 = o.object_id
+WHERE s.username IS NOT NULL;
+
+-- Deadlock handling
+CREATE OR REPLACE PROCEDURE transfer_funds(
+   p_from_account NUMBER,
+   p_to_account NUMBER,
+   p_amount NUMBER
+) IS
+   deadlock_detected EXCEPTION;
+   PRAGMA EXCEPTION_INIT(deadlock_detected, -60);
+BEGIN
+   -- Lock accounts in consistent order to avoid deadlocks
+   IF p_from_account < p_to_account THEN
+       SELECT balance INTO l_from_balance
+       FROM accounts WHERE account_id = p_from_account FOR UPDATE;
+       
+       SELECT balance INTO l_to_balance  
+       FROM accounts WHERE account_id = p_to_account FOR UPDATE;
+   ELSE
+       SELECT balance INTO l_to_balance
+       FROM accounts WHERE account_id = p_to_account FOR UPDATE;
+       
+       SELECT balance INTO l_from_balance
+       FROM accounts WHERE account_id = p_from_account FOR UPDATE;
+   END IF;
+   
+   -- Perform transfer
+   UPDATE accounts SET balance = balance - p_amount WHERE account_id = p_from_account;
+   UPDATE accounts SET balance = balance + p_amount WHERE account_id = p_to_account;
+   
+   COMMIT;
+EXCEPTION
+   WHEN deadlock_detected THEN
+       ROLLBACK;
+       DBMS_OUTPUT.PUT_LINE('Deadlock detected, transaction rolled back');
+       RAISE;
+END;
+/
+
+-- Set transaction isolation level
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+-- or
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+-- Read-only transactions
+SET TRANSACTION READ ONLY;
+SELECT * FROM employees WHERE hire_date >= DATE '2023-01-01';
+COMMIT;
+
+-- Check transaction status
+SELECT s.sid, s.serial#, s.username, 
+      t.status, t.start_time, t.used_ublk
+FROM v$session s
+JOIN v$transaction t ON s.saddr = t.ses_addr
+WHERE s.username = USER;`
+   },
+   {
+       id: 94,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Write a query to find the median salary for each department without using built-in median functions.',
+       answer: 'Calculate median using window functions and percentile logic by finding the middle value(s) in ordered datasets.',
+       language: 'Oracle SQL',
+       code: `-- Method 1: Using PERCENTILE_CONT (if allowed)
+SELECT department_id,
+      PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) as median_salary
+FROM employees
+GROUP BY department_id;
+
+-- Method 2: Manual median calculation using ROW_NUMBER
+WITH ranked_salaries AS (
+   SELECT department_id, salary,
+          ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary) as rn,
+          COUNT(*) OVER (PARTITION BY department_id) as total_count
+   FROM employees
+),
+median_positions AS (
+   SELECT department_id, salary, rn, total_count,
+          CASE 
+              WHEN MOD(total_count, 2) = 1 THEN (total_count + 1) / 2
+              ELSE total_count / 2
+          END as median_pos1,
+
+
+          
+
+
+
+            
+
+
+
+
+            
         ];
 
         // Combine all questions
