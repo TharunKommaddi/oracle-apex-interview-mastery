@@ -1,1093 +1,1215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oracle APEX Interview Questions - APEX Interview Mastery</title>
-    <meta name="description" content="Complete Oracle APEX preparation covering architecture, components, and development.">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="assets/css/style.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Oracle APEX Interview Questions - APEX Interview Mastery</title>
+   <meta name="description" content="Complete Oracle APEX preparation covering architecture, components, and development.">
+   
+   <!-- Fonts -->
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+   
+   <!-- Icons -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+   <!-- Styles -->
+   <link rel="stylesheet" href="assets/css/style.css">
+   
+   <!-- Favicon -->
+   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>">
 </head>
 <body>
-    <header class="header">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-code"></i>
-                APEX Interview Mastery
-            </a>
-            <nav>
-                <ul class="nav-menu" id="navMenu">
-                    <li class="nav-item">
-                        <a href="index.html">
-                            <i class="fas fa-home"></i> Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="oracle-sql.html">
-                            <i class="fas fa-database"></i> Oracle SQL
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="plsql.html">
-                            <i class="fas fa-code-branch"></i> PL/SQL
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="oracle-apex.html" class="active">
-                            <i class="fas fa-layer-group"></i> Oracle APEX
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
-                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
-                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
-                            <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </nav>
-        </div>
-    </header>
+   <header class="header">
+       <div class="nav-container">
+           <a href="index.html" class="logo">
+               <i class="fas fa-code"></i>
+               APEX Interview Mastery
+           </a>
+           <nav>
+               <ul class="nav-menu" id="navMenu">
+                   <li class="nav-item">
+                       <a href="index.html">
+                           <i class="fas fa-home"></i> Home
+                       </a>
+                   </li>
+                   <li class="nav-item">
+                       <a href="oracle-sql.html">
+                           <i class="fas fa-database"></i> Oracle SQL
+                       </a>
+                   </li>
+                   <li class="nav-item">
+                       <a href="plsql.html">
+                           <i class="fas fa-code-branch"></i> PL/SQL
+                       </a>
+                   </li>
+                   <li class="nav-item">
+                       <a href="oracle-apex.html" class="active">
+                           <i class="fas fa-layer-group"></i> Oracle APEX
+                       </a>
+                   </li>
+                   <li class="nav-item dropdown">
+                       <a href="#" class="dropdown-toggle">
+                           <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                       </a>
+                       <ul class="dropdown-menu">
+                           <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                           <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                           <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                           <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
+                       </ul>
+                   </li>
+               </ul>
+               <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu">
+                   <i class="fas fa-bars"></i>
+               </button>
+           </nav>
+       </div>
+   </header>
 
-    <section class="page-header">
-        <h1 class="page-title">Oracle APEX Interview Questions</h1>
-        <p class="page-subtitle">Complete Oracle APEX preparation covering architecture, components, and development</p>
-    </section>
+   <section class="page-header">
+       <h1 class="page-title">Oracle APEX Interview Questions</h1>
+       <p class="page-subtitle">Complete Oracle APEX preparation covering architecture, components, and development</p>
+   </section>
 
-    <div class="container" id="main-content">
-        <div class="filter-section">
-            <div class="filter-title">
-                <i class="fas fa-layer-group"></i> Filter Questions
-            </div>
-            <div class="filter-tabs">
-                <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
-                <button class="filter-tab" onclick="filterQuestions('basic')">Basic</button>
-                <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate</button>
-                <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced</button>
-            </div>
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search APEX questions..." 
-                       onkeyup="searchQuestions()" id="searchInput" aria-label="Search questions">
-            </div>
-        </div>
+   <div class="container" id="main-content">
+       <div class="filter-section">
+           <div class="filter-title">
+               <i class="fas fa-layer-group"></i> Filter Questions
+           </div>
+           <div class="filter-tabs">
+               <button class="filter-tab active" onclick="filterQuestions('all')">All Questions</button>
+               <button class="filter-tab" onclick="filterQuestions('basic')">Basic</button>
+               <button class="filter-tab" onclick="filterQuestions('intermediate')">Intermediate</button>
+               <button class="filter-tab" onclick="filterQuestions('advanced')">Advanced</button>
+           </div>
+           <div class="search-container">
+               <i class="fas fa-search search-icon"></i>
+               <input type="text" class="search-input" placeholder="Search APEX questions..." 
+                      onkeyup="searchQuestions()" id="searchInput" aria-label="Search questions">
+           </div>
+       </div>
 
-        <div id="questionsContainer" class="questions-container">
-            <!-- Questions will be loaded here by JavaScript -->
-        </div>
-    </div>
+       <div id="questionsContainer" class="questions-container">
+           <!-- Questions will be loaded here by JavaScript -->
+       </div>
+   </div>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <h3>Ready to Master Oracle APEX?</h3>
-            <p>Practice these essential questions to excel in your Oracle APEX interviews</p>
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="oracle-sql.html">SQL Questions</a>
-                <a href="plsql.html">PL/SQL Questions</a>
-            </div>
-        </div>
-    </footer>
+   <footer class="footer">
+       <div class="footer-content">
+           <h3>Ready to Master Oracle APEX?</h3>
+           <p>Practice these essential questions to excel in your Oracle APEX interviews</p>
+           <div class="footer-links">
+               <a href="index.html">Home</a>
+               <a href="oracle-sql.html">SQL Questions</a>
+               <a href="plsql.html">PL/SQL Questions</a>
+           </div>
+       </div>
+   </footer>
 
-    <script src="assets/js/script.js"></script>
-    <script>
-        // Oracle APEX Questions Data (Minimal for testing)
+   <script src="assets/js/script.js"></script>
+   <script>
+       // Function to format answer text with proper line breaks
+       function formatAnswer(text) {
+           // Handle numbered lists (1. 2. 3. etc.)
+           text = text.replace(/(\d+\.\s)/g, '\n$1');
+           
+           // Handle lettered lists (a. b. c. etc.)
+           text = text.replace(/([a-z]\.\s)/g, '\n$1');
+           
+           // Handle bullet points and common separators
+           text = text.replace(/,\s*(\d+\.)/g, '\n$1');
+           text = text.replace(/,\s*([A-Z][a-z]+\s[A-Z])/g, '\n• $1');
+           
+           // Handle "including:" or "include:" followed by items
+           text = text.replace(/(including?:)\s*/gi, '$1\n');
+           
+           // Handle common phrases that should start new lines
+           text = text.replace(/,\s*(Use\s|Always\s|Never\s|Implement\s|Configure\s|Enable\s|Create\s|Define\s|Navigate\s)/g, '\n• $1');
+           
+           // Clean up multiple newlines
+           text = text.replace(/\n+/g, '\n');
+           
+           // Trim whitespace
+           text = text.trim();
+           
+           return text;
+       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        // Oracle APEX Questions Data - Comprehensive from all PDFs
+       // Oracle APEX Questions Data - Comprehensive from all PDFs
 const oracleApexQuestions = [
-    // BASIC LEVEL QUESTIONS (1-20)
-    {
-        id: 1,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What is Oracle Application Express (APEX)?',
-        answer: 'Oracle Application Express (APEX) is a low-code development platform that allows developers to build scalable web applications quickly and efficiently using SQL and PL/SQL. It enables you to build scalable, secure enterprise apps, with world-class features, that can be deployed anywhere.',
-        language: 'APEX Concepts'
-    },
-    {
-        id: 2,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are the key components of Oracle APEX?',
-        answer: 'Oracle APEX consists of three primary components: the Oracle APEX Builder (development environment), Oracle APEX Listener (web server integration), and Oracle APEX Runtime (execution engine). Key components also include Workspace, Application Builder, SQL Workshop, Team Development, and App Gallery.',
-        language: 'APEX Components'
-    },
-    {
-        id: 3,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are the advantages of using Oracle APEX?',
-        answer: 'Oracle APEX offers several advantages including rapid application development, easy deployment, scalability, security features, seamless integration with Oracle Database, low-code development approach, responsive design capabilities, and cost-effectiveness with no additional licensing costs.',
-        language: 'Benefits'
-    },
-    {
-        id: 4,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are APEX pages and regions?',
-        answer: 'APEX pages are the building blocks of an application, representing individual web pages. Regions define areas on a page for displaying content such as reports, charts, forms, and other components. Regions help organize the layout and structure of a page.',
-        language: 'Page Structure'
-    },
-    {
-        id: 5,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What is a theme in Oracle APEX?',
-        answer: 'A theme is a predefined set of templates and styles that determine the look and feel of an APEX application. Themes ensure consistent design across all pages and include page templates, region templates, list templates, and other UI components.',
-        language: 'Themes'
-    },
-    {
-        id: 6,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What is a Workspace in Oracle APEX?',
-        answer: 'A Workspace is a shared work area within an Oracle APEX instance that allows multiple users to work on applications and database objects. Each workspace has its own schemas and can contain multiple applications, providing logical separation between different development teams or projects.',
-        language: 'Workspace'
-    },
-    {
-        id: 7,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What is a Page in Oracle APEX?',
-        answer: 'A Page in Oracle APEX is a web page that is part of an application. Pages can contain various regions, items, buttons, and other components. Each page has a unique identifier within the application and serves as the basic building block for user interfaces.',
-        language: 'Pages'
-    },
-    {
-        id: 8,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What is a Region in Oracle APEX?',
-        answer: 'A Region is a container within a page that holds content such as reports, charts, forms, and other components. Regions help organize the layout and structure of a page and can be positioned in different areas of the page template.',
-        language: 'Regions'
-    },
-    {
-        id: 9,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are the different types of pages in Oracle APEX?',
-        answer: 'Oracle APEX supports various types of pages including Form Pages (data entry), Report Pages (tabular data display), Chart Pages (visual data representation), Dashboard Pages (key metrics summary), Calendar Pages (calendar format data), and Wizard Pages (multi-step processes).',
-        language: 'Page Types'
-    },
-    {
-        id: 10,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What is the difference between an APEX page and a component?',
-        answer: 'APEX pages are containers for components. Components are individual elements like buttons, items, reports, and charts that reside within pages. Pages provide the structure while components provide the functionality.',
-        language: 'Architecture'
-    },
-    {
-        id: 11,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are the main features of Oracle APEX?',
-        answer: 'Main features include: Low-code development, Responsive design, Built-in security, Interactive Reports, RESTful Web Services, Themes and Templates, Dynamic Actions, Version Control, and seamless Oracle Database integration.',
-        language: 'Features'
-    },
-    {
-        id: 12,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'Does APEX work with non-Oracle databases?',
-        answer: 'No. Oracle APEX will work only with Oracle database. It is tightly integrated with Oracle Database and cannot be used with other database systems.',
-        language: 'Database Compatibility'
-    },
-    {
-        id: 13,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are the skills required for APEX Developers?',
-        answer: 'SQL and PL/SQL are essential skills. HTML, CSS, and JavaScript are good to have skills to understand and customize look and feel (themes, templates). Knowledge of Oracle Database concepts is also important.',
-        language: 'Skills'
-    },
-    {
-        id: 14,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are the different types of APEX items?',
-        answer: 'APEX items include text fields, select lists, radio groups, checkboxes, date pickers, file upload items, number fields, password fields, textarea, and hidden items. Each item type serves different purposes for capturing user input.',
-        language: 'Page Items'
-    },
-    {
-        id: 15,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What is a LOV (List of Values) in Oracle APEX?',
-        answer: 'A List of Values (LOV) is a predefined list of options that can be used to populate select lists, radio groups, and other form elements. LOVs can be static (hardcoded values) or dynamic (based on a SQL query).',
-        language: 'LOV'
-    },
-    {
-        id: 16,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are Page Items and how do you use them in Oracle APEX?',
-        answer: 'Page Items are form elements such as text fields, select lists, and checkboxes that capture user input. They are used to interact with data and control the behavior of the application. Each page item has a unique name within the page.',
-        language: 'Page Items'
-    },
-    {
-        id: 17,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'Can you give me some examples of real-world applications that use Oracle Application Express?',
-        answer: 'There are a number of real-world applications that use Oracle Application Express. Some examples include the United States Department of Veterans Affairs, NASA, the National Weather Service, and Oracle\'s own multiple products.',
-        language: 'Real World Examples'
-    },
-    {
-        id: 18,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are the different types of Reports available in Oracle APEX?',
-        answer: 'There are several types of reports available: Interactive Reports (user customizable), Classic Reports (static with predefined formatting), Interactive Grid (Excel-like editing), Cards (card-based layout), Faceted Search (search with filters), and Calendar Reports.',
-        language: 'Report Types'
-    },
-    {
-        id: 19,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'Can you explain the difference between shared and local workspaces in Oracle Application Express?',
-        answer: 'Shared workspaces are those that are accessible to all users of the application, while local workspaces are only accessible to the user who created them. In a shared workspace, all users have the same privileges, while in a local workspace, the creator has full control over access.',
-        language: 'Workspaces'
-    },
-    {
-        id: 20,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'Who uses APEX?',
-        answer: 'If you are running on an Oracle database and you want to build rich web applications with reports, forms, charts, drill downs and dashboards with limited Java experienced developers in a short time frame, Oracle APEX is the most likely candidate for consideration.',
-        language: 'Use Cases'
-    },
+   // BASIC LEVEL QUESTIONS (1-20)
+   {
+       id: 1,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What is Oracle Application Express (APEX)?',
+       answer: 'Oracle Application Express (APEX) is a low-code development platform that allows developers to build scalable web applications quickly and efficiently using SQL and PL/SQL. It enables you to build scalable, secure enterprise apps, with world-class features, that can be deployed anywhere.',
+       language: 'APEX Concepts'
+   },
+   {
+       id: 2,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are the key components of Oracle APEX?',
+       answer: 'Oracle APEX consists of three primary components:\n• Oracle APEX Builder (development environment)\n• Oracle APEX Listener (web server integration)\n• Oracle APEX Runtime (execution engine)\n\nKey components also include:\n• Workspace\n• Application Builder\n• SQL Workshop\n• Team Development\n• App Gallery',
+       language: 'APEX Components'
+   },
+   {
+       id: 3,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are the advantages of using Oracle APEX?',
+       answer: 'Oracle APEX offers several advantages including:\n• Rapid application development\n• Easy deployment\n• Scalability\n• Security features\n• Seamless integration with Oracle Database\n• Low-code development approach\n• Responsive design capabilities\n• Cost-effectiveness with no additional licensing costs',
+       language: 'Benefits'
+   },
+   {
+       id: 4,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are APEX pages and regions?',
+       answer: 'APEX pages are the building blocks of an application, representing individual web pages. Regions define areas on a page for displaying content such as reports, charts, forms, and other components. Regions help organize the layout and structure of a page.',
+       language: 'Page Structure'
+   },
+   {
+       id: 5,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What is a theme in Oracle APEX?',
+       answer: 'A theme is a predefined set of templates and styles that determine the look and feel of an APEX application. Themes ensure consistent design across all pages and include:\n• Page templates\n• Region templates\n• List templates\n• Other UI components',
+       language: 'Themes'
+   },
+   {
+       id: 6,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What is a Workspace in Oracle APEX?',
+       answer: 'A Workspace is a shared work area within an Oracle APEX instance that allows multiple users to work on applications and database objects. Each workspace has its own schemas and can contain multiple applications, providing logical separation between different development teams or projects.',
+       language: 'Workspace'
+   },
+   {
+       id: 7,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What is a Page in Oracle APEX?',
+       answer: 'A Page in Oracle APEX is a web page that is part of an application. Pages can contain various regions, items, buttons, and other components. Each page has a unique identifier within the application and serves as the basic building block for user interfaces.',
+       language: 'Pages'
+   },
+   {
+       id: 8,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What is a Region in Oracle APEX?',
+       answer: 'A Region is a container within a page that holds content such as reports, charts, forms, and other components. Regions help organize the layout and structure of a page and can be positioned in different areas of the page template.',
+       language: 'Regions'
+   },
+   {
+       id: 9,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are the different types of pages in Oracle APEX?',
+       answer: 'Oracle APEX supports various types of pages including:\n• Form Pages (data entry)\n• Report Pages (tabular data display)\n• Chart Pages (visual data representation)\n• Dashboard Pages (key metrics summary)\n• Calendar Pages (calendar format data)\n• Wizard Pages (multi-step processes)',
+       language: 'Page Types'
+   },
+   {
+       id: 10,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What is the difference between an APEX page and a component?',
+       answer: 'APEX pages are containers for components. Components are individual elements like buttons, items, reports, and charts that reside within pages. Pages provide the structure while components provide the functionality.',
+       language: 'Architecture'
+   },
+   {
+       id: 11,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are the main features of Oracle APEX?',
+       answer: 'Main features include:\n• Low-code development\n• Responsive design\n• Built-in security\n• Interactive Reports\n• RESTful Web Services\n• Themes and Templates\n• Dynamic Actions\n• Version Control\n• Seamless Oracle Database integration',
+       language: 'Features'
+   },
+   {
+       id: 12,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'Does APEX work with non-Oracle databases?',
+       answer: 'No. Oracle APEX will work only with Oracle database. It is tightly integrated with Oracle Database and cannot be used with other database systems.',
+       language: 'Database Compatibility'
+   },
+   {
+       id: 13,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are the skills required for APEX Developers?',
+       answer: 'Required skills include:\n• SQL and PL/SQL (essential skills)\n• HTML, CSS, and JavaScript (good to have for customization)\n• Oracle Database concepts\n• Understanding of web development principles',
+       language: 'Skills'
+   },
+   {
+       id: 14,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are the different types of APEX items?',
+       answer: 'APEX items include:\n• Text fields\n• Select lists\n• Radio groups\n• Checkboxes\n• Date pickers\n• File upload items\n• Number fields\n• Password fields\n• Textarea\n• Hidden items\n\nEach item type serves different purposes for capturing user input.',
+       language: 'Page Items'
+   },
+   {
+       id: 15,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What is a LOV (List of Values) in Oracle APEX?',
+       answer: 'A List of Values (LOV) is a predefined list of options that can be used to populate select lists, radio groups, and other form elements. LOVs can be:\n• Static (hardcoded values)\n• Dynamic (based on a SQL query)',
+       language: 'LOV'
+   },
+   {
+       id: 16,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are Page Items and how do you use them in Oracle APEX?',
+       answer: 'Page Items are form elements such as text fields, select lists, and checkboxes that capture user input. They are used to interact with data and control the behavior of the application. Each page item has a unique name within the page.',
+       language: 'Page Items'
+   },
+   {
+       id: 17,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'Can you give me some examples of real-world applications that use Oracle Application Express?',
+       answer: 'Real-world applications using Oracle APEX include:\n• United States Department of Veterans Affairs\n• NASA\n• National Weather Service\n• Oracle\'s own multiple products\n• Various enterprise applications across different industries',
+       language: 'Real World Examples'
+   },
+   {
+       id: 18,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are the different types of Reports available in Oracle APEX?',
+       answer: 'Report types available:\n• Interactive Reports (user customizable)\n• Classic Reports (static with predefined formatting)\n• Interactive Grid (Excel-like editing)\n• Cards (card-based layout)\n• Faceted Search (search with filters)\n• Calendar Reports',
+       language: 'Report Types'
+   },
+   {
+       id: 19,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'Can you explain the difference between shared and local workspaces in Oracle Application Express?',
+       answer: 'Shared workspaces are those that are accessible to all users of the application, while local workspaces are only accessible to the user who created them. In a shared workspace, all users have the same privileges, while in a local workspace, the creator has full control over access.',
+       language: 'Workspaces'
+   },
+   {
+       id: 20,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'Who uses APEX?',
+       answer: 'APEX is ideal for organizations running on Oracle database who want to build rich web applications with reports, forms, charts, drill downs and dashboards with limited Java experienced developers in a short time frame.',
+       language: 'Use Cases'
+   },
 
-    // INTERMEDIATE LEVEL QUESTIONS (21-60)
-    {
-        id: 21,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'Can you explain the architecture of Oracle APEX?',
-        answer: 'Oracle APEX follows a three-tier architecture: the client tier (web browsers), the application server tier (hosts APEX runtime), and the database tier (stores application data). The APEX Engine resides in the Oracle Database and processes application requests.',
-        language: 'Architecture'
-    },
-    {
-        id: 22,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How does Oracle APEX handle security?',
-        answer: 'Oracle APEX provides robust security features such as authentication schemes, authorization schemes, session state protection, and data validation. It includes built-in authentication methods, SQL injection prevention, and secure session management.',
-        language: 'Security'
-    },
-    {
-        id: 23,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you create a report in Oracle APEX?',
-        answer: 'You can create reports using the Report Wizard, SQL queries, or by utilizing the Interactive Grid component. Navigate to Application Builder, click Create > Report, choose the type of report, select the data source, and configure the report settings.',
-        language: 'Reports'
-    },
-    {
-        id: 24,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you handle validations in Oracle APEX?',
-        answer: 'Validations can be implemented using built-in validations, PL/SQL code, or custom JavaScript validation functions. Oracle APEX provides several validation options such as required fields, data type validations, pattern validations, and custom PL/SQL validations.',
-        language: 'Validations'
-    },
-    {
-        id: 25,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How do you perform data manipulation in Oracle APEX?',
-        answer: 'Data manipulation can be done using SQL statements, interactive grids, or through PL/SQL processes. You can create automatic DML processes for forms, use Interactive Grid for Excel-like editing, or write custom PL/SQL processes for complex data operations.',
-        language: 'Data Manipulation'
-    },
-    {
-        id: 26,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What are shared components in Oracle APEX?',
-        answer: 'Shared components are reusable objects like templates, items, and processes that can be used across multiple pages in an application. Examples include Lists of Values (LOVs), Themes, Templates, Navigation Menus, and Dynamic Actions.',
-        language: 'Shared Components'
-    },
-    {
-        id: 27,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you schedule jobs in Oracle APEX?',
-        answer: 'Jobs can be scheduled using Oracle APEX\'s built-in Scheduler functionality or by utilizing Oracle Database\'s Scheduler features. You can define the frequency and timing of job execution along with the PL/SQL code to be executed.',
-        language: 'Job Scheduling'
-    },
-    {
-        id: 28,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How does Oracle APEX handle internationalization and localization?',
-        answer: 'Oracle APEX provides features for translating applications to different languages and supporting localized date, number, and currency formats. It includes built-in support for creating multilingual applications with language-specific translations.',
-        language: 'Internationalization'
-    },
-    {
-        id: 29,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you customize the appearance of an APEX application?',
-        answer: 'Appearance can be customized using themes, templates, CSS styling, and JavaScript. You can modify theme templates, add custom CSS, use template options, and apply JavaScript for enhanced user interactions.',
-        language: 'Customization'
-    },
-    {
-        id: 30,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How do you debug an Oracle APEX application?',
-        answer: 'Debugging can be done using debug mode, the Debug Messages window, logging, and using breakpoints in PL/SQL code. Enable debug mode by appending ?p_debug=YES to the URL, use apex_debug in PL/SQL code, and utilize browser developer tools.',
-        language: 'Debugging'
-    },
-    {
-        id: 31,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you create a LOV in Oracle APEX?',
-        answer: 'Steps to create a LOV: Navigate to Shared Components > List of Values, click Create > From Scratch, choose the type of LOV (Static or Dynamic), define the LOV entries or SQL query, configure the settings and save.',
-        language: 'LOV Creation'
-    },
-    {
-        id: 32,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How do you create a Form in Oracle APEX?',
-        answer: 'Steps to create a form: Navigate to Application Builder, click Create > Form, choose the type of form (e.g., Form on a Table with Report), select the data source (table or view), configure the form settings and click Create.',
-        language: 'Form Development'
-    },
-    {
-        id: 33,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How do you create a Workspace in Oracle APEX?',
-        answer: 'Steps to create a workspace: Log in to the APEX Administration Services, Navigate to Manage Workspaces > Create Workspace, enter the workspace name, schema name, and other details, click Create Workspace.',
-        language: 'Workspace Management'
-    },
-    {
-        id: 34,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you apply and customize a Theme in Oracle APEX?',
-        answer: 'Steps to apply and customize a theme: Navigate to Shared Components > Themes, select a theme and click Apply. To customize, navigate to Page Designer, select the page, modify template options, and use CSS and JavaScript for further customization.',
-        language: 'Theme Customization'
-    },
-    {
-        id: 35,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What is the usage of the apex_util package in Oracle APEX?',
-        answer: 'The apex_util package is used for a variety of tasks related to Oracle Application Express, including retrieving session information, generating HTML, creating email messages, managing collections, and performing various utility functions.',
-        language: 'APEX Utilities'
-    },
-    {
-        id: 36,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How do you design a responsive page using Oracle Application Express?',
-        answer: 'In order to design a responsive page using Oracle Application Express, you need to use the fluid grid layout. This allows you to create a page that will resize itself based on the size of the device that it is being viewed on.',
-        language: 'Responsive Design'
-    },
-    {
-        id: 37,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'Is it possible to migrate the code from one workspace to another? If yes, then how?',
-        answer: 'Yes, it is possible to migrate code from one workspace to another. You need to use the Export/Import feature within Oracle Application Express. Export the application from source workspace and import it into the target workspace.',
-        language: 'Migration'
-    },
-    {
-        id: 38,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What are the key differences between SQL Workshop and Apex Workspace?',
-        answer: 'SQL Workshop is a tool for working with SQL databases, providing a user interface for running SQL queries and commands. Apex Workspace is a tool for developing and managing Oracle Application Express applications, providing development environment features.',
-        language: 'Tools Comparison'
-    },
-    {
-        id: 39,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'Can you explain how to install Oracle Application Express(APEX) on an existing database?',
-        answer: 'There are two ways: On-Premise and Cloud. On-Premise: Download APEX installer, unzip and run setup.exe, choose installation type, provide database details, run configuration script. Cloud: Use existing autonomous database in Oracle Cloud Infrastructure, access APEX through Database Actions.',
-        language: 'Installation'
-    },
-    {
-        id: 40,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'Why would you want to build a mobile app using Oracle Application Express?',
-        answer: 'Oracle Application Express is a great tool for building mobile apps because it is very user-friendly and easy to use. Additionally, it offers a lot of flexibility in terms of how you can design and build your app with responsive design capabilities.',
-        language: 'Mobile Development'
-    },
-    {
-        id: 41,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How does Oracle Application Express compare with other frameworks like Ruby on Rails or Django?',
-        answer: 'Oracle Application Express is a web application development framework similar to Ruby on Rails or Django. It is used to develop web applications using Oracle databases and includes unique features like automatic form generation based on database tables and easy Oracle database integration.',
-        language: 'Framework Comparison'
-    },
-    {
-        id: 42,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you keep your development environment up-to-date with regard to security patches?',
-        answer: 'You can keep your development environment up-to-date by regularly checking for updates from Oracle and applying them as necessary. You can also subscribe to Oracle\'s security mailing list to receive notifications of new security patches as they are released.',
-        language: 'Security Updates'
-    },
-    {
-        id: 43,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What is the difference between a static and dynamic action in Oracle APEX?',
-        answer: 'A static action is defined at design time and is executed when a specific event occurs, such as a page load or button click. A dynamic action is defined at runtime and can be triggered based on various conditions or user interactions.',
-        language: 'Dynamic Actions'
-    },
-    {
-        id: 44,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you pass values between pages in Oracle APEX?',
-        answer: 'Oracle APEX provides several methods to pass values between pages, such as URL parameters, global variables, session state, or using the apex_util.set_session_state function.',
-        language: 'Session Management'
-    },
-    {
-        id: 45,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you handle exception handling in Oracle APEX?',
-        answer: 'Exception handling in Oracle APEX can be done using the built-in error handling features, such as defining error messages and handling exceptions in PL/SQL code using proper exception blocks.',
-        language: 'Error Handling'
-    },
-    {
-        id: 46,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'Can you explain the difference between a shared component and a shared page in Oracle APEX?',
-        answer: 'A shared component in Oracle APEX is a reusable object, such as a navigation menu or a template, that can be used across multiple applications. A shared page is a page that is shared between multiple applications.',
-        language: 'Shared Components'
-    },
-    {
-        id: 47,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What is the difference between a report and a chart in Oracle APEX?',
-        answer: 'A report in Oracle APEX displays data in a tabular format, allowing users to view and interact with the data. A chart visualizes the data in a graphical format, making it easier to understand trends and patterns.',
-        language: 'Reports vs Charts'
-    },
-    {
-        id: 48,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement pagination in Oracle APEX?',
-        answer: 'Oracle APEX provides built-in pagination features that allow developers to display a limited number of rows per page and provide navigation controls to move between pages.',
-        language: 'Pagination'
-    },
-    {
-        id: 49,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you handle file uploads in Oracle APEX?',
-        answer: 'Oracle APEX provides file upload functionality through the File Browse item type. Developers can define the file upload item on a page and configure the settings for file size, file type, and storage location.',
-        language: 'File Upload'
-    },
-    {
-        id: 50,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'Can you explain the difference between a session state and an application item in Oracle APEX?',
-        answer: 'A session state in Oracle APEX stores values that are specific to a user session and can be accessed across different pages within the session. An application item is a global variable that can be accessed by all user sessions.',
-        language: 'Session State'
-    },
-    {
-        id: 51,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you customize the navigation menu in Oracle APEX?',
-        answer: 'Oracle APEX provides a navigation menu component that can be customized by defining menu entries, hierarchical structures, and styling options.',
-        language: 'Navigation'
-    },
-    {
-        id: 52,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement master-detail relationships in Oracle APEX?',
-        answer: 'Master-detail relationships in Oracle APEX can be implemented by creating a parent-child relationship between two regions or by using the built-in master-detail form wizard.',
-        language: 'Master Detail'
-    },
-    {
-        id: 53,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you handle session timeout in Oracle APEX?',
-        answer: 'Oracle APEX provides session timeout settings that can be configured in the application\'s security attributes. Developers can define the session timeout duration and customize the behavior when a session expires.',
-        language: 'Session Timeout'
-    },
-    {
-        id: 54,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'Can you explain the difference between a theme and a template in Oracle APEX?',
-        answer: 'A theme in Oracle APEX defines the overall look and feel of an application, including the layout, colors, and fonts. A template defines the structure and arrangement of regions and items on a page.',
-        language: 'Themes vs Templates'
-    },
-    {
-        id: 55,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement a conditional display of items in Oracle APEX?',
-        answer: 'Oracle APEX provides conditional rendering options that allow developers to show or hide items based on specific conditions or user input. This can be achieved by defining conditional display attributes for the items.',
-        language: 'Conditional Display'
-    },
-    {
-        id: 56,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement internationalization and localization in Oracle APEX?',
-        answer: 'Oracle APEX provides built-in support for internationalization and localization, allowing developers to create applications that can be translated into multiple languages by defining language-specific translations and configuring language preferences.',
-        language: 'Internationalization'
-    },
-    {
-        id: 57,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement cascading LOVs (List of Values) in Oracle APEX?',
-        answer: 'Oracle APEX provides cascading LOV functionality through the cascading LOV item type. Developers can define parent-child relationships between LOVs, where the selection of a parent LOV filters the values available in the child LOV.',
-        language: 'Cascading LOV'
-    },
-    {
-        id: 58,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement data validation in Oracle APEX?',
-        answer: 'Oracle APEX provides several built-in data validation options, such as required fields, data type validations, and pattern validations. Developers can also define custom PL/SQL validations to enforce specific business rules.',
-        language: 'Data Validation'
-    },
-    {
-        id: 59,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement a multi-step wizard in Oracle APEX?',
-        answer: 'Oracle APEX provides a built-in wizard component that allows developers to create multi-step processes. Developers can define each step as a separate page and use navigation buttons to move between steps.',
-        language: 'Wizard'
-    },
-    {
-        id: 60,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How can you implement client-side validations in Oracle APEX?',
-        answer: 'Oracle APEX supports client-side validations using JavaScript. Developers can define custom JavaScript functions to validate user input and display error messages without making a round trip to the server.',
-        language: 'Client Side Validation'
-    },
-
-    // ADVANCED LEVEL QUESTIONS (61-85)
-    {
-        id: 61,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'Are there any performance issues when thousands of users access a single instance of Oracle?',
-        answer: 'There are no known performance issues when thousands of users access a single instance of Oracle. In fact, Oracle is designed to handle large numbers of users and transactions as it is scalable by default.',
-        language: 'Performance'
-    },
-    {
-        id: 62,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are some best practices for developing web apps using Oracle Application Express (APEX)?',
-        answer: 'Some best practices include using the built-in security features to control access to the app, using bind variables to avoid SQL injection attacks, using the built-in report generation features, following naming conventions, and implementing proper error handling.',
-        language: 'Best Practices'
-    },
-    {
-        id: 63,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What is a break field in context of reporting in Oracle Application Express?',
-        answer: 'A break field is a field that is used to break up data in a report. For example, if you have a report that contains data for multiple years, you could use a break field to break up the data by year, allowing you to easily see the data for each year separately.',
-        language: 'Reporting'
-    },
-    {
-        id: 64,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What kind of activities you have done for APEX as APEX DBA?',
-        answer: '1. Setup of APEX environment, 2. SSL configuration, 3. USER access management, 4. Security modal definition, 5. Ad hoc issue resolution, 6. Patching and Performance optimization.',
-        language: 'DBA Activities'
-    },
-    {
-        id: 65,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How does APEX Architecture work?',
-        answer: 'APEX is installed on Oracle database (above 9.2 version), starting from Oracle 11g it comes pre-installed. It comprises metadata in tables, PL/SQL code, and extensive JavaScript APIs. The URL request from browser is translated into appropriate APEX PL/SQL call by Oracle HTTP Server or Embedded PL/SQL Gateway.',
-        language: 'Architecture'
-    },
-    {
-        id: 66,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How do I separate development from production environment?',
-        answer: 'Depending on requirements, you can have two (development and production) or three (development, test, and production) servers. Applications can be moved using export and import facility. With one server, you can separate using two workspaces accessing separate schemas.',
-        language: 'Environment Management'
-    },
-    {
-        id: 67,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How can you secure data in an APEX application?',
-        answer: 'Data can be secured by implementing proper authentication, authorization, encryption, and by following secure coding practices. Use authentication schemes, authorization schemes, escape user input, validate data, and implement proper session management.',
-        language: 'Data Security'
-    },
-    {
-        id: 68,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'Explain the process of deploying an APEX application.',
-        answer: 'APEX applications can be deployed using the built-in export/import feature, by generating installation scripts, or by deploying to Oracle Cloud. Export the application as a SQL file, import it into the target environment, and configure necessary supporting objects.',
-        language: 'Deployment'
-    },
-    {
-        id: 69,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How can you call PL/SQL code from an APEX application?',
-        answer: 'PL/SQL code can be called using processes, computations, validations, or by defining PL/SQL regions on a page. You can create page processes, use AJAX callbacks, or execute PL/SQL through dynamic actions.',
-        language: 'PL/SQL Integration'
-    },
-    {
-        id: 70,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How does Oracle APEX handle version control and team development?',
-        answer: 'Oracle APEX provides features like Team Development, Application Builder Team Development, and integration with version control systems. It includes built-in collaboration tools, application versioning, and export/import capabilities.',
-        language: 'Version Control'
-    },
-    {
-        id: 71,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are dynamic actions in Oracle APEX?',
-        answer: 'Dynamic actions allow you to define actions that are triggered based on certain events or conditions in an APEX application. They enable declarative client-side logic without writing JavaScript, such as show/hide items, refresh regions, or execute PL/SQL code.',
-        language: 'Dynamic Actions'
-    },
-    {
-        id: 72,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How can you create and use Dynamic Actions in Oracle APEX?',
-        answer: 'Steps to create: Navigate to Page Designer, select the item or button, click Create > Dynamic Action, define the event (Click, Change), specify the actions (Show, Hide, Execute JavaScript), configure settings and save.',
-        language: 'Dynamic Actions'
-    },
-    {
-        id: 73,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How can you implement error handling in Oracle APEX?',
-        answer: 'Error handling can be done using exception handling in PL/SQL, displaying error messages, and logging errors to the database. Implement proper exception blocks, use apex_error for custom error handling, and provide user-friendly error messages.',
-        language: 'Error Handling'
-    },
-
-
-    {
-       id: 74,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you import data into an APEX application from external sources?',
-       answer: 'Data can be imported using various methods like SQL*Loader, External Tables, CSV files, and RESTful Web Services. APEX provides Data Loading wizard, APEX_DATA_PARSER package, and web service integration for importing external data.',
-       language: 'Data Import'
+   // INTERMEDIATE LEVEL QUESTIONS (21-60)
+   {
+       id: 21,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Can you explain the architecture of Oracle APEX?',
+       answer: 'Oracle APEX follows a three-tier architecture:\n• Client tier (web browsers)\n• Application server tier (hosts APEX runtime)\n• Database tier (stores application data)\n\nThe APEX Engine resides in the Oracle Database and processes application requests.',
+       language: 'Architecture'
    },
    {
-       id: 75,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you integrate Oracle APEX with other systems or applications?',
-       answer: 'Oracle APEX can be integrated with other systems using Web Services, RESTful Services, JavaScript APIs, and database links. It supports consuming and creating web services, REST APIs, and can integrate with external authentication systems.',
-       language: 'Integration'
+       id: 22,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How does Oracle APEX handle security?',
+       answer: 'Oracle APEX provides robust security features:\n• Authentication schemes\n• Authorization schemes\n• Session state protection\n• Data validation\n• Built-in authentication methods\n• SQL injection prevention\n• Secure session management',
+       language: 'Security'
    },
    {
-       id: 76,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'What are the best practices for performance tuning in Oracle APEX?',
-       answer: 'Some performance-tuning best practices include optimizing SQL queries, minimizing database round trips, caching frequently accessed data, leveraging browser caching mechanisms, using bind variables, and proper indexing.',
-       language: 'Performance Tuning'
+       id: 23,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you create a report in Oracle APEX?',
+       answer: 'You can create reports using:\n• Report Wizard\n• SQL queries\n• Interactive Grid component\n\nSteps:\n1. Navigate to Application Builder\n2. Click Create > Report\n3. Choose the type of report\n4. Select the data source\n5. Configure the report settings',
+       language: 'Reports'
    },
    {
-       id: 77,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you package and deploy Oracle APEX applications?',
-       answer: 'Oracle APEX allows developers to package an application into a single export file, which can be easily imported into another environment. It also provides deployment options like Oracle REST Data Services (ORDS) or Oracle APEX Listener.',
-       language: 'Packaging'
+       id: 24,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you handle validations in Oracle APEX?',
+       answer: 'Validations can be implemented using:\n• Built-in validations\n• PL/SQL code\n• Custom JavaScript validation functions\n\nValidation options include:\n• Required fields\n• Data type validations\n• Pattern validations\n• Custom PL/SQL validations',
+       language: 'Validations'
    },
    {
-       id: 78,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'What are the limitations of Oracle APEX?',
-       answer: 'Some limitations include limited support for complex business rules, limited offline capabilities, potential performance issues when handling large datasets, dependency on Oracle Database, and limited customization compared to custom development.',
-       language: 'Limitations'
+       id: 25,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you perform data manipulation in Oracle APEX?',
+       answer: 'Data manipulation can be done using:\n• SQL statements\n• Interactive grids\n• PL/SQL processes\n\nMethods include:\n• Automatic DML processes for forms\n• Interactive Grid for Excel-like editing\n• Custom PL/SQL processes for complex operations',
+       language: 'Data Manipulation'
    },
    {
-       id: 79,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you extend Oracle APEX functionality using custom plugins?',
-       answer: 'Oracle APEX supports custom plugins, which are reusable components or extensions that developers can create and share with the community to enhance the functionality of their applications.',
-       language: 'Plugins'
-   },
-   {
-       id: 80,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement dynamic actions based on AJAX callbacks in Oracle APEX?',
-       answer: 'Oracle APEX provides the ability to create dynamic actions that are triggered by AJAX callbacks. This allows developers to perform actions such as refreshing a region or executing PL/SQL code without refreshing the entire page.',
-       language: 'AJAX'
-   },
-   {
-       id: 81,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement a search functionality in Oracle APEX?',
-       answer: 'Oracle APEX offers various options for implementing search functionality, such as using a search bar with a dynamic action to filter data, or creating a dedicated search page with interactive reports or form-based searches.',
-       language: 'Search Functionality'
-   },
-   {
-       id: 82,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement data encryption in Oracle APEX?',
-       answer: 'Oracle APEX provides built-in functions for data encryption and decryption, such as the DBMS_CRYPTO package. Developers can use these functions to encrypt sensitive data stored in the database.',
-       language: 'Data Encryption'
-   },
-   {
-       id: 83,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement RESTful web services in Oracle APEX?',
-       answer: 'Oracle APEX allows developers to create and consume RESTful web services. Developers can define RESTful web services using PL/SQL code or by exposing SQL queries as RESTful services.',
-       language: 'REST Services'
-   },
-   {
-       id: 84,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'What are RESTful Web Services in Oracle APEX, and how do you create one?',
-       answer: 'RESTful Web Services expose database operations as RESTful endpoints using HTTP methods GET, POST, PUT, DELETE. Steps: Navigate to SQL Workshop > RESTful Services, create a RESTful Service Module, define resource templates and handlers, write SQL/PL/SQL code for requests, save and deploy the service.',
-       language: 'REST Services'
-   },
-   {
-       id: 85,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement email notifications in Oracle APEX?',
-       answer: 'Oracle APEX provides the ability to send email notifications using the built-in APEX_MAIL package. Developers can use this package to send emails for various purposes, such as account activation, password resets, or notification alerts.',
-       language: 'Email Notifications'
-   },
-   {
-       id: 86,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement user authentication and authorization in Oracle APEX?',
-       answer: 'Oracle APEX supports various authentication schemes, such as database authentication, LDAP authentication, and single sign-on. Developers can also define authorization schemes to control access to specific pages or components based on user roles.',
-       language: 'Authentication'
-   },
-   {
-       id: 87,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement data import and export functionality in Oracle APEX?',
-       answer: 'Oracle APEX provides several options for importing and exporting data, such as using the Data Loading wizard, SQL*Loader, or the APEX_DATA_PARSER package. Developers can choose the appropriate method based on the data source and format.',
-       language: 'Data Import Export'
-   },
-   {
-       id: 88,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement file downloads in Oracle APEX?',
-       answer: 'Oracle APEX provides the ability to generate and download files dynamically. Developers can use the APEX_UTIL package to generate files in various formats, such as CSV, Excel, or PDF, and provide download links to the users.',
-       language: 'File Downloads'
-   },
-   {
-       id: 89,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you implement user authentication with social media accounts in Oracle APEX?',
-       answer: 'Oracle APEX allows developers to enable social sign-in functionality using OAuth authentication. Developers can configure OAuth providers, such as Google or Facebook, to allow users to authenticate using their social media accounts.',
-       language: 'Social Authentication'
-   },
-   {
-       id: 90,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you monitor and analyze performance in Oracle APEX?',
-       answer: 'Oracle APEX provides built-in monitoring and performance analysis features, such as the Application Express Monitor, which allows developers to track application performance, identify bottlenecks, and optimize SQL queries.',
-       language: 'Performance Monitoring'
-   },
-   {
-       id: 91,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you create a mobile-responsive application in Oracle APEX?',
-       answer: 'Oracle APEX provides responsive design templates and components that automatically adapt to different screen sizes and devices. Developers can also customize the appearance and behavior of their application for mobile devices using CSS and JavaScript.',
-       language: 'Mobile Responsive'
-   },
-   {
-       id: 92,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'What is a Plug-in in Oracle APEX?',
-       answer: 'A Plug-in in Oracle APEX is a reusable component that extends the platform\'s functionality, such as custom items, regions, processes, and dynamic actions. They allow complex functionalities to be encapsulated and shared across applications.',
-       language: 'Plugins'
-   },
-   {
-       id: 93,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'Explain the concept of Shared Components in Oracle APEX.',
-       answer: 'Shared Components are reusable elements that can be used across multiple pages and applications. Examples include Lists of Values (LOVs), Themes, Templates, Navigation Menus, and Dynamic Actions. They help maintain consistency and reduce redundancy in application development.',
+       id: 26,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What are shared components in Oracle APEX?',
+       answer: 'Shared components are reusable objects that can be used across multiple pages in an application. Examples include:\n• Lists of Values (LOVs)\n• Themes\n• Templates\n• Navigation Menus\n• Dynamic Actions',
        language: 'Shared Components'
    },
    {
-       id: 94,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How do you stay updated with the latest features and enhancements in Oracle APEX?',
-       answer: 'Staying updated with Oracle APEX can be achieved by following official Oracle APEX documentation, participating in online forums and communities, attending conferences, and engaging in continuous learning through tutorials and blogs.',
-       language: 'Learning Resources'
+       id: 27,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you schedule jobs in Oracle APEX?',
+       answer: 'Jobs can be scheduled using:\n• Oracle APEX\'s built-in Scheduler functionality\n• Oracle Database\'s Scheduler features\n\nYou can define:\n• Frequency and timing of job execution\n• PL/SQL code to be executed',
+       language: 'Job Scheduling'
    },
    {
-       id: 95,
-       category: 'advanced',
-       difficulty: 'advanced',
-       question: 'How can you debug and troubleshoot Oracle APEX applications?',
-       answer: 'Oracle APEX provides debugging tools such as the debug mode, error handling, and logging options to help identify and resolve issues during application development and deployment. Use debug mode, apex_debug package, browser developer tools, and error logging.',
+       id: 28,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How does Oracle APEX handle internationalization and localization?',
+       answer: 'Oracle APEX provides features for:\n• Translating applications to different languages\n• Supporting localized date, number, and currency formats\n• Built-in support for creating multilingual applications\n• Language-specific translations',
+       language: 'Internationalization'
+   },
+   {
+       id: 29,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you customize the appearance of an APEX application?',
+       answer: 'Appearance can be customized using:\n• Themes\n• Templates\n• CSS styling\n• JavaScript\n• Template options\n• Custom CSS additions\n• JavaScript for enhanced user interactions',
+       language: 'Customization'
+   },
+   {
+       id: 30,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you debug an Oracle APEX application?',
+       answer: 'Debugging methods include:\n• Debug mode (append ?p_debug=YES to URL)\n• Debug Messages window\n• Logging\n• Breakpoints in PL/SQL code\n• apex_debug in PL/SQL code\n• Browser developer tools',
        language: 'Debugging'
    },
+   {
+       id: 31,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you create a LOV in Oracle APEX?',
+       answer: 'Steps to create a LOV:\n1. Navigate to Shared Components > List of Values\n2. Click Create > From Scratch\n3. Choose the type of LOV (Static or Dynamic)\n4. Define the LOV entries or SQL query\n5. Configure the settings and save',
+       language: 'LOV Creation'
+   },
+   {
+       id: 32,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you create a Form in Oracle APEX?',
+       answer: 'Steps to create a form:\n1. Navigate to Application Builder\n2. Click Create > Form\n3. Choose the type of form (e.g., Form on a Table with Report)\n4. Select the data source (table or view)\n5. Configure the form settings\n6. Click Create',
+       language: 'Form Development'
+   },
+   {
+       id: 33,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you create a Workspace in Oracle APEX?',
+       answer: 'Steps to create a workspace:\n1. Log in to the APEX Administration Services\n2. Navigate to Manage Workspaces > Create Workspace\n3. Enter the workspace name, schema name, and other details\n4. Click Create Workspace',
+       language: 'Workspace Management'
+   },
+   {
+       id: 34,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you apply and customize a Theme in Oracle APEX?',
+       answer: 'Steps to apply and customize a theme:\n1. Navigate to Shared Components > Themes\n2. Select a theme and click Apply\n\nTo customize:\n1. Navigate to Page Designer\n2. Select the page\n3. Modify template options\n4. Use CSS and JavaScript for further customization',
+       language: 'Theme Customization'
+   },
+   {
+       id: 35,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What is the usage of the apex_util package in Oracle APEX?',
+       answer: 'The apex_util package is used for:\n• Retrieving session information\n• Generating HTML\n• Creating email messages\n• Managing collections\n• Performing various utility functions\n• Session state management',
+       language: 'APEX Utilities'
+   },
+   {
+       id: 36,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you design a responsive page using Oracle Application Express?',
+       answer: 'To design a responsive page, you need to use the fluid grid layout. This allows you to create a page that will resize itself based on the size of the device that it is being viewed on.',
+       language: 'Responsive Design'
+   },
+   {
+       id: 37,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Is it possible to migrate the code from one workspace to another? If yes, then how?',
+       answer: 'Yes, it is possible to migrate code from one workspace to another using the Export/Import feature:\n1. Export the application from source workspace\n2. Import it into the target workspace\n3. Configure any necessary supporting objects',
+       language: 'Migration'
+   },
+   {
+       id: 38,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What are the key differences between SQL Workshop and Apex Workspace?',
+       answer: 'SQL Workshop is a tool for working with SQL databases, providing a user interface for running SQL queries and commands. Apex Workspace is a tool for developing and managing Oracle Application Express applications, providing development environment features.',
+       language: 'Tools Comparison'
+   },
+   {
+       id: 39,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Can you explain how to install Oracle Application Express(APEX) on an existing database?',
+       answer: 'There are two ways:\n\nOn-Premise:\n1. Download APEX installer\n2. Unzip and run setup.exe\n3. Choose installation type\n4. Provide database details\n5. Run configuration script\n\nCloud:\n1. Use existing autonomous database in Oracle Cloud Infrastructure\n2. Access APEX through Database Actions',
+       language: 'Installation'
+   },
+   {
+       id: 40,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Why would you want to build a mobile app using Oracle Application Express?',
+       answer: 'Oracle Application Express is great for building mobile apps because:\n• Very user-friendly and easy to use\n• Offers flexibility in design and build\n• Responsive design capabilities\n• Quick development cycle\n• Built-in mobile optimizations',
+       language: 'Mobile Development'
+   },
+   {
+       id: 41,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How does Oracle Application Express compare with other frameworks like Ruby on Rails or Django?',
+       answer: 'Oracle Application Express is similar to Ruby on Rails or Django but includes unique features:\n• Automatic form generation based on database tables\n• Easy Oracle database integration\n• Low-code development approach\n• Built-in security features\n• Rapid application development',
+       language: 'Framework Comparison'
+   },
+   {
+       id: 42,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you keep your development environment up-to-date with regard to security patches?',
+       answer: 'You can keep your development environment up-to-date by:\n• Regularly checking for updates from Oracle\n• Applying updates as necessary\n• Subscribing to Oracle\'s security mailing list\n• Receiving notifications of new security patches',
+       language: 'Security Updates'
+   },
+   {
+       id: 43,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What is the difference between a static and dynamic action in Oracle APEX?',
+       answer: 'Static action is defined at design time and is executed when a specific event occurs (page load, button click). Dynamic action is defined at runtime and can be triggered based on various conditions or user interactions.',
+       language: 'Dynamic Actions'
+   },
+   {
+       id: 44,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you pass values between pages in Oracle APEX?',
+       answer: 'Oracle APEX provides several methods:\n• URL parameters\n• Global variables\n• Session state\n• apex_util.set_session_state function\n• Application items\n• Page items',
+       language: 'Session Management'
+   },
+   {
+       id: 45,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you handle exception handling in Oracle APEX?',
+       answer: 'Exception handling can be done using:\n• Built-in error handling features\n• Defining error messages\n• Handling exceptions in PL/SQL code using proper exception blocks\n• Custom error handling functions',
+       language: 'Error Handling'
+   },
+   {
+       id: 46,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Can you explain the difference between a shared component and a shared page in Oracle APEX?',
+       answer: 'A shared component is a reusable object (navigation menu, template) that can be used across multiple applications. A shared page is a page that is shared between multiple applications.',
+       language: 'Shared Components'
+   },
+   {
+       id: 47,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What is the difference between a report and a chart in Oracle APEX?',
+       answer: 'A report displays data in a tabular format, allowing users to view and interact with the data. A chart visualizes the data in a graphical format, making it easier to understand trends and patterns.',
+       language: 'Reports vs Charts'
+   },
+   {
+       id: 48,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement pagination in Oracle APEX?',
+       answer: 'Oracle APEX provides built-in pagination features that allow developers to:\n• Display a limited number of rows per page\n• Provide navigation controls to move between pages\n• Configure pagination settings\n• Customize pagination appearance',
+       language: 'Pagination'
+   },
+   {
+       id: 49,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you handle file uploads in Oracle APEX?',
+       answer: 'Oracle APEX provides file upload functionality through:\n• File Browse item type\n• Configure settings for file size\n• File type restrictions\n• Storage location options\n• Validation rules for uploads',
+       language: 'File Upload'
+   },
+   {
+       id: 50,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Can you explain the difference between a session state and an application item in Oracle APEX?',
+       answer: 'Session state stores values specific to a user session and can be accessed across different pages within the session. An application item is a global variable that can be accessed by all user sessions.',
+       language: 'Session State'
+   },
+   {
+       id: 51,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you customize the navigation menu in Oracle APEX?',
+       answer: 'Oracle APEX provides a navigation menu component that can be customized by:\n• Defining menu entries\n• Creating hierarchical structures\n• Configuring styling options\n• Setting conditional display rules',
+       language: 'Navigation'
+   },
+   {
+       id: 52,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement master-detail relationships in Oracle APEX?',
+       answer: 'Master-detail relationships can be implemented by:\n• Creating a parent-child relationship between two regions\n• Using the built-in master-detail form wizard\n• Configuring data synchronization\n• Setting up navigation between master and detail',
+       language: 'Master Detail'
+   },
+   {
+       id: 53,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you handle session timeout in Oracle APEX?',
+       answer: 'Oracle APEX provides session timeout settings that can be configured in:\n• Application\'s security attributes\n• Session timeout duration\n• Custom behavior when session expires\n• Redirect options for expired sessions',
+       language: 'Session Timeout'
+   },
+   {
+       id: 54,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'Can you explain the difference between a theme and a template in Oracle APEX?',
+       answer: 'A theme defines the overall look and feel of an application (layout, colors, fonts). A template defines the structure and arrangement of regions and items on a page.',
+       language: 'Themes vs Templates'
+   },
+   {
+       id: 55,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement a conditional display of items in Oracle APEX?',
+       answer: 'Oracle APEX provides conditional rendering options that allow developers to show or hide items based on:\n• Specific conditions\n• User input\n• Session state values\n• Database values\n• User roles and permissions',
+       language: 'Conditional Display'
+   },
+   {
+       id: 56,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement internationalization and localization in Oracle APEX?',
+       answer: 'Oracle APEX provides built-in support for internationalization by:\n• Creating applications that can be translated into multiple languages\n• Defining language-specific translations\n• Configuring language preferences\n• Supporting multiple date/number formats',
+       language: 'Internationalization'
+   },
+   {
+       id: 57,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement cascading LOVs (List of Values) in Oracle APEX?',
+       answer: 'Oracle APEX provides cascading LOV functionality through:\n• Cascading LOV item type\n• Parent-child relationships between LOVs\n• Filtering child LOV values based on parent selection\n• Dynamic refresh of dependent LOVs',
+       language: 'Cascading LOV'
+   },
+   {
+       id: 58,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement data validation in Oracle APEX?',
+       answer: 'Oracle APEX provides several validation options:\n• Required fields\n• Data type validations\n• Pattern validations\n• Custom PL/SQL validations\n• Client-side JavaScript validations\n• Database constraint validations',
+       language: 'Data Validation'
+   },
+   {
+       id: 59,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement a multi-step wizard in Oracle APEX?',
+       answer: 'Oracle APEX provides a built-in wizard component:\n• Define each step as a separate page\n• Use navigation buttons to move between steps\n• Maintain state across wizard steps\n• Implement validation for each step',
+       language: 'Wizard'
+   },
+   {
+       id: 60,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How can you implement client-side validations in Oracle APEX?',
+       answer: 'Oracle APEX supports client-side validations using:\n• JavaScript functions\n• Dynamic actions\n• Built-in item validations\n• Custom validation functions\n• Real-time validation feedback',
+       language: 'Client Side Validation'
+   },
 
-    
-{
-        id: 96,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are the 4 essential security pillars that every Oracle APEX application should implement?',
-        answer: 'According to Oracle APEX security best practices, the 4 essential security pillars are: 1. Authentication - Verifies the user\'s identity using methods like APEX accounts, LDAP, SSO, or OAuth2. This should be implemented in every APEX app, even internal ones, as no login equals an open door to your application. 2. Authorization - Defines what users can access by setting user permissions. Admins typically see all data while regular users see limited data. This is crucial when your app supports roles, restricted pages, or conditional visibility. 3. Session State Protection - Prevents users from manipulating hidden values and protects against URL tampering or form field injection by securing item values. Use Session State Protection on critical or hidden items, especially those passed between pages. 4. SQL Injection Prevention - Protects your app from malicious input that could compromise your database. Always use bind variables, sanitize user input, and avoid direct string concatenation in SQL.',
-        language: 'Security Best Practices'
-    },
-
- 
-    {
-        id: 97,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What is an APEX Collection and when would you use them?',
-        answer: 'APEX Collections are in-memory data structures that allow you to store and manipulate data without the need to perform frequent database commits. They are session-specific, meaning they exist only for the duration of a user\'s session. Common use cases include storing user session data, performing bulk data operations, temporary data storage, caching, and passing data between different parts of an application.',
-        language: 'APEX Collections'
-    },
-    {
-        id: 98,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How would you implement a custom authentication scheme in Oracle APEX?',
-        answer: 'To implement a custom authentication scheme: 1. Navigate to Shared Components > Authentication Schemes, 2. Create a new scheme, 3. Choose "Custom" as the scheme type, 4. Define authentication function that returns TRUE for valid users, 5. Configure login processing, logout URL, and session verification, 6. Test the scheme thoroughly before making it current.',
-        language: 'Authentication'
-    },
-    {
-        id: 99,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are the different ways to implement navigation in an APEX application?',
-        answer: 'Navigation can be implemented through: 1. Navigation Menu (breadcrumb navigation), 2. List-based navigation (tabs, sidebar), 3. Button-based navigation, 4. Tree navigation for hierarchical data, 5. Custom navigation using dynamic actions, 6. URL-based navigation with page linking, 7. Breadcrumb regions for path tracking.',
-        language: 'Navigation'
-    },
-    {
-        id: 100,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How do you create and use dynamic lists in Oracle APEX?',
-        answer: 'Dynamic lists are created by: 1. Going to Shared Components > Lists, 2. Creating a new list with dynamic query, 3. Writing SQL query that returns list entries, 4. Using columns for display value, target, and attributes, 5. Adding the list to a page region, 6. Configuring list template for display format.',
-        language: 'Dynamic Lists'
-    },
-    {
-        id: 101,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How would you create a custom report with multiple data sources in APEX?',
-        answer: 'Custom reports with multiple data sources can be created by: 1. Using UNION or JOIN operations in SQL query, 2. Creating database views that combine multiple tables, 3. Using PL/SQL to fetch data from multiple sources, 4. Implementing web service integration for external data, 5. Using APEX collections to merge data from different sources.',
-        language: 'Multi-Source Reports'
-    },
-    {
-        id: 102,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are APEX error handling techniques, and how would you implement them?',
-        answer: 'Error handling techniques include: 1. Built-in error handling with apex_error package, 2. Custom error handling functions, 3. PL/SQL exception handling with BEGIN-EXCEPTION-END blocks, 4. Client-side JavaScript error handling, 5. Global error handling at application level, 6. Page-specific error handling, 7. Error logging to custom tables for debugging.',
-        language: 'Error Handling'
-    },
-    {
-        id: 103,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How do you integrate third-party JavaScript libraries into an APEX application?',
-        answer: 'Integration steps: 1. Upload library files to Static Application Files or use CDN links, 2. Reference libraries in page template or specific pages, 3. Include library CSS and JS files in page header, 4. Create JavaScript functions to interface with APEX, 5. Use dynamic actions to trigger library functions, 6. Handle library initialization in page load events.',
-        language: 'JavaScript Integration'
-    },
-    {
-        id: 104,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What is APEX session state and its importance in application development?',
-        answer: 'APEX session state maintains user-specific data across page requests within a user session. It includes page item values, application items, and collection data. Session state is important for: maintaining user context, passing data between pages, preserving form data, implementing security, and providing personalized user experience. It\'s managed automatically by APEX and can be manipulated using APEX APIs.',
-        language: 'Session State'
-    },
-    {
-        id: 105,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How would you optimize a slow-running report in an Oracle APEX application?',
-        answer: 'Optimization techniques: 1. Analyze SQL execution plan, 2. Add appropriate database indexes, 3. Use bind variables instead of literal values, 4. Implement pagination for large datasets, 5. Use caching for frequently accessed data, 6. Optimize joins and subqueries, 7. Consider materialized views for complex queries, 8. Use lazy loading for dynamic regions.',
-        language: 'Performance Optimization'
-    },
-    {
-        id: 106,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How can you execute JavaScript code from PL/SQL process in Oracle APEX?',
-        answer: 'You can execute JavaScript from PL/SQL using: 1. apex_javascript.add_onload_code procedure, 2. htp.p or apex_application.g_print_success_message for inline JavaScript, 3. apex_json package to return data for JavaScript processing, 4. AJAX callbacks that execute JavaScript in success/error handlers, 5. Dynamic actions triggered by PL/SQL processes.',
-        language: 'PL/SQL JavaScript Integration'
-    },
-    {
-        id: 107,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What is the difference between Oracle APEX Listener and Oracle HTTP Server (OHS)?',
-        answer: 'APEX Listener (now ORDS) is a Java-based web server specifically designed for APEX applications, handling HTTP requests and database connections. Oracle HTTP Server (OHS) is an Apache-based web server that can serve multiple applications and provides additional features like load balancing, SSL termination, and reverse proxy capabilities. OHS can be used as a front-end to ORDS for production deployments.',
-        language: 'Web Servers'
-    },
-    {
-        id: 108,
-        category: 'basic',
-        difficulty: 'basic',
-        question: 'What are some pre-packaged applications available in Oracle APEX?',
-        answer: 'Oracle APEX provides several pre-packaged applications including: 1. Employee Directory Lookup, 2. Ask the Expert (Q&A site), 3. Bug Tracker (logging and tracking bug reports), 4. Discussion Forum (threaded chat and user management), 5. Document Library (multi-user document repository), 6. Project Issue Tracker, 7. Online Store (catalog and shopping cart), 8. Software Projects (project task tracker).',
-        language: 'Sample Applications'
-    },
-    {
-        id: 109,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are the aspects you should consider when deploying Oracle APEX applications for large-scale public use?',
-        answer: 'Considerations for large-scale deployment: 1. Load balancing and clustering, 2. SSL/TLS encryption, 3. CDN for static content, 4. Database performance tuning, 5. Security hardening, 6. Monitoring and logging, 7. Backup and disaster recovery, 8. Scalable infrastructure, 9. Session management, 10. Caching strategies, 11. Network optimization.',
-        language: 'Enterprise Deployment'
-    },
-    {
-        id: 110,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How does APEX Data Load wizard work and what formats does it support?',
-        answer: 'The APEX Data Load wizard simplifies uploading and importing data into database tables. It supports various formats including CSV, XLSX, XML, and JSON. The wizard allows users to: map columns to database columns, preview data before loading, handle data type conversions, set up validation rules, and perform bulk operations. It provides an intuitive interface for non-technical users to import data.',
-        language: 'Data Loading'
-    },
-    {
-        id: 111,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How do you create a drill-down report in Oracle APEX?',
-        answer: 'Creating a drill-down report involves: 1. Define a hyperlink on a column in the master report, 2. Configure the link to navigate to a detail report page, 3. Pass parameters (like ID) from master to detail report, 4. Create the detail report page with appropriate filters, 5. Use page items to receive parameters, 6. Implement breadcrumb navigation for user experience.',
-        language: 'Drill-down Reports'
-    },
-    {
-        id: 112,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are plugins in Oracle APEX and when would you choose to use them?',
-        answer: 'Plugins are reusable components that extend APEX functionality beyond built-in components. They\'re chosen when: 1. Custom functionality is required, 2. Third-party library integration is needed, 3. Complex validations or dynamic actions are required, 4. New item types are needed, 5. Enhanced user interface customization is desired. Plugins offer flexibility and control over data presentation and interaction.',
-        language: 'Plugins'
-    },
-    {
-        id: 113,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'How do you ensure data validation at both client-side and server-side in Oracle APEX?',
-        answer: 'Client-side validation: Use item-level settings like "Value Required", built-in validations (Number, Email), JavaScript functions, and dynamic actions. Server-side validation: Implement PL/SQL validations, database constraints, custom validation functions, and process-level checks. Always implement server-side validation as client-side can be bypassed. Use both for optimal user experience and security.',
-        language: 'Data Validation'
-    },
-    {
-        id: 114,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'What is ActionPoller in Oracle APEX?',
-        answer: 'ActionPoller is a clock mechanism in APEX that enables periodic AJAX refresh requests to be sent to the server at intervals determined by the developer. It\'s useful for: auto-refreshing reports, real-time data updates, session management, periodic status checks, and creating dynamic dashboards that update automatically without user interaction.',
-        language: 'ActionPoller'
-    },
-    {
-        id: 115,
-        category: 'intermediate',
-        difficulty: 'intermediate',
-        question: 'How would you handle complex data validation in Oracle APEX?',
-        answer: 'Complex validation can be handled using: 1. Built-in validation features for basic rules, 2. Custom PL/SQL code for intricate business logic, 3. JavaScript for enhanced client-side validation, 4. Combination of page-level and item-level validations, 5. Cross-field validation using dynamic actions, 6. Database triggers for data integrity, 7. Custom validation functions that can be reused across applications.',
-        language: 'Complex Validation'
-    },
-    {
-        id: 116,
-        category: 'advanced',
-        difficulty: 'advanced',
-        question: 'What are the different deployment options for Oracle APEX applications?',
-        answer: 'Deployment options include: 1. On-premise deployment with Oracle HTTP Server/ORDS, 2. Oracle Cloud Infrastructure (OCI), 3. Oracle Autonomous Database, 4. Third-party cloud providers with Oracle Database, 5. Hybrid cloud deployments, 6. Docker containers, 7. Export/Import for application migration, 8. Manual deployment with supporting objects, 9. Automated deployment pipelines.',
-        language: 'Deployment Options'
-    }
+   // ADVANCED LEVEL QUESTIONS (61-116)
+   {
+       id: 61,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Are there any performance issues when thousands of users access a single instance of Oracle?',
+       answer: 'There are no known performance issues when thousands of users access a single instance of Oracle. Oracle is designed to handle large numbers of users and transactions as it is scalable by default.',
+       language: 'Performance'
+   },
+   {
+       id: 62,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are some best practices for developing web apps using Oracle Application Express (APEX)?',
+       answer: 'Best practices include:\n• Using built-in security features to control access\n• Using bind variables to avoid SQL injection attacks\n• Using built-in report generation features\n• Following naming conventions\n• Implementing proper error handling\n• Optimizing SQL queries\n• Using session state protection',
+       language: 'Best Practices'
+   },
+   {
+       id: 63,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What is a break field in context of reporting in Oracle Application Express?',
+       answer: 'A break field is a field used to break up data in a report. For example, if you have a report with data for multiple years, you could use a break field to break up the data by year, allowing you to easily see the data for each year separately.',
+       language: 'Reporting'
+   },
+   {
+       id: 64,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What kind of activities you have done for APEX as APEX DBA?',
+       answer: 'APEX DBA activities include:\n1. Setup of APEX environment\n2. SSL configuration\n3. USER access management\n4. Security modal definition\n5. Ad hoc issue resolution\n6. Patching and Performance optimization',
+       language: 'DBA Activities'
+   },
+   {
+       id: 65,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How does APEX Architecture work?',
+       answer: 'APEX is installed on Oracle database (above 9.2 version), starting from Oracle 11g it comes pre-installed. It comprises:\n• Metadata in tables\n• PL/SQL code\n• Extensive JavaScript APIs\n\nThe URL request from browser is translated into appropriate APEX PL/SQL call by Oracle HTTP Server or Embedded PL/SQL Gateway.',
+       language: 'Architecture'
+   },
+   {
+       id: 66,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do I separate development from production environment?',
+       answer: 'Environment separation options:\n• Two servers (development and production)\n• Three servers (development, test, and production)\n• Applications moved using export and import facility\n• Single server with two workspaces accessing separate schemas',
+       language: 'Environment Management'
+   },
+   {
+       id: 67,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How can you secure data in an APEX application?',
+       answer: 'Data can be secured by implementing:\n• Proper authentication\n• Authorization schemes\n• Encryption\n• Secure coding practices\n• Input validation\n• Session management\n• Escape user input',
+       language: 'Data Security'
+   },
+   {
+       id: 68,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'Explain the process of deploying an APEX application.',
+       answer: 'APEX applications can be deployed using:\n• Built-in export/import feature\n• Generating installation scripts\n• Deploying to Oracle Cloud\n\nSteps:\n1. Export the application as a SQL file\n2. Import it into the target environment\n3. Configure necessary supporting objects',
+       language: 'Deployment'
+   },
+   {
+       id: 69,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How can you call PL/SQL code from an APEX application?',
+       answer: 'PL/SQL code can be called using:\n• Processes\n• Computations\n• Validations\n• PL/SQL regions on a page\n• Page processes\n• AJAX callbacks\n• Dynamic actions',
+       language: 'PL/SQL Integration'
+   },
+   {
+       id: 70,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How does Oracle APEX handle version control and team development?',
+       answer: 'Oracle APEX provides features like:\n• Team Development\n• Application Builder Team Development\n• Integration with version control systems\n• Built-in collaboration tools\n• Application versioning\n• Export/import capabilities',
+       language: 'Version Control'
+   },
+   {
+       id: 71,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are dynamic actions in Oracle APEX?',
+       answer: 'Dynamic actions allow you to define actions triggered based on certain events or conditions. They enable declarative client-side logic without writing JavaScript:\n• Show/hide items\n• Refresh regions\n• Execute PL/SQL code\n• Submit pages\n• Set values',
+       language: 'Dynamic Actions'
+   },
+   {
+       id: 72,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How can you create and use Dynamic Actions in Oracle APEX?',
+       answer: 'Steps to create Dynamic Actions:\n1. Navigate to Page Designer\n2. Select the item or button\n3. Click Create > Dynamic Action\n4. Define the event (Click, Change)\n5. Specify the actions (Show, Hide, Execute JavaScript)\n6. Configure settings and save',
+       language: 'Dynamic Actions'
+   },
+   {
+       id: 73,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How can you implement error handling in Oracle APEX?',
+       answer: 'Error handling can be done using:\n• Exception handling in PL/SQL\n• Displaying error messages\n• Logging errors to the database\n• Proper exception blocks\n• apex_error for custom error handling\n• User-friendly error messages',
+       language: 'Error Handling'
+   },
+   {
+      id: 74,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you import data into an APEX application from external sources?',
+      answer: 'Data can be imported using various methods:\n• SQL*Loader\n• External Tables\n• CSV files\n• RESTful Web Services\n• Data Loading wizard\n• APEX_DATA_PARSER package\n• Web service integration',
+      language: 'Data Import'
+  },
+  {
+      id: 75,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you integrate Oracle APEX with other systems or applications?',
+      answer: 'Oracle APEX can be integrated using:\n• Web Services\n• RESTful Services\n• JavaScript APIs\n• Database links\n• External authentication systems\n• REST APIs\n• Third-party integrations',
+      language: 'Integration'
+  },
+  {
+      id: 76,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'What are the best practices for performance tuning in Oracle APEX?',
+      answer: 'Performance-tuning best practices include:\n• Optimizing SQL queries\n• Minimizing database round trips\n• Caching frequently accessed data\n• Leveraging browser caching mechanisms\n• Using bind variables\n• Proper indexing\n• Pagination for large datasets',
+      language: 'Performance Tuning'
+  },
+  {
+      id: 77,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you package and deploy Oracle APEX applications?',
+      answer: 'Oracle APEX allows developers to:\n• Package application into a single export file\n• Import into another environment\n• Use Oracle REST Data Services (ORDS)\n• Use Oracle APEX Listener\n• Create installation scripts\n• Deploy supporting objects',
+      language: 'Packaging'
+  },
+  {
+      id: 78,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'What are the limitations of Oracle APEX?',
+      answer: 'Some limitations include:\n• Limited support for complex business rules\n• Limited offline capabilities\n• Potential performance issues with large datasets\n• Dependency on Oracle Database\n• Limited customization compared to custom development\n• Browser compatibility requirements',
+      language: 'Limitations'
+  },
+  {
+      id: 79,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you extend Oracle APEX functionality using custom plugins?',
+      answer: 'Oracle APEX supports custom plugins, which are reusable components or extensions that developers can:\n• Create custom functionality\n• Share with the community\n• Enhance application capabilities\n• Integrate third-party libraries\n• Extend built-in components',
+      language: 'Plugins'
+  },
+  {
+      id: 80,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement dynamic actions based on AJAX callbacks in Oracle APEX?',
+      answer: 'Oracle APEX provides the ability to create dynamic actions triggered by AJAX callbacks:\n• Refresh regions without page refresh\n• Execute PL/SQL code\n• Update page items\n• Show/hide elements\n• Display messages',
+      language: 'AJAX'
+  },
+  {
+      id: 81,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement a search functionality in Oracle APEX?',
+      answer: 'Oracle APEX offers various search options:\n• Search bar with dynamic action to filter data\n• Dedicated search page with interactive reports\n• Form-based searches\n• Global search functionality\n• Faceted search regions',
+      language: 'Search Functionality'
+  },
+  {
+      id: 82,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement data encryption in Oracle APEX?',
+      answer: 'Oracle APEX provides built-in functions for data encryption:\n• DBMS_CRYPTO package\n• Encrypt sensitive data in database\n• SSL/TLS for data transmission\n• Session state protection\n• Password hashing',
+      language: 'Data Encryption'
+  },
+  {
+      id: 83,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement RESTful web services in Oracle APEX?',
+      answer: 'Oracle APEX allows developers to:\n• Create RESTful web services\n• Consume RESTful web services\n• Define services using PL/SQL code\n• Expose SQL queries as RESTful services\n• Handle HTTP methods (GET, POST, PUT, DELETE)',
+      language: 'REST Services'
+  },
+  {
+      id: 84,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'What are RESTful Web Services in Oracle APEX, and how do you create one?',
+      answer: 'RESTful Web Services expose database operations as RESTful endpoints using HTTP methods GET, POST, PUT, DELETE.\n\nSteps:\n1. Navigate to SQL Workshop > RESTful Services\n2. Create a RESTful Service Module\n3. Define resource templates and handlers\n4. Write SQL/PL/SQL code for requests\n5. Save and deploy the service',
+      language: 'REST Services'
+  },
+  {
+      id: 85,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement email notifications in Oracle APEX?',
+      answer: 'Oracle APEX provides email functionality using:\n• APEX_MAIL package\n• Send emails for various purposes:\n  - Account activation\n  - Password resets\n  - Notification alerts\n  - Workflow notifications\n• Configure SMTP settings',
+      language: 'Email Notifications'
+  },
+  {
+      id: 86,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement user authentication and authorization in Oracle APEX?',
+      answer: 'Oracle APEX supports various authentication schemes:\n• Database authentication\n• LDAP authentication\n• Single sign-on\n• OAuth authentication\n• Custom authentication\n\nAuthorization schemes control access to:\n• Specific pages\n• Components based on user roles\n• Data based on user permissions',
+      language: 'Authentication'
+  },
+  {
+      id: 87,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement data import and export functionality in Oracle APEX?',
+      answer: 'Oracle APEX provides several options:\n• Data Loading wizard\n• SQL*Loader\n• APEX_DATA_PARSER package\n• Export to various formats (CSV, Excel, PDF)\n• Custom import/export processes\n• Bulk data operations',
+      language: 'Data Import Export'
+  },
+  {
+      id: 88,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement file downloads in Oracle APEX?',
+      answer: 'Oracle APEX provides file download capabilities:\n• APEX_UTIL package to generate files\n• Various formats (CSV, Excel, PDF)\n• Dynamic file generation\n• Download links for users\n• Secure file access controls',
+      language: 'File Downloads'
+  },
+  {
+      id: 89,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you implement user authentication with social media accounts in Oracle APEX?',
+      answer: 'Oracle APEX allows social sign-in functionality:\n• OAuth authentication\n• Configure OAuth providers (Google, Facebook)\n• Allow users to authenticate using social media accounts\n• Integrate with external identity providers',
+      language: 'Social Authentication'
+  },
+  {
+      id: 90,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you monitor and analyze performance in Oracle APEX?',
+      answer: 'Oracle APEX provides monitoring features:\n• Application Express Monitor\n• Track application performance\n• Identify bottlenecks\n• Optimize SQL queries\n• Performance analytics\n• Resource usage monitoring',
+      language: 'Performance Monitoring'
+  },
+  {
+      id: 91,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you create a mobile-responsive application in Oracle APEX?',
+      answer: 'Oracle APEX provides responsive design features:\n• Responsive design templates\n• Components that adapt to different screen sizes\n• Mobile device optimization\n• CSS and JavaScript customization\n• Touch-friendly interfaces',
+      language: 'Mobile Responsive'
+  },
+  {
+      id: 92,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'What is a Plug-in in Oracle APEX?',
+      answer: 'A Plug-in is a reusable component that extends platform functionality:\n• Custom items\n• Regions\n• Processes\n• Dynamic actions\n• Encapsulate complex functionalities\n• Share across applications',
+      language: 'Plugins'
+  },
+  {
+      id: 93,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'Explain the concept of Shared Components in Oracle APEX.',
+      answer: 'Shared Components are reusable elements used across multiple pages and applications:\n• Lists of Values (LOVs)\n• Themes\n• Templates\n• Navigation Menus\n• Dynamic Actions\n• Help maintain consistency\n• Reduce redundancy',
+      language: 'Shared Components'
+  },
+  {
+      id: 94,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How do you stay updated with the latest features and enhancements in Oracle APEX?',
+      answer: 'Stay updated through:\n• Official Oracle APEX documentation\n• Online forums and communities\n• Conferences and events\n• Continuous learning through tutorials\n• Oracle blogs and announcements\n• Beta testing programs',
+      language: 'Learning Resources'
+  },
+  {
+      id: 95,
+      category: 'advanced',
+      difficulty: 'advanced',
+      question: 'How can you debug and troubleshoot Oracle APEX applications?',
+      answer: 'Oracle APEX provides debugging tools:\n• Debug mode\n• Error handling\n• Logging options\n• apex_debug package\n• Browser developer tools\n• Error logging to database\n• Step-by-step debugging',
+      language: 'Debugging'
+  },
+   {
+       id: 96,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are the 4 essential security pillars that every Oracle APEX application should implement?',
+       answer: 'According to Oracle APEX security best practices, the 4 essential security pillars are:\n\n1. Authentication - Verifies the user\'s identity using methods like APEX accounts, LDAP, SSO, or OAuth2. This should be implemented in every APEX app, even internal ones, as no login equals an open door to your application.\n\n2. Authorization - Defines what users can access by setting user permissions. Admins typically see all data while regular users see limited data. This is crucial when your app supports roles, restricted pages, or conditional visibility.\n\n3. Session State Protection - Prevents users from manipulating hidden values and protects against URL tampering or form field injection by securing item values. Use Session State Protection on critical or hidden items, especially those passed between pages.\n\n4. SQL Injection Prevention - Protects your app from malicious input that could compromise your database. Always use bind variables, sanitize user input, and avoid direct string concatenation in SQL.',
+       language: 'Security Best Practices'
+   },
+   {
+       id: 97,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What is an APEX Collection and when would you use them?',
+       answer: 'APEX Collections are in-memory data structures that allow you to store and manipulate data without frequent database commits. They are session-specific, existing only for the duration of a user\'s session.\n\nCommon use cases include:\n• Storing user session data\n• Performing bulk data operations\n• Temporary data storage\n• Caching\n• Passing data between different parts of an application',
+       language: 'APEX Collections'
+   },
+   {
+       id: 98,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How would you implement a custom authentication scheme in Oracle APEX?',
+       answer: 'To implement a custom authentication scheme:\n1. Navigate to Shared Components > Authentication Schemes\n2. Create a new scheme\n3. Choose "Custom" as the scheme type\n4. Define authentication function that returns TRUE for valid users\n5. Configure login processing, logout URL, and session verification\n6. Test the scheme thoroughly before making it current',
+       language: 'Authentication'
+   },
+   {
+       id: 99,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are the different ways to implement navigation in an APEX application?',
+       answer: 'Navigation can be implemented through:\n1. Navigation Menu (breadcrumb navigation)\n2. List-based navigation (tabs, sidebar)\n3. Button-based navigation\n4. Tree navigation for hierarchical data\n5. Custom navigation using dynamic actions\n6. URL-based navigation with page linking\n7. Breadcrumb regions for path tracking',
+       language: 'Navigation'
+   },
+   {
+       id: 100,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you create and use dynamic lists in Oracle APEX?',
+       answer: 'Dynamic lists are created by:\n1. Going to Shared Components > Lists\n2. Creating a new list with dynamic query\n3. Writing SQL query that returns list entries\n4. Using columns for display value, target, and attributes\n5. Adding the list to a page region\n6. Configuring list template for display format',
+       language: 'Dynamic Lists'
+   },
+   {
+       id: 101,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How would you create a custom report with multiple data sources in APEX?',
+       answer: 'Custom reports with multiple data sources can be created by:\n1. Using UNION or JOIN operations in SQL query\n2. Creating database views that combine multiple tables\n3. Using PL/SQL to fetch data from multiple sources\n4. Implementing web service integration for external data\n5. Using APEX collections to merge data from different sources',
+       language: 'Multi-Source Reports'
+   },
+   {
+       id: 102,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are APEX error handling techniques, and how would you implement them?',
+       answer: 'Error handling techniques include:\n1. Built-in error handling with apex_error package\n2. Custom error handling functions\n3. PL/SQL exception handling with BEGIN-EXCEPTION-END blocks\n4. Client-side JavaScript error handling\n5. Global error handling at application level\n6. Page-specific error handling\n7. Error logging to custom tables for debugging',
+       language: 'Error Handling'
+   },
+   {
+       id: 103,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you integrate third-party JavaScript libraries into an APEX application?',
+       answer: 'Integration steps:\n1. Upload library files to Static Application Files or use CDN links\n2. Reference libraries in page template or specific pages\n3. Include library CSS and JS files in page header\n4. Create JavaScript functions to interface with APEX\n5. Use dynamic actions to trigger library functions\n6. Handle library initialization in page load events',
+       language: 'JavaScript Integration'
+   },
+   {
+       id: 104,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What is APEX session state and its importance in application development?',
+       answer: 'APEX session state maintains user-specific data across page requests within a user session. It includes page item values, application items, and collection data.\n\nSession state is important for:\n• Maintaining user context\n• Passing data between pages\n• Preserving form data\n• Implementing security\n• Providing personalized user experience\n\nIt\'s managed automatically by APEX and can be manipulated using APEX APIs.',
+       language: 'Session State'
+   },
+   {
+       id: 105,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How would you optimize a slow-running report in an Oracle APEX application?',
+       answer: 'Optimization techniques:\n1. Analyze SQL execution plan\n2. Add appropriate database indexes\n3. Use bind variables instead of literal values\n4. Implement pagination for large datasets\n5. Use caching for frequently accessed data\n6. Optimize joins and subqueries\n7. Consider materialized views for complex queries\n8. Use lazy loading for dynamic regions',
+       language: 'Performance Optimization'
+   },
+   {
+       id: 106,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How can you execute JavaScript code from PL/SQL process in Oracle APEX?',
+       answer: 'You can execute JavaScript from PL/SQL using:\n1. apex_javascript.add_onload_code procedure\n2. htp.p or apex_application.g_print_success_message for inline JavaScript\n3. apex_json package to return data for JavaScript processing\n4. AJAX callbacks that execute JavaScript in success/error handlers\n5. Dynamic actions triggered by PL/SQL processes',
+       language: 'PL/SQL JavaScript Integration'
+   },
+   {
+       id: 107,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What is the difference between Oracle APEX Listener and Oracle HTTP Server (OHS)?',
+       answer: 'APEX Listener (now ORDS) is a Java-based web server specifically designed for APEX applications, handling HTTP requests and database connections.\n\nOracle HTTP Server (OHS) is an Apache-based web server that can serve multiple applications and provides additional features like:\n• Load balancing\n• SSL termination\n• Reverse proxy capabilities\n\nOHS can be used as a front-end to ORDS for production deployments.',
+       language: 'Web Servers'
+   },
+   {
+       id: 108,
+       category: 'basic',
+       difficulty: 'basic',
+       question: 'What are some pre-packaged applications available in Oracle APEX?',
+       answer: 'Oracle APEX provides several pre-packaged applications including:\n1. Employee Directory Lookup\n2. Ask the Expert (Q&A site)\n3. Bug Tracker (logging and tracking bug reports)\n4. Discussion Forum (threaded chat and user management)\n5. Document Library (multi-user document repository)\n6. Project Issue Tracker\n7. Online Store (catalog and shopping cart)\n8. Software Projects (project task tracker)',
+       language: 'Sample Applications'
+   },
+   {
+       id: 109,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are the aspects you should consider when deploying Oracle APEX applications for large-scale public use?',
+       answer: 'Considerations for large-scale deployment:\n1. Load balancing and clustering\n2. SSL/TLS encryption\n3. CDN for static content\n4. Database performance tuning\n5. Security hardening\n6. Monitoring and logging\n7. Backup and disaster recovery\n8. Scalable infrastructure\n9. Session management\n10. Caching strategies\n11. Network optimization',
+       language: 'Enterprise Deployment'
+   },
+   {
+       id: 110,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How does APEX Data Load wizard work and what formats does it support?',
+       answer: 'The APEX Data Load wizard simplifies uploading and importing data into database tables. It supports various formats including CSV, XLSX, XML, and JSON.\n\nThe wizard allows users to:\n• Map columns to database columns\n• Preview data before loading\n• Handle data type conversions\n• Set up validation rules\n• Perform bulk operations\n\nIt provides an intuitive interface for non-technical users to import data.',
+       language: 'Data Loading'
+   },
+   {
+       id: 111,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How do you create a drill-down report in Oracle APEX?',
+       answer: 'Creating a drill-down report involves:\n1. Define a hyperlink on a column in the master report\n2. Configure the link to navigate to a detail report page\n3. Pass parameters (like ID) from master to detail report\n4. Create the detail report page with appropriate filters\n5. Use page items to receive parameters\n6. Implement breadcrumb navigation for user experience',
+       language: 'Drill-down Reports'
+   },
+   {
+       id: 112,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are plugins in Oracle APEX and when would you choose to use them?',
+       answer: 'Plugins are reusable components that extend APEX functionality beyond built-in components.\n\nThey\'re chosen when:\n1. Custom functionality is required\n2. Third-party library integration is needed\n3. Complex validations or dynamic actions are required\n4. New item types are needed\n5. Enhanced user interface customization is desired\n\nPlugins offer flexibility and control over data presentation and interaction.',
+       language: 'Plugins'
+   },
+   {
+       id: 113,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'How do you ensure data validation at both client-side and server-side in Oracle APEX?',
+       answer: 'Client-side validation:\n• Use item-level settings like "Value Required"\n• Built-in validations (Number, Email)\n• JavaScript functions\n• Dynamic actions\n\nServer-side validation:\n• Implement PL/SQL validations\n• Database constraints\n• Custom validation functions\n• Process-level checks\n\nAlways implement server-side validation as client-side can be bypassed. Use both for optimal user experience and security.',
+       language: 'Data Validation'
+   },
+   {
+       id: 114,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'What is ActionPoller in Oracle APEX?',
+       answer: 'ActionPoller is a clock mechanism in APEX that enables periodic AJAX refresh requests to be sent to the server at intervals determined by the developer.\n\nIt\'s useful for:\n• Auto-refreshing reports\n• Real-time data updates\n• Session management\n• Periodic status checks\n• Creating dynamic dashboards that update automatically without user interaction',
+       language: 'ActionPoller'
+   },
+   {
+       id: 115,
+       category: 'intermediate',
+       difficulty: 'intermediate',
+       question: 'How would you handle complex data validation in Oracle APEX?',
+       answer: 'Complex validation can be handled using:\n1. Built-in validation features for basic rules\n2. Custom PL/SQL code for intricate business logic\n3. JavaScript for enhanced client-side validation\n4. Combination of page-level and item-level validations\n5. Cross-field validation using dynamic actions\n6. Database triggers for data integrity\n7. Custom validation functions that can be reused across applications',
+       language: 'Complex Validation'
+   },
+   {
+       id: 116,
+       category: 'advanced',
+       difficulty: 'advanced',
+       question: 'What are the different deployment options for Oracle APEX applications?',
+       answer: 'Deployment options include:\n1. On-premise deployment with Oracle HTTP Server/ORDS\n2. Oracle Cloud Infrastructure (OCI)\n3. Oracle Autonomous Database\n4. Third-party cloud providers with Oracle Database\n5. Hybrid cloud deployments\n6. Docker containers\n7. Export/Import for application migration\n8. Manual deployment with supporting objects\n9. Automated deployment pipelines',
+       language: 'Deployment Options'
+   }
 ];
 
+       // Create question element with improved formatting
+       function createQuestionElement(question) {
+           const questionDiv = document.createElement('div');
+           questionDiv.className = `question-card ${question.difficulty}`;
+           questionDiv.setAttribute('data-difficulty', question.difficulty);
+           questionDiv.setAttribute('data-language', question.language.toLowerCase());
 
+           // Format the answer text with proper line breaks
+           const formattedAnswer = formatAnswer(question.answer);
+           
+           questionDiv.innerHTML = `
+               <div class="question-header">
+                   <div class="question-meta">
+                       <span class="question-id">Q${question.id}</span>
+                       <span class="difficulty-badge ${question.difficulty}">${question.difficulty.toUpperCase()}</span>
+                       <span class="language-tag">${question.language}</span>
+                   </div>
+                   <button class="expand-btn" onclick="toggleAnswer(this)" aria-label="Toggle answer">
+                       <i class="fas fa-chevron-down"></i>
+                   </button>
+               </div>
+               <div class="question-content">
+                   <h3 class="question-title">${question.question}</h3>
+                   <div class="answer-content" style="display: none;">
+                       <div class="answer-text">${formattedAnswer.replace(/\n/g, '<br>')}</div>
+                   </div>
+               </div>
+           `;
 
+           return questionDiv;
+       }
 
+       // Toggle answer visibility
+       function toggleAnswer(button) {
+           const questionCard = button.closest('.question-card');
+           const answerContent = questionCard.querySelector('.answer-content');
+           const icon = button.querySelector('i');
+           
+           if (answerContent.style.display === 'none') {
+               answerContent.style.display = 'block';
+               icon.classList.remove('fa-chevron-down');
+               icon.classList.add('fa-chevron-up');
+               questionCard.classList.add('expanded');
+           } else {
+               answerContent.style.display = 'none';
+               icon.classList.remove('fa-chevron-up');
+               icon.classList.add('fa-chevron-down');
+               questionCard.classList.remove('expanded');
+           }
+       }
 
-            
+       // Filter questions by difficulty
+       function filterQuestions(difficulty) {
+           const questions = document.querySelectorAll('.question-card');
+           const tabs = document.querySelectorAll('.filter-tab');
+           
+           // Update active tab
+           tabs.forEach(tab => tab.classList.remove('active'));
+           event.target.classList.add('active');
+           
+           // Show/hide questions
+           questions.forEach(question => {
+               if (difficulty === 'all' || question.getAttribute('data-difficulty') === difficulty) {
+                   question.style.display = 'block';
+               } else {
+                   question.style.display = 'none';
+               }
+           });
+       }
 
-        // Load questions when page loads
-        function loadQuestions() {
-            const container = document.getElementById('questionsContainer');
-            container.innerHTML = '';
-            
-            oracleApexQuestions.forEach(question => {
-                const questionElement = createQuestionElement(question);
-                container.appendChild(questionElement);
-            });
-        }
+       // Search questions
+       function searchQuestions() {
+           const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+           const questions = document.querySelectorAll('.question-card');
+           
+           questions.forEach(question => {
+               const questionText = question.querySelector('.question-title').textContent.toLowerCase();
+               const answerText = question.querySelector('.answer-text').textContent.toLowerCase();
+               const languageText = question.querySelector('.language-tag').textContent.toLowerCase();
+               
+               if (questionText.includes(searchTerm) || 
+                   answerText.includes(searchTerm) || 
+                   languageText.includes(searchTerm)) {
+                   question.style.display = 'block';
+               } else {
+                   question.style.display = 'none';
+               }
+           });
+       }
 
-        // Initialize questions on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadQuestions();
-        });
-    </script>
+       // Load questions when page loads
+       function loadQuestions() {
+           const container = document.getElementById('questionsContainer');
+           container.innerHTML = '';
+           
+           oracleApexQuestions.forEach(question => {
+               const questionElement = createQuestionElement(question);
+               container.appendChild(questionElement);
+           });
+       }
+
+       // Mobile menu toggle
+       function toggleMobileMenu() {
+           const navMenu = document.getElementById('navMenu');
+           navMenu.classList.toggle('active');
+       }
+
+       // Initialize questions on page load
+       document.addEventListener('DOMContentLoaded', function() {
+           loadQuestions();
+       });
+   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       
