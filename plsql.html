@@ -98,229 +98,2075 @@
     <script src="assets/js/script.js"></script>
     <script>
         // PL/SQL Questions Data
-        const plsqlQuestions = [
-            {
-                id: 1,
-                category: 'basic',
-                difficulty: 'basic',
-                question: 'What is PL/SQL and what are its advantages?',
-                answer: 'PL/SQL (Procedural Language extension to SQL) is Oracle\'s procedural extension for SQL. It combines the data manipulation power of SQL with the processing power of procedural language.',
-                language: 'PL/SQL',
-                code: `-- Basic PL/SQL Block Structure
+        // Updated PL/SQL Interview Questions for 2025
+const plsqlQuestions = [
+    {
+        id: 1,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'What is PL/SQL and its advantages?',
+        answer: 'PL/SQL is Oracle\'s procedural extension to SQL that combines SQL with procedural programming features.',
+        language: 'PL/SQL',
+        code: `-- Basic PL/SQL Block
 DECLARE
-  -- Declaration section (optional)
-  v_employee_name VARCHAR2(100);
+  v_emp_name VARCHAR2(50);
   v_salary NUMBER;
 BEGIN
-  -- Executable section (mandatory)
   SELECT employee_name, salary
-  INTO v_employee_name, v_salary
+  INTO v_emp_name, v_salary
   FROM employees
   WHERE employee_id = 101;
   
-  DBMS_OUTPUT.PUT_LINE('Employee: ' || v_employee_name);
-  DBMS_OUTPUT.PUT_LINE('Salary: ' || v_salary);
+  DBMS_OUTPUT.PUT_LINE(v_emp_name || ' earns ' || v_salary);
 EXCEPTION
-  -- Exception handling section (optional)
   WHEN NO_DATA_FOUND THEN
-   DBMS_OUTPUT.PUT_LINE('Employee not found');
- WHEN OTHERS THEN
-   DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-END;
-/
-
--- Advantages of PL/SQL:
--- 1. Block structure for better organization
--- 2. Exception handling
--- 3. Procedural constructs (loops, conditions)
--- 4. Better performance (compiled code)
--- 5. Integration with SQL`
-           },
-           {
-               id: 2,
-               category: 'basic',
-               difficulty: 'basic',
-               question: 'What is the difference between stored procedures and functions in PL/SQL?',
-               answer: '<strong>Procedures:</strong> Can have IN, OUT, IN OUT parameters; may or may not return values; can be called independently<br><strong>Functions:</strong> Must return a value; can be used in SQL statements; typically used for calculations',
-               language: 'PL/SQL',
-               code: `-- Stored Procedure Example
-CREATE OR REPLACE PROCEDURE update_employee_salary(
- p_employee_id IN NUMBER,
- p_new_salary IN NUMBER,
- p_status OUT VARCHAR2
-) IS
-BEGIN
- UPDATE employees 
- SET salary = p_new_salary 
- WHERE employee_id = p_employee_id;
- 
- IF SQL%ROWCOUNT > 0 THEN
-   p_status := 'SUCCESS';
-   COMMIT;
- ELSE
-   p_status := 'EMPLOYEE_NOT_FOUND';
- END IF;
-EXCEPTION
- WHEN OTHERS THEN
-   p_status := 'ERROR: ' || SQLERRM;
-   ROLLBACK;
-END;
-/
-
--- Function Example
-CREATE OR REPLACE FUNCTION calculate_annual_bonus(
- p_employee_id IN NUMBER
-) RETURN NUMBER IS
- v_salary NUMBER;
- v_performance_rating NUMBER;
- v_bonus NUMBER;
-BEGIN
- SELECT salary, performance_rating
- INTO v_salary, v_performance_rating
- FROM employees
- WHERE employee_id = p_employee_id;
- 
- v_bonus := CASE v_performance_rating
-              WHEN 5 THEN v_salary * 0.20  -- 20% for excellent
-              WHEN 4 THEN v_salary * 0.15  -- 15% for good
-              WHEN 3 THEN v_salary * 0.10  -- 10% for average
-              ELSE 0
-            END;
- 
- RETURN v_bonus;
-EXCEPTION
- WHEN NO_DATA_FOUND THEN
-   RETURN 0;
- WHEN OTHERS THEN
-   RETURN -1;  -- Error indicator
-END;
-/
-
--- Usage Examples
-DECLARE
- v_status VARCHAR2(50);
- v_bonus NUMBER;
-BEGIN
- -- Call procedure
- update_employee_salary(101, 75000, v_status);
- DBMS_OUTPUT.PUT_LINE('Update Status: ' || v_status);
- 
- -- Call function
- v_bonus := calculate_annual_bonus(101);
- DBMS_OUTPUT.PUT_LINE('Annual Bonus: ' || v_bonus);
- 
- -- Function can be used in SQL
- SELECT employee_name, 
-        salary,
-        calculate_annual_bonus(employee_id) as bonus
- FROM employees
- WHERE department_id = 10;
+    DBMS_OUTPUT.PUT_LINE('Employee not found');
 END;
 /`
-           },
-           {
-               id: 3,
-               category: 'intermediate',
-               difficulty: 'intermediate',
-               question: 'Explain cursors in PL/SQL and provide examples of implicit and explicit cursors.',
-               answer: 'Cursors are memory areas that store the result set of a SQL query. They allow row-by-row processing of query results.',
-               language: 'PL/SQL',
-               code: `-- Implicit Cursor Example (automatic for DML statements)
+    },
+    {
+        id: 2,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'Difference between procedures and functions?',
+        answer: 'Procedures can have multiple OUT parameters and don\'t return values. Functions must return a value and can be used in SQL statements.',
+        language: 'PL/SQL',
+        code: `-- Procedure
+CREATE OR REPLACE PROCEDURE update_salary(
+  p_emp_id IN NUMBER,
+  p_salary IN NUMBER,
+  p_status OUT VARCHAR2
+) IS
 BEGIN
- UPDATE employees 
- SET salary = salary * 1.10 
- WHERE department_id = 10;
- 
- -- SQL cursor attributes
- DBMS_OUTPUT.PUT_LINE('Rows updated: ' || SQL%ROWCOUNT);
- 
- IF SQL%FOUND THEN
-   DBMS_OUTPUT.PUT_LINE('Update successful');
-   COMMIT;
- ELSE
-   DBMS_OUTPUT.PUT_LINE('No rows updated');
- END IF;
+  UPDATE employees SET salary = p_salary WHERE employee_id = p_emp_id;
+  p_status := CASE WHEN SQL%ROWCOUNT > 0 THEN 'SUCCESS' ELSE 'NOT_FOUND' END;
 END;
 /
 
--- Explicit Cursor Example
+-- Function
+CREATE OR REPLACE FUNCTION get_employee_name(p_emp_id NUMBER) 
+RETURN VARCHAR2 IS
+  v_name VARCHAR2(100);
+BEGIN
+  SELECT employee_name INTO v_name FROM employees WHERE employee_id = p_emp_id;
+  RETURN v_name;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN RETURN 'Unknown';
+END;
+/`
+    },
+    {
+        id: 3,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Explain cursors with examples.',
+        answer: 'Cursors are pointers to SQL result sets. Implicit cursors are automatic, explicit cursors provide more control.',
+        language: 'PL/SQL',
+        code: `-- Explicit Cursor
 DECLARE
- -- Cursor declaration
- CURSOR emp_cursor IS
-   SELECT employee_id, employee_name, salary, department_id
-   FROM employees
-   WHERE department_id = 10
-   ORDER BY salary DESC;
- 
- -- Record type for cursor
- v_emp_record emp_cursor%ROWTYPE;
- v_counter NUMBER := 0;
+  CURSOR emp_cur IS SELECT employee_id, employee_name FROM employees;
+  v_emp_id NUMBER;
+  v_name VARCHAR2(100);
 BEGIN
- -- Open cursor
- OPEN emp_cursor;
- 
- LOOP
-   -- Fetch data
-   FETCH emp_cursor INTO v_emp_record;
-   
-   -- Exit when no more rows
-   EXIT WHEN emp_cursor%NOTFOUND;
-   
-   v_counter := v_counter + 1;
-   
-   DBMS_OUTPUT.PUT_LINE(
-     'Employee ' || v_counter || ': ' ||
-     v_emp_record.employee_name || 
-     ' - Salary: ' || v_emp_record.salary
-   );
- END LOOP;
- 
- DBMS_OUTPUT.PUT_LINE('Total employees processed: ' || v_counter);
- 
- -- Close cursor
- CLOSE emp_cursor;
+  OPEN emp_cur;
+  LOOP
+    FETCH emp_cur INTO v_emp_id, v_name;
+    EXIT WHEN emp_cur%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(v_emp_id || ': ' || v_name);
+  END LOOP;
+  CLOSE emp_cur;
 END;
 /
 
--- Cursor FOR Loop (Simplified syntax)
+-- Cursor FOR Loop (simpler)
 BEGIN
- FOR emp_rec IN (
-   SELECT employee_name, salary, hire_date
-   FROM employees
-   WHERE department_id = 20
-   ORDER BY hire_date
- ) LOOP
-   DBMS_OUTPUT.PUT_LINE(
-     emp_rec.employee_name || ' hired on ' || 
-     TO_CHAR(emp_rec.hire_date, 'DD-MON-YYYY') ||
-     ' with salary ' || emp_rec.salary
-   );
- END LOOP;
+  FOR rec IN (SELECT employee_name, salary FROM employees WHERE dept_id = 10) LOOP
+    DBMS_OUTPUT.PUT_LINE(rec.employee_name || ': ' || rec.salary);
+  END LOOP;
 END;
 /
 
 -- Parameterized Cursor
 DECLARE
- CURSOR dept_emp_cursor(p_dept_id NUMBER, p_min_salary NUMBER) IS
-   SELECT employee_name, salary
-   FROM employees
-   WHERE department_id = p_dept_id
-     AND salary >= p_min_salary
-   ORDER BY salary DESC;
+  CURSOR dept_cur(p_dept_id NUMBER) IS 
+    SELECT employee_name FROM employees WHERE department_id = p_dept_id;
 BEGIN
- DBMS_OUTPUT.PUT_LINE('High-paid employees in dept 10:');
- FOR emp_rec IN dept_emp_cursor(10, 50000) LOOP
-   DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name || ': ' || emp_rec.salary);
- END LOOP;
- 
- DBMS_OUTPUT.PUT_LINE('High-paid employees in dept 20:');
- FOR emp_rec IN dept_emp_cursor(20, 60000) LOOP
-   DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name || ': ' || emp_rec.salary);
- END LOOP;
+  FOR rec IN dept_cur(10) LOOP
+    DBMS_OUTPUT.PUT_LINE(rec.employee_name);
+  END LOOP;
 END;
 /`
-           }
-       ];
+    },
+    {
+        id: 4,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What are triggers? Explain types with examples.',
+        answer: 'Triggers are stored procedures that execute automatically in response to database events like INSERT, UPDATE, DELETE.',
+        language: 'PL/SQL',
+        code: `-- BEFORE INSERT Trigger
+CREATE OR REPLACE TRIGGER trg_emp_before_insert
+  BEFORE INSERT ON employees
+  FOR EACH ROW
+BEGIN
+  IF :NEW.salary < 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'Salary cannot be negative');
+  END IF;
+  :NEW.created_date := SYSDATE;
+END;
+/
+
+-- AFTER UPDATE Trigger
+CREATE OR REPLACE TRIGGER trg_emp_audit
+  AFTER UPDATE ON employees
+  FOR EACH ROW
+BEGIN
+  IF :OLD.salary != :NEW.salary THEN
+    INSERT INTO salary_audit(emp_id, old_sal, new_sal, change_date)
+    VALUES(:NEW.employee_id, :OLD.salary, :NEW.salary, SYSDATE);
+  END IF;
+END;
+/
+
+-- INSTEAD OF Trigger (for views)
+CREATE OR REPLACE TRIGGER trg_emp_view
+  INSTEAD OF INSERT ON emp_dept_view
+  FOR EACH ROW
+BEGIN
+  INSERT INTO employees(employee_id, name, dept_id)
+  VALUES(:NEW.employee_id, :NEW.name, :NEW.dept_id);
+END;
+/`
+    },
+    {
+        id: 5,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Explain BULK COLLECT and FORALL with performance benefits.',
+        answer: 'BULK COLLECT fetches multiple rows at once. FORALL performs DML on collections. Both reduce context switches between PL/SQL and SQL engines.',
+        language: 'PL/SQL',
+        code: `-- BULK COLLECT Example
+DECLARE
+  TYPE t_emp_ids IS TABLE OF employees.employee_id%TYPE;
+  TYPE t_salaries IS TABLE OF employees.salary%TYPE;
+  v_emp_ids t_emp_ids;
+  v_salaries t_salaries;
+BEGIN
+  -- Fetch multiple rows at once
+  SELECT employee_id, salary 
+  BULK COLLECT INTO v_emp_ids, v_salaries
+  FROM employees WHERE department_id = 10;
+  
+  DBMS_OUTPUT.PUT_LINE('Fetched ' || v_emp_ids.COUNT || ' employees');
+END;
+/
+
+-- FORALL Example
+DECLARE
+  TYPE t_emp_ids IS TABLE OF NUMBER;
+  v_emp_ids t_emp_ids := t_emp_ids(101, 102, 103, 104);
+BEGIN
+  -- Update multiple rows in single operation
+  FORALL i IN 1..v_emp_ids.COUNT
+    UPDATE employees SET salary = salary * 1.1 
+    WHERE employee_id = v_emp_ids(i);
+    
+  DBMS_OUTPUT.PUT_LINE('Updated ' || SQL%ROWCOUNT || ' rows');
+END;
+/
+
+-- BULK COLLECT with LIMIT (for large datasets)
+DECLARE
+  TYPE t_employees IS TABLE OF employees%ROWTYPE;
+  v_employees t_employees;
+  CURSOR c_emp IS SELECT * FROM employees;
+BEGIN
+  OPEN c_emp;
+  LOOP
+    FETCH c_emp BULK COLLECT INTO v_employees LIMIT 1000;
+    -- Process batch
+    EXIT WHEN v_employees.COUNT = 0;
+  END LOOP;
+  CLOSE c_emp;
+END;
+/`
+    },
+    {
+        id: 6,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'What are packages? Explain specification and body.',
+        answer: 'Packages group related procedures, functions, and variables. Specification declares public items, body contains implementation.',
+        language: 'PL/SQL',
+        code: `-- Package Specification
+CREATE OR REPLACE PACKAGE emp_pkg AS
+  -- Public variables
+  g_bonus_rate CONSTANT NUMBER := 0.15;
+  
+  -- Public procedures/functions
+  PROCEDURE hire_employee(p_name VARCHAR2, p_salary NUMBER);
+  FUNCTION calculate_bonus(p_emp_id NUMBER) RETURN NUMBER;
+END emp_pkg;
+/
+
+-- Package Body
+CREATE OR REPLACE PACKAGE BODY emp_pkg AS
+  -- Private variable
+  g_total_employees NUMBER := 0;
+  
+  PROCEDURE hire_employee(p_name VARCHAR2, p_salary NUMBER) IS
+  BEGIN
+    INSERT INTO employees(employee_id, name, salary, hire_date)
+    VALUES(emp_seq.NEXTVAL, p_name, p_salary, SYSDATE);
+    g_total_employees := g_total_employees + 1;
+  END;
+  
+  FUNCTION calculate_bonus(p_emp_id NUMBER) RETURN NUMBER IS
+    v_salary NUMBER;
+  BEGIN
+    SELECT salary INTO v_salary FROM employees WHERE employee_id = p_emp_id;
+    RETURN v_salary * g_bonus_rate;
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN RETURN 0;
+  END;
+END emp_pkg;
+/
+
+-- Usage
+BEGIN
+  emp_pkg.hire_employee('John Doe', 50000);
+  DBMS_OUTPUT.PUT_LINE('Bonus: ' || emp_pkg.calculate_bonus(101));
+END;
+/`
+    },
+    {
+        id: 7,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Exception handling and custom exceptions in PL/SQL.',
+        answer: 'Exception handling uses EXCEPTION blocks. Custom exceptions provide business-specific error handling using user-defined exceptions and RAISE_APPLICATION_ERROR.',
+        language: 'PL/SQL',
+        code: `-- Custom Exception Example
+DECLARE
+  insufficient_salary EXCEPTION;
+  invalid_dept EXCEPTION;
+  v_salary NUMBER := 25000;
+  v_dept_id NUMBER := 99;
+BEGIN
+  -- Check department
+  IF v_dept_id NOT IN (10, 20, 30) THEN
+    RAISE invalid_dept;
+  END IF;
+  
+  -- Check salary
+  IF v_salary < 30000 THEN
+    RAISE insufficient_salary;
+  END IF;
+  
+EXCEPTION
+  WHEN insufficient_salary THEN
+    RAISE_APPLICATION_ERROR(-20001, 'Salary must be >= 30000');
+  WHEN invalid_dept THEN
+    RAISE_APPLICATION_ERROR(-20002, 'Invalid department: ' || v_dept_id);
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+-- Exception with PRAGMA
+DECLARE
+  duplicate_employee EXCEPTION;
+  PRAGMA EXCEPTION_INIT(duplicate_employee, -00001);
+BEGIN
+  INSERT INTO employees VALUES(101, 'Test', 50000, 10);
+EXCEPTION
+  WHEN duplicate_employee THEN
+    DBMS_OUTPUT.PUT_LINE('Employee already exists');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('SQLCODE: ' || SQLCODE);
+    DBMS_OUTPUT.PUT_LINE('SQLERRM: ' || SQLERRM);
+END;
+/`
+    },
+    {
+        id: 8,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'What is dynamic SQL? Provide examples.',
+        answer: 'Dynamic SQL constructs and executes SQL statements at runtime using EXECUTE IMMEDIATE or DBMS_SQL package.',
+        language: 'PL/SQL',
+        code: `-- EXECUTE IMMEDIATE Example
+DECLARE
+  v_table_name VARCHAR2(30) := 'employees';
+  v_column VARCHAR2(30) := 'salary';
+  v_sql VARCHAR2(1000);
+  v_result NUMBER;
+BEGIN
+  -- Dynamic query
+  v_sql := 'SELECT AVG(' || v_column || ') FROM ' || v_table_name;
+  EXECUTE IMMEDIATE v_sql INTO v_result;
+  DBMS_OUTPUT.PUT_LINE('Average salary: ' || v_result);
+  
+  -- Dynamic DML
+  v_sql := 'UPDATE ' || v_table_name || ' SET salary = salary * 1.1 WHERE dept_id = :1';
+  EXECUTE IMMEDIATE v_sql USING 10;
+END;
+/
+
+-- Dynamic SQL with cursor
+DECLARE
+  v_sql VARCHAR2(1000);
+  v_emp_id NUMBER;
+  v_name VARCHAR2(100);
+  TYPE cur_type IS REF CURSOR;
+  emp_cur cur_type;
+BEGIN
+  v_sql := 'SELECT employee_id, name FROM employees WHERE dept_id = :dept';
+  OPEN emp_cur FOR v_sql USING 10;
+  LOOP
+    FETCH emp_cur INTO v_emp_id, v_name;
+    EXIT WHEN emp_cur%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(v_emp_id || ': ' || v_name);
+  END LOOP;
+  CLOSE emp_cur;
+END;
+/`
+    },
+    {
+        id: 9,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Explain collections in PL/SQL - Nested Tables, VArrays, Associative Arrays.',
+        answer: 'Collections store multiple values. Nested Tables are unbounded, VArrays have fixed size, Associative Arrays use key-value pairs.',
+        language: 'PL/SQL',
+        code: `-- Nested Table
+DECLARE
+  TYPE t_names IS TABLE OF VARCHAR2(50);
+  v_names t_names := t_names('John', 'Jane', 'Bob');
+BEGIN
+  v_names.EXTEND;
+  v_names(4) := 'Alice';
+  FOR i IN 1..v_names.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE(v_names(i));
+  END LOOP;
+END;
+/
+
+-- VARRAY (Variable Array)
+DECLARE
+  TYPE t_nums IS VARRAY(5) OF NUMBER;
+  v_nums t_nums := t_nums(10, 20, 30);
+BEGIN
+  v_nums.EXTEND(2);
+  v_nums(4) := 40;
+  v_nums(5) := 50;
+  FOR i IN 1..v_nums.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE('Index ' || i || ': ' || v_nums(i));
+  END LOOP;
+END;
+/
+
+-- Associative Array (Index-by table)
+DECLARE
+  TYPE t_salary_tab IS TABLE OF NUMBER INDEX BY VARCHAR2(30);
+  v_salaries t_salary_tab;
+  v_name VARCHAR2(30);
+BEGIN
+  v_salaries('John') := 50000;
+  v_salaries('Jane') := 60000;
+  
+  v_name := v_salaries.FIRST;
+  WHILE v_name IS NOT NULL LOOP
+    DBMS_OUTPUT.PUT_LINE(v_name || ': ' || v_salaries(v_name));
+    v_name := v_salaries.NEXT(v_name);
+  END LOOP;
+END;
+/`
+    },
+    {
+        id: 10,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Performance tuning in PL/SQL - best practices.',
+        answer: 'Use BULK operations, minimize context switches, use bind variables, avoid loops with SQL, analyze execution plans.',
+        language: 'PL/SQL',
+        code: `-- Bad Practice: Row-by-row processing
+BEGIN
+  FOR rec IN (SELECT employee_id FROM employees WHERE dept_id = 10) LOOP
+    UPDATE employees SET bonus = salary * 0.1 WHERE employee_id = rec.employee_id;
+  END LOOP;
+END;
+/
+
+-- Good Practice: Bulk operations
+DECLARE
+  TYPE t_emp_ids IS TABLE OF employees.employee_id%TYPE;
+  v_emp_ids t_emp_ids;
+BEGIN
+  SELECT employee_id BULK COLLECT INTO v_emp_ids
+  FROM employees WHERE dept_id = 10;
+  
+  FORALL i IN 1..v_emp_ids.COUNT
+    UPDATE employees SET bonus = salary * 0.1 
+    WHERE employee_id = v_emp_ids(i);
+END;
+/
+
+-- Use bind variables
+DECLARE
+  v_dept_id NUMBER := 10;
+  v_sql VARCHAR2(200);
+BEGIN
+  -- Good: Using bind variable
+  v_sql := 'UPDATE employees SET salary = salary * 1.1 WHERE dept_id = :1';
+  EXECUTE IMMEDIATE v_sql USING v_dept_id;
+  
+  -- Avoid: String concatenation
+  -- v_sql := 'UPDATE employees SET salary = salary * 1.1 WHERE dept_id = ' || v_dept_id;
+END;
+/
+
+-- Efficient cursor with LIMIT
+DECLARE
+  TYPE t_employees IS TABLE OF employees%ROWTYPE;
+  v_employees t_employees;
+  CURSOR c_emp IS SELECT * FROM employees;
+BEGIN
+  OPEN c_emp;
+  LOOP
+    FETCH c_emp BULK COLLECT INTO v_employees LIMIT 1000;
+    -- Process batch efficiently
+    EXIT WHEN v_employees.COUNT = 0;
+  END LOOP;
+  CLOSE c_emp;
+END;
+/`
+    },
+
+    {
+        id: 11,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'What are REF CURSORS? Explain strong vs weak REF cursors.',
+        answer: 'REF CURSORS are cursor variables that can be opened dynamically at runtime. Strong REF cursors have return type specified, weak REF cursors do not.',
+        language: 'PL/SQL',
+        code: `-- Strong REF Cursor (with return type)
+DECLARE
+  TYPE emp_cur_type IS REF CURSOR RETURN employees%ROWTYPE;
+  emp_cursor emp_cur_type;
+  emp_rec employees%ROWTYPE;
+BEGIN
+  OPEN emp_cursor FOR SELECT * FROM employees WHERE dept_id = 10;
+  LOOP
+    FETCH emp_cursor INTO emp_rec;
+    EXIT WHEN emp_cursor%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name);
+  END LOOP;
+  CLOSE emp_cursor;
+END;
+/
+
+-- Weak REF Cursor (no return type)
+DECLARE
+  generic_cursor SYS_REFCURSOR;
+  v_name VARCHAR2(100);
+  v_salary NUMBER;
+  v_sql VARCHAR2(500);
+BEGIN
+  v_sql := 'SELECT employee_name, salary FROM employees WHERE dept_id = :1';
+  OPEN generic_cursor FOR v_sql USING 10;
+  LOOP
+    FETCH generic_cursor INTO v_name, v_salary;
+    EXIT WHEN generic_cursor%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(v_name || ': ' || v_salary);
+  END LOOP;
+  CLOSE generic_cursor;
+END;
+/
+
+-- REF Cursor as parameter
+CREATE OR REPLACE PROCEDURE get_employees(
+  p_dept_id IN NUMBER,
+  p_cursor OUT SYS_REFCURSOR
+) IS
+BEGIN
+  OPEN p_cursor FOR 
+    SELECT employee_name, salary FROM employees WHERE dept_id = p_dept_id;
+END;
+/
+
+-- Usage
+DECLARE
+  emp_cursor SYS_REFCURSOR;
+  v_name VARCHAR2(100);
+  v_salary NUMBER;
+BEGIN
+  get_employees(10, emp_cursor);
+  LOOP
+    FETCH emp_cursor INTO v_name, v_salary;
+    EXIT WHEN emp_cursor%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(v_name || ': ' || v_salary);
+  END LOOP;
+  CLOSE emp_cursor;
+END;
+/`
+    },
+    {
+        id: 12,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Explain autonomous transactions and their use cases.',
+        answer: 'Autonomous transactions execute independently of the main transaction. Used for logging, auditing, and operations that must commit regardless of main transaction outcome.',
+        language: 'PL/SQL',
+        code: `-- Autonomous Transaction for Logging
+CREATE OR REPLACE PROCEDURE log_error(
+  p_error_msg VARCHAR2,
+  p_module_name VARCHAR2
+) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  INSERT INTO error_log(log_date, error_message, module_name)
+  VALUES(SYSDATE, p_error_msg, p_module_name);
+  COMMIT; -- This commit doesn't affect main transaction
+END;
+/
+
+-- Main procedure with error handling
+CREATE OR REPLACE PROCEDURE transfer_funds(
+  p_from_account NUMBER,
+  p_to_account NUMBER,
+  p_amount NUMBER
+) IS
+  insufficient_funds EXCEPTION;
+  v_balance NUMBER;
+BEGIN
+  -- Check balance
+  SELECT balance INTO v_balance FROM accounts WHERE account_id = p_from_account;
+  
+  IF v_balance < p_amount THEN
+    RAISE insufficient_funds;
+  END IF;
+  
+  -- Transfer funds
+  UPDATE accounts SET balance = balance - p_amount WHERE account_id = p_from_account;
+  UPDATE accounts SET balance = balance + p_amount WHERE account_id = p_to_account;
+  
+  COMMIT;
+  
+EXCEPTION
+  WHEN insufficient_funds THEN
+    log_error('Insufficient funds for transfer', 'TRANSFER_FUNDS');
+    ROLLBACK; -- Main transaction rolls back, but log is committed
+    RAISE_APPLICATION_ERROR(-20001, 'Insufficient funds');
+  WHEN OTHERS THEN
+    log_error(SQLERRM, 'TRANSFER_FUNDS');
+    ROLLBACK;
+    RAISE;
+END;
+/
+
+-- Autonomous function for sequence generation
+CREATE OR REPLACE FUNCTION get_next_id RETURN NUMBER IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+  v_next_id NUMBER;
+BEGIN
+  SELECT seq_id.NEXTVAL INTO v_next_id FROM DUAL;
+  COMMIT;
+  RETURN v_next_id;
+END;
+/`
+    },
+    {
+        id: 13,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'What are pipelined table functions? Provide example.',
+        answer: 'Pipelined table functions return rows one at a time using PIPE ROW, allowing streaming of large result sets without storing entire collection in memory.',
+        language: 'PL/SQL',
+        code: `-- Define object type for return
+CREATE OR REPLACE TYPE emp_obj AS OBJECT (
+  employee_id NUMBER,
+  employee_name VARCHAR2(100),
+  salary NUMBER,
+  department VARCHAR2(50)
+);
+/
+
+CREATE OR REPLACE TYPE emp_table AS TABLE OF emp_obj;
+/
+
+-- Pipelined Table Function
+CREATE OR REPLACE FUNCTION get_employees_pipe(p_min_salary NUMBER DEFAULT 0)
+RETURN emp_table PIPELINED IS
+  
+  v_emp emp_obj;
+  
+  CURSOR emp_cur IS
+    SELECT e.employee_id, e.employee_name, e.salary, d.department_name
+    FROM employees e
+    JOIN departments d ON e.department_id = d.department_id
+    WHERE e.salary >= p_min_salary
+    ORDER BY e.salary DESC;
+    
+BEGIN
+  FOR rec IN emp_cur LOOP
+    -- Create object and pipe it
+    v_emp := emp_obj(rec.employee_id, rec.employee_name, 
+                     rec.salary, rec.department_name);
+    PIPE ROW(v_emp);
+  END LOOP;
+  
+  RETURN; -- Required for pipelined functions
+END;
+/
+
+-- Usage in SQL
+SELECT * FROM TABLE(get_employees_pipe(50000));
+
+-- Advanced: Parallel pipelined function
+CREATE OR REPLACE FUNCTION process_data_parallel
+RETURN emp_table PIPELINED 
+PARALLEL_ENABLE(PARTITION p_cursor BY ANY) IS
+BEGIN
+  FOR rec IN (SELECT * FROM employees) LOOP
+    -- Process each row
+    PIPE ROW(emp_obj(rec.employee_id, rec.employee_name, 
+                     rec.salary * 1.1, 'UPDATED'));
+  END LOOP;
+  RETURN;
+END;
+/
+
+-- Can be used in parallel queries
+SELECT /*+ PARALLEL(4) */ * FROM TABLE(process_data_parallel());`
+    },
+    {
+        id: 14,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Explain PRAGMA SERIALLY_REUSABLE and its benefits.',
+        answer: 'SERIALLY_REUSABLE pragma allows package state to be reused across calls, reducing memory overhead for long-running sessions by reinitializing package variables after each server call.',
+        language: 'PL/SQL',
+        code: `-- Package without SERIALLY_REUSABLE
+CREATE OR REPLACE PACKAGE normal_pkg AS
+  g_counter NUMBER := 0;
+  PROCEDURE increment_counter;
+  PROCEDURE show_counter;
+END normal_pkg;
+/
+
+CREATE OR REPLACE PACKAGE BODY normal_pkg AS
+  PROCEDURE increment_counter IS
+  BEGIN
+    g_counter := g_counter + 1;
+  END;
+  
+  PROCEDURE show_counter IS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('Counter: ' || g_counter);
+  END;
+END normal_pkg;
+/
+
+-- Package with SERIALLY_REUSABLE
+CREATE OR REPLACE PACKAGE reusable_pkg AS
+  PRAGMA SERIALLY_REUSABLE;
+  g_counter NUMBER := 0;
+  PROCEDURE increment_counter;
+  PROCEDURE show_counter;
+END reusable_pkg;
+/
+
+CREATE OR REPLACE PACKAGE BODY reusable_pkg AS
+  PRAGMA SERIALLY_REUSABLE;
+  
+  PROCEDURE increment_counter IS
+  BEGIN
+    g_counter := g_counter + 1;
+  END;
+  
+  PROCEDURE show_counter IS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('Reusable Counter: ' || g_counter);
+  END;
+END reusable_pkg;
+/
+
+-- Test difference
+BEGIN
+  -- First call
+  normal_pkg.increment_counter;
+  normal_pkg.show_counter; -- Shows: Counter: 1
+  
+  reusable_pkg.increment_counter;
+  reusable_pkg.show_counter; -- Shows: Reusable Counter: 1
+END;
+/
+
+BEGIN
+  -- Second call - different behavior
+  normal_pkg.increment_counter;
+  normal_pkg.show_counter; -- Shows: Counter: 2 (state persists)
+  
+  reusable_pkg.increment_counter;
+  reusable_pkg.show_counter; -- Shows: Reusable Counter: 1 (reinitialized)
+END;
+/
+
+-- Use case: Large temporary arrays
+CREATE OR REPLACE PACKAGE temp_processing AS
+  PRAGMA SERIALLY_REUSABLE;
+  
+  TYPE large_array IS TABLE OF VARCHAR2(4000) INDEX BY PLS_INTEGER;
+  g_temp_data large_array;
+  
+  PROCEDURE process_batch(p_data IN large_array);
+  PROCEDURE cleanup;
+END temp_processing;
+/`
+    },
+    {
+        id: 15,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What is the difference between materialized views and regular views?',
+        answer: 'Regular views are virtual tables that execute underlying query each time. Materialized views store actual data and can be refreshed periodically, providing better performance.',
+        language: 'PL/SQL',
+        code: `-- Regular View
+CREATE OR REPLACE VIEW emp_dept_view AS
+SELECT e.employee_name, e.salary, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id;
+
+-- Query always executes underlying SQL
+SELECT * FROM emp_dept_view WHERE salary > 50000;
+
+-- Materialized View
+CREATE MATERIALIZED VIEW emp_summary_mv
+BUILD IMMEDIATE
+REFRESH COMPLETE ON DEMAND
+AS
+SELECT d.department_name,
+       COUNT(*) as employee_count,
+       AVG(e.salary) as avg_salary,
+       SUM(e.salary) as total_salary
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+GROUP BY d.department_name;
+
+-- Query uses stored data (much faster)
+SELECT * FROM emp_summary_mv WHERE avg_salary > 60000;
+
+-- Refresh materialized view
+BEGIN
+  DBMS_MVIEW.REFRESH('EMP_SUMMARY_MV');
+END;
+/
+
+-- Fast refresh materialized view (requires MV log)
+CREATE MATERIALIZED VIEW LOG ON employees
+WITH PRIMARY KEY, ROWID INCLUDING NEW VALUES;
+
+CREATE MATERIALIZED VIEW emp_fast_mv
+BUILD IMMEDIATE
+REFRESH FAST ON COMMIT
+AS
+SELECT employee_id, employee_name, salary, department_id
+FROM employees;
+
+-- Automatic refresh on data changes
+INSERT INTO employees VALUES(999, 'John Doe', 55000, 10);
+COMMIT; -- MV refreshes automatically
+
+-- On-demand refresh with interval
+CREATE MATERIALIZED VIEW emp_hourly_mv
+BUILD IMMEDIATE
+REFRESH COMPLETE
+START WITH SYSDATE
+NEXT SYSDATE + 1/24  -- Refresh every hour
+AS
+SELECT department_id, COUNT(*) as emp_count
+FROM employees
+GROUP BY department_id;`
+    },
+    {
+        id: 16,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Explain %TYPE and %ROWTYPE attributes with examples.',
+        answer: '%TYPE declares variable with same datatype as table column. %ROWTYPE declares record with same structure as table row or cursor.',
+        language: 'PL/SQL',
+        code: `-- %TYPE attribute
+DECLARE
+  v_emp_name employees.employee_name%TYPE;
+  v_salary employees.salary%TYPE;
+  v_hire_date employees.hire_date%TYPE;
+BEGIN
+  SELECT employee_name, salary, hire_date
+  INTO v_emp_name, v_salary, v_hire_date
+  FROM employees
+  WHERE employee_id = 101;
+  
+  DBMS_OUTPUT.PUT_LINE('Name: ' || v_emp_name);
+  DBMS_OUTPUT.PUT_LINE('Salary: ' || v_salary);
+END;
+/
+
+-- %ROWTYPE attribute
+DECLARE
+  emp_record employees%ROWTYPE;
+  dept_record departments%ROWTYPE;
+BEGIN
+  -- Fetch entire row
+  SELECT * INTO emp_record FROM employees WHERE employee_id = 101;
+  SELECT * INTO dept_record FROM departments WHERE department_id = emp_record.department_id;
+  
+  DBMS_OUTPUT.PUT_LINE('Employee: ' || emp_record.employee_name);
+  DBMS_OUTPUT.PUT_LINE('Department: ' || dept_record.department_name);
+  DBMS_OUTPUT.PUT_LINE('Salary: ' || emp_record.salary);
+END;
+/
+
+-- %ROWTYPE with cursor
+DECLARE
+  CURSOR emp_cursor IS
+    SELECT e.employee_name, e.salary, d.department_name
+    FROM employees e
+    JOIN departments d ON e.department_id = d.department_id;
+    
+  emp_rec emp_cursor%ROWTYPE;
+BEGIN
+  OPEN emp_cursor;
+  LOOP
+    FETCH emp_cursor INTO emp_rec;
+    EXIT WHEN emp_cursor%NOTFOUND;
+    
+    DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name || 
+                        ' works in ' || emp_rec.department_name ||
+                        ' earning ' || emp_rec.salary);
+  END LOOP;
+  CLOSE emp_cursor;
+END;
+/
+
+-- Function using %TYPE
+CREATE OR REPLACE FUNCTION get_employee_salary(
+  p_emp_id employees.employee_id%TYPE
+) RETURN employees.salary%TYPE IS
+  v_salary employees.salary%TYPE;
+BEGIN
+  SELECT salary INTO v_salary FROM employees WHERE employee_id = p_emp_id;
+  RETURN v_salary;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN RETURN NULL;
+END;
+/`
+    },
+    {
+        id: 17,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'How do you handle mutating table errors in triggers?',
+        answer: 'Mutating table error occurs when row-level trigger tries to query/modify the same table. Solutions include using compound triggers, statement-level triggers, or temporary tables.',
+        language: 'PL/SQL',
+        code: `-- Problem: This trigger causes mutating table error
+CREATE OR REPLACE TRIGGER trg_salary_check
+  BEFORE UPDATE OF salary ON employees
+  FOR EACH ROW
+DECLARE
+  v_avg_salary NUMBER;
+BEGIN
+  -- This causes ORA-04091: table is mutating
+  SELECT AVG(salary) INTO v_avg_salary FROM employees;
+  
+  IF :NEW.salary > v_avg_salary * 2 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'Salary too high');
+  END IF;
+END;
+/
+
+-- Solution 1: Compound Trigger
+CREATE OR REPLACE TRIGGER trg_salary_compound
+  FOR UPDATE OF salary ON employees
+  COMPOUND TRIGGER
+  
+  TYPE t_emp_salaries IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+  g_new_salaries t_emp_salaries;
+  g_avg_salary NUMBER;
+  
+  BEFORE STATEMENT IS
+  BEGIN
+    SELECT AVG(salary) INTO g_avg_salary FROM employees;
+    g_new_salaries.DELETE;
+  END BEFORE STATEMENT;
+  
+  BEFORE EACH ROW IS
+  BEGIN
+    g_new_salaries(:NEW.employee_id) := :NEW.salary;
+  END BEFORE EACH ROW;
+  
+  AFTER EACH ROW IS
+  BEGIN
+    IF g_new_salaries(:NEW.employee_id) > g_avg_salary * 2 THEN
+      RAISE_APPLICATION_ERROR(-20001, 'Salary exceeds average by 100%');
+    END IF;
+  END AFTER EACH ROW;
+  
+END trg_salary_compound;
+/
+
+-- Solution 2: Statement Level Trigger with Global Package
+CREATE OR REPLACE PACKAGE emp_trigger_pkg AS
+  TYPE t_emp_ids IS TABLE OF NUMBER;
+  g_updated_employees t_emp_ids := t_emp_ids();
+END emp_trigger_pkg;
+/
+
+CREATE OR REPLACE TRIGGER trg_emp_row_level
+  AFTER UPDATE OF salary ON employees
+  FOR EACH ROW
+BEGIN
+  emp_trigger_pkg.g_updated_employees.EXTEND;
+  emp_trigger_pkg.g_updated_employees(emp_trigger_pkg.g_updated_employees.COUNT) := :NEW.employee_id;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_emp_statement_level
+  AFTER UPDATE OF salary ON employees
+DECLARE
+  v_avg_salary NUMBER;
+  v_high_salary_count NUMBER := 0;
+BEGIN
+  SELECT AVG(salary) INTO v_avg_salary FROM employees;
+  
+  FOR i IN 1..emp_trigger_pkg.g_updated_employees.COUNT LOOP
+    SELECT COUNT(*) INTO v_high_salary_count
+    FROM employees
+    WHERE employee_id = emp_trigger_pkg.g_updated_employees(i)
+      AND salary > v_avg_salary * 2;
+      
+    IF v_high_salary_count > 0 THEN
+      RAISE_APPLICATION_ERROR(-20001, 'Salary validation failed');
+    END IF;
+  END LOOP;
+  
+  emp_trigger_pkg.g_updated_employees.DELETE;
+END;
+/`
+    },
+    {
+        id: 18,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What is the difference between DECODE and CASE in PL/SQL?',
+        answer: 'DECODE is Oracle-specific function for simple equality comparisons. CASE is ANSI standard, more flexible, supports complex conditions and can be used in PL/SQL statements.',
+        language: 'PL/SQL',
+        code: `-- DECODE function (Oracle specific)
+DECLARE
+  v_grade CHAR(1) := 'A';
+  v_description VARCHAR2(20);
+BEGIN
+  -- DECODE for simple equality
+  SELECT DECODE(v_grade, 
+    'A', 'Excellent',
+    'B', 'Good', 
+    'C', 'Average',
+    'D', 'Below Average',
+    'Unknown'
+  ) INTO v_description FROM DUAL;
+  
+  DBMS_OUTPUT.PUT_LINE('Grade ' || v_grade || ': ' || v_description);
+END;
+/
+
+-- CASE expression (ANSI standard)
+DECLARE
+  v_salary NUMBER := 75000;
+  v_bonus NUMBER;
+  v_performance NUMBER := 4;
+BEGIN
+  -- Simple CASE
+  v_bonus := CASE v_performance
+    WHEN 5 THEN v_salary * 0.20
+    WHEN 4 THEN v_salary * 0.15
+    WHEN 3 THEN v_salary * 0.10
+    ELSE 0
+  END;
+  
+  DBMS_OUTPUT.PUT_LINE('Simple CASE bonus: ' || v_bonus);
+  
+  -- Searched CASE (more powerful)
+  v_bonus := CASE
+    WHEN v_salary > 100000 AND v_performance >= 4 THEN v_salary * 0.25
+    WHEN v_salary > 75000 AND v_performance >= 3 THEN v_salary * 0.20
+    WHEN v_salary > 50000 THEN v_salary * 0.15
+    WHEN v_performance >= 4 THEN v_salary * 0.10
+    ELSE 0
+  END;
+  
+  DBMS_OUTPUT.PUT_LINE('Searched CASE bonus: ' || v_bonus);
+END;
+/
+
+-- CASE statement in PL/SQL
+DECLARE
+  v_dept_id NUMBER := 10;
+  v_dept_name VARCHAR2(50);
+  v_budget NUMBER;
+BEGIN
+  CASE v_dept_id
+    WHEN 10 THEN
+      v_dept_name := 'Sales';
+      v_budget := 100000;
+    WHEN 20 THEN
+      v_dept_name := 'Marketing';
+      v_budget := 150000;
+    WHEN 30 THEN
+      v_dept_name := 'IT';
+      v_budget := 200000;
+    ELSE
+      v_dept_name := 'Unknown';
+      v_budget := 0;
+  END CASE;
+  
+  DBMS_OUTPUT.PUT_LINE('Department: ' || v_dept_name);
+  DBMS_OUTPUT.PUT_LINE('Budget: ' || v_budget);
+END;
+/
+
+-- Complex CASE with multiple conditions
+DECLARE
+  v_emp_id NUMBER := 101;
+  v_years_service NUMBER;
+  v_salary NUMBER;
+  v_raise_percent NUMBER;
+BEGIN
+  SELECT ROUND(MONTHS_BETWEEN(SYSDATE, hire_date)/12), salary
+  INTO v_years_service, v_salary
+  FROM employees WHERE employee_id = v_emp_id;
+  
+  v_raise_percent := CASE
+    WHEN v_years_service >= 10 AND v_salary < 80000 THEN 15
+    WHEN v_years_service >= 5 AND v_salary < 60000 THEN 12
+    WHEN v_years_service >= 2 THEN 8
+    WHEN v_salary < 40000 THEN 10
+    ELSE 5
+  END;
+  
+  DBMS_OUTPUT.PUT_LINE('Raise percentage: ' || v_raise_percent || '%');
+END;
+/`
+    },
+    {
+        id: 19,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Explain the WHERE CURRENT OF clause in cursors.',
+        answer: 'WHERE CURRENT OF allows updating or deleting the current row fetched by a cursor without specifying the full WHERE condition, useful for cursor-based row processing.',
+        language: 'PL/SQL',
+        code: `-- WHERE CURRENT OF for UPDATE
+DECLARE
+  CURSOR emp_cursor IS
+    SELECT employee_id, employee_name, salary
+    FROM employees
+    WHERE department_id = 10
+    FOR UPDATE; -- Required for WHERE CURRENT OF
+    
+  v_bonus NUMBER;
+BEGIN
+  FOR emp_rec IN emp_cursor LOOP
+    -- Calculate bonus
+    v_bonus := emp_rec.salary * 0.10;
+    
+    -- Update current row without specifying WHERE condition
+    UPDATE employees 
+    SET bonus = v_bonus,
+        last_bonus_date = SYSDATE
+    WHERE CURRENT OF emp_cursor;
+    
+    DBMS_OUTPUT.PUT_LINE('Updated bonus for ' || emp_rec.employee_name);
+  END LOOP;
+  
+  COMMIT;
+END;
+/
+
+-- WHERE CURRENT OF for DELETE
+DECLARE
+  CURSOR inactive_emp_cursor IS
+    SELECT employee_id, employee_name, last_login_date
+    FROM employees
+    WHERE last_login_date < ADD_MONTHS(SYSDATE, -6)
+    FOR UPDATE;
+BEGIN
+  FOR emp_rec IN inactive_emp_cursor LOOP
+    DBMS_OUTPUT.PUT_LINE('Deleting inactive employee: ' || emp_rec.employee_name);
+    
+    -- Delete current row
+    DELETE FROM employees
+    WHERE CURRENT OF inactive_emp_cursor;
+  END LOOP;
+  
+  DBMS_OUTPUT.PUT_LINE('Deleted ' || SQL%ROWCOUNT || ' inactive employees');
+  COMMIT;
+END;
+/
+
+-- Complex example with validation
+DECLARE
+  CURSOR sal_review_cursor IS
+    SELECT employee_id, employee_name, salary, performance_rating
+    FROM employees
+    WHERE review_date <= SYSDATE
+    FOR UPDATE;
+    
+  v_new_salary NUMBER;
+  v_raise_percent NUMBER;
+BEGIN
+  FOR emp_rec IN sal_review_cursor LOOP
+    -- Calculate raise based on performance
+    v_raise_percent := CASE emp_rec.performance_rating
+      WHEN 5 THEN 0.15
+      WHEN 4 THEN 0.10
+      WHEN 3 THEN 0.05
+      ELSE 0
+    END;
+    
+    v_new_salary := emp_rec.salary * (1 + v_raise_percent);
+    
+    -- Validate new salary doesn't exceed maximum
+    IF v_new_salary <= 150000 THEN
+      UPDATE employees
+      SET salary = v_new_salary,
+          review_date = ADD_MONTHS(SYSDATE, 12),
+          last_raise_date = SYSDATE
+      WHERE CURRENT OF sal_review_cursor;
+      
+      DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name || 
+                          ': Salary updated to ' || v_new_salary);
+    ELSE
+      DBMS_OUTPUT.PUT_LINE(emp_rec.employee_name || 
+                          ': Salary exceeds maximum, skipped');
+    END IF;
+  END LOOP;
+  
+  COMMIT;
+END;
+/`
+    },
+    {
+        id: 20,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What are the different transaction control statements in PL/SQL?',
+        answer: 'Transaction control statements include COMMIT (save changes), ROLLBACK (undo changes), and SAVEPOINT (create rollback points within transaction).',
+        language: 'PL/SQL',
+        code: `-- Basic Transaction Control
+DECLARE
+  v_account1_balance NUMBER;
+  v_account2_balance NUMBER;
+  insufficient_funds EXCEPTION;
+BEGIN
+  -- Start transaction (implicit)
+  SELECT balance INTO v_account1_balance FROM accounts WHERE account_id = 1001;
+  
+  IF v_account1_balance < 1000 THEN
+    RAISE insufficient_funds;
+  END IF;
+  
+  -- Debit from account 1
+  UPDATE accounts SET balance = balance - 1000 WHERE account_id = 1001;
+  
+  -- Credit to account 2
+  UPDATE accounts SET balance = balance + 1000 WHERE account_id = 1002;
+  
+  COMMIT; -- Save all changes
+  DBMS_OUTPUT.PUT_LINE('Transfer successful');
+  
+EXCEPTION
+  WHEN insufficient_funds THEN
+    ROLLBACK; -- Undo all changes
+    DBMS_OUTPUT.PUT_LINE('Transfer failed: Insufficient funds');
+  WHEN OTHERS THEN
+    ROLLBACK;
+    DBMS_OUTPUT.PUT_LINE('Transfer failed: ' || SQLERRM);
+END;
+/
+
+-- Using SAVEPOINT
+DECLARE
+  v_error_count NUMBER := 0;
+BEGIN
+  -- Insert department
+  INSERT INTO departments VALUES(999, 'Test Dept', 'Test Location');
+  SAVEPOINT after_dept_insert;
+  
+  -- Insert employees
+  FOR i IN 1..5 LOOP
+    BEGIN
+      INSERT INTO employees VALUES(9990 + i, 'Test Emp ' || i, 50000, 999);
+      SAVEPOINT after_emp_insert;
+      
+      -- Some validation that might fail
+      IF i = 3 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Validation failed for employee 3');
+      END IF;
+      
+    EXCEPTION
+      WHEN OTHERS THEN
+        v_error_count := v_error_count + 1;
+        ROLLBACK TO after_emp_insert; -- Partial rollback
+        DBMS_OUTPUT.PUT_LINE('Failed to insert employee ' || i);
+    END;
+  END LOOP;
+  
+  IF v_error_count = 0 THEN
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('All employees inserted successfully');
+  ELSIF v_error_count < 3 THEN
+    COMMIT; -- Accept partial success
+    DBMS_OUTPUT.PUT_LINE('Inserted with ' || v_error_count || ' errors');
+  ELSE
+    ROLLBACK TO after_dept_insert; -- Keep department, remove all employees
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Too many errors, kept only department');
+  END IF;
+  
+EXCEPTION
+  WHEN OTHERS THEN
+    ROLLBACK; -- Complete rollback
+    DBMS_OUTPUT.PUT_LINE('Complete rollback due to: ' || SQLERRM);
+END;
+/
+
+-- Nested transaction simulation
+CREATE OR REPLACE PROCEDURE process_orders IS
+  v_order_id NUMBER;
+  v_processed_count NUMBER := 0;
+  v_failed_count NUMBER := 0;
+BEGIN
+  FOR order_rec IN (SELECT * FROM orders WHERE status = 'PENDING') LOOP
+    SAVEPOINT process_order;
+    
+    BEGIN
+      -- Update inventory
+      UPDATE inventory SET quantity = quantity - order_rec.quantity
+      WHERE product_id = order_rec.product_id;
+      
+      -- Check if sufficient inventory
+      IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Product not found');
+      END IF;
+      
+      -- Update order status
+      UPDATE orders SET status = 'PROCESSED', process_date = SYSDATE
+      WHERE order_id = order_rec.order_id;
+      
+      v_processed_count := v_processed_count + 1;
+      
+    EXCEPTION
+      WHEN OTHERS THEN
+        ROLLBACK TO process_order;
+        v_failed_count := v_failed_count + 1;
+        
+        -- Log error
+        INSERT INTO order_errors(order_id, error_msg, error_date)
+        VALUES(order_rec.order_id, SQLERRM, SYSDATE);
+    END;
+  END LOOP;
+  
+  COMMIT;
+  DBMS_OUTPUT.PUT_LINE('Processed: ' || v_processed_count || 
+                      ', Failed: ' || v_failed_count);
+END;
+/`
+    },
+
+
+
+
+    {
+        id: 21,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'What are the features of PL/SQL?',
+        answer: 'PL/SQL provides procedural features like decision making, iteration, exception handling, code reusability through stored units, and portability across Oracle platforms.',
+        language: 'PL/SQL',
+        code: `-- Features demonstration
+DECLARE
+  v_counter NUMBER := 1;
+  v_result VARCHAR2(100);
+BEGIN
+  -- Decision making
+  IF v_counter > 0 THEN
+    v_result := 'Positive';
+  ELSE
+    v_result := 'Zero or Negative';
+  END IF;
+  
+  -- Iteration
+  FOR i IN 1..5 LOOP
+    DBMS_OUTPUT.PUT_LINE('Loop iteration: ' || i);
+  END LOOP;
+  
+  -- Exception handling
+  BEGIN
+    SELECT 1/0 INTO v_counter FROM DUAL;
+  EXCEPTION
+    WHEN ZERO_DIVIDE THEN
+      DBMS_OUTPUT.PUT_LINE('Division by zero handled');
+  END;
+  
+  DBMS_OUTPUT.PUT_LINE('Result: ' || v_result);
+END;
+/`
+    },
+    {
+        id: 22,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'What is a PL/SQL table (associative array)?',
+        answer: 'PL/SQL table is an ordered collection of elements indexed by integers or strings, similar to arrays but with dynamic sizing.',
+        language: 'PL/SQL',
+        code: `-- Index-by table (Associative Array)
+DECLARE
+  TYPE emp_salary_tab IS TABLE OF NUMBER INDEX BY VARCHAR2(50);
+  emp_salaries emp_salary_tab;
+  
+  TYPE num_tab IS TABLE OF INTEGER INDEX BY BINARY_INTEGER;
+  numbers num_tab;
+  
+  v_name VARCHAR2(50);
+BEGIN
+  -- Populate associative array
+  emp_salaries('John') := 50000;
+  emp_salaries('Jane') := 60000;
+  emp_salaries('Bob') := 55000;
+  
+  -- Populate numeric index array
+  FOR i IN 1..5 LOOP
+    numbers(i) := i * 10;
+  END LOOP;
+  
+  -- Display employee salaries
+  v_name := emp_salaries.FIRST;
+  WHILE v_name IS NOT NULL LOOP
+    DBMS_OUTPUT.PUT_LINE(v_name || ': $' || emp_salaries(v_name));
+    v_name := emp_salaries.NEXT(v_name);
+  END LOOP;
+  
+  -- Display numbers
+  FOR i IN 1..numbers.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE('Number[' || i || ']: ' || numbers(i));
+  END LOOP;
+END;
+/`
+    },
+    {
+        id: 23,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'Explain the basic structure of PL/SQL block.',
+        answer: 'PL/SQL block consists of three sections: DECLARE (optional - variables/constants), BEGIN (mandatory - executable statements), EXCEPTION (optional - error handling).',
+        language: 'PL/SQL',
+        code: `-- Complete PL/SQL Block Structure
+DECLARE
+  -- Declaration section (optional)
+  v_employee_id NUMBER := 101;
+  v_employee_name VARCHAR2(100);
+  v_salary NUMBER;
+  c_bonus_rate CONSTANT NUMBER := 0.10;
+  
+  -- Cursor declaration
+  CURSOR emp_cursor IS SELECT employee_name, salary FROM employees;
+  
+  -- Exception declaration
+  salary_too_low EXCEPTION;
+  
+BEGIN
+  -- Execution section (mandatory)
+  SELECT employee_name, salary 
+  INTO v_employee_name, v_salary
+  FROM employees 
+  WHERE employee_id = v_employee_id;
+  
+  -- Business logic
+  IF v_salary < 30000 THEN
+    RAISE salary_too_low;
+  END IF;
+  
+  -- Calculate and display bonus
+  DBMS_OUTPUT.PUT_LINE('Employee: ' || v_employee_name);
+  DBMS_OUTPUT.PUT_LINE('Salary: $' || v_salary);
+  DBMS_OUTPUT.PUT_LINE('Bonus: $' || (v_salary * c_bonus_rate));
+  
+EXCEPTION
+  -- Exception handling section (optional)
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Employee ID ' || v_employee_id || ' not found');
+  WHEN salary_too_low THEN
+    DBMS_OUTPUT.PUT_LINE('Salary is below minimum threshold');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Unexpected error: ' || SQLERRM);
+END;
+/`
+    },
+    {
+        id: 24,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What is the use of SYSDATE and USER keywords?',
+        answer: 'SYSDATE returns current date and time from database server. USER returns the username of current session.',
+        language: 'PL/SQL',
+        code: `-- SYSDATE and USER examples
+DECLARE
+  v_current_date DATE;
+  v_current_user VARCHAR2(30);
+  v_formatted_date VARCHAR2(50);
+BEGIN
+  -- Get current date and user
+  v_current_date := SYSDATE;
+  v_current_user := USER;
+  
+  -- Format date
+  v_formatted_date := TO_CHAR(SYSDATE, 'DD-MON-YYYY HH24:MI:SS');
+  
+  DBMS_OUTPUT.PUT_LINE('Current Date: ' || v_current_date);
+  DBMS_OUTPUT.PUT_LINE('Formatted Date: ' || v_formatted_date);
+  DBMS_OUTPUT.PUT_LINE('Current User: ' || v_current_user);
+  
+  -- Extract parts of date
+  DBMS_OUTPUT.PUT_LINE('Year: ' || TO_CHAR(SYSDATE, 'YYYY'));
+  DBMS_OUTPUT.PUT_LINE('Month: ' || TO_CHAR(SYSDATE, 'MM'));
+  DBMS_OUTPUT.PUT_LINE('Day: ' || TO_CHAR(SYSDATE, 'DD'));
+  DBMS_OUTPUT.PUT_LINE('Time: ' || TO_CHAR(SYSDATE, 'HH24:MI:SS'));
+  
+  -- Audit example
+  INSERT INTO user_activity_log(username, login_time, session_info)
+  VALUES(USER, SYSDATE, 'PL/SQL Block Execution');
+  
+END;
+/
+
+-- Using in SQL queries
+SELECT 
+  USER as current_user,
+  SYSDATE as current_timestamp,
+  SYSDATE + 30 as thirty_days_later
+FROM DUAL;`
+    },
+    {
+        id: 25,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What are SQLCODE and SQLERRM? Explain their importance.',
+        answer: 'SQLCODE returns the error number for the most recent error. SQLERRM returns the error message. Both are used in exception handling for error reporting.',
+        language: 'PL/SQL',
+        code: `-- SQLCODE and SQLERRM example
+DECLARE
+  v_emp_name VARCHAR2(100);
+  v_error_code NUMBER;
+  v_error_message VARCHAR2(4000);
+BEGIN
+  -- This will cause an error
+  SELECT employee_name INTO v_emp_name 
+  FROM employees 
+  WHERE employee_id = 9999; -- Non-existent ID
+  
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    v_error_code := SQLCODE;
+    v_error_message := SQLERRM;
+    
+    DBMS_OUTPUT.PUT_LINE('Error Code: ' || v_error_code);
+    DBMS_OUTPUT.PUT_LINE('Error Message: ' || v_error_message);
+    
+    -- Log to error table
+    INSERT INTO error_log(
+      error_date, error_code, error_message, 
+      module_name, username
+    ) VALUES(
+      SYSDATE, v_error_code, v_error_message,
+      'EMPLOYEE_LOOKUP', USER
+    );
+    
+  WHEN TOO_MANY_ROWS THEN
+    DBMS_OUTPUT.PUT_LINE('Multiple rows found');
+    DBMS_OUTPUT.PUT_LINE('SQLCODE: ' || SQLCODE);
+    DBMS_OUTPUT.PUT_LINE('SQLERRM: ' || SQLERRM);
+    
+  WHEN OTHERS THEN
+    v_error_code := SQLCODE;
+    v_error_message := SQLERRM;
+    
+    DBMS_OUTPUT.PUT_LINE('Unexpected Error');
+    DBMS_OUTPUT.PUT_LINE('Code: ' || v_error_code);
+    DBMS_OUTPUT.PUT_LINE('Message: ' || v_error_message);
+    
+    -- Generic error logging
+    INSERT INTO error_log(
+      error_date, error_code, error_message, 
+      module_name, username
+    ) VALUES(
+      SYSDATE, SQLCODE, SQLERRM,
+      'GENERAL_ERROR', USER
+    );
+    
+    RAISE; -- Re-raise the exception
+END;
+/
+
+-- Error handling procedure
+CREATE OR REPLACE PROCEDURE log_error(
+  p_module_name VARCHAR2,
+  p_additional_info VARCHAR2 DEFAULT NULL
+) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  INSERT INTO application_errors(
+    error_date, error_code, error_message,
+    module_name, additional_info, username
+  ) VALUES(
+    SYSDATE, SQLCODE, SQLERRM,
+    p_module_name, p_additional_info, USER
+  );
+  COMMIT;
+END;
+/`
+    },
+    {
+        id: 26,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Explain PL/SQL records and their types.',
+        answer: 'Records are composite data types that group related data elements. Types: Table-based records, Cursor-based records, and User-defined records.',
+        language: 'PL/SQL',
+        code: `-- Table-based record
+DECLARE
+  emp_record employees%ROWTYPE;
+BEGIN
+  SELECT * INTO emp_record FROM employees WHERE employee_id = 101;
+  
+  DBMS_OUTPUT.PUT_LINE('ID: ' || emp_record.employee_id);
+  DBMS_OUTPUT.PUT_LINE('Name: ' || emp_record.employee_name);
+  DBMS_OUTPUT.PUT_LINE('Salary: ' || emp_record.salary);
+END;
+/
+
+-- Cursor-based record
+DECLARE
+  CURSOR emp_cursor IS 
+    SELECT employee_id, employee_name, salary, department_name
+    FROM employees e JOIN departments d ON e.department_id = d.department_id;
+    
+  emp_rec emp_cursor%ROWTYPE;
+BEGIN
+  OPEN emp_cursor;
+  FETCH emp_cursor INTO emp_rec;
+  
+  DBMS_OUTPUT.PUT_LINE('Employee: ' || emp_rec.employee_name);
+  DBMS_OUTPUT.PUT_LINE('Department: ' || emp_rec.department_name);
+  
+  CLOSE emp_cursor;
+END;
+/
+
+-- User-defined record
+DECLARE
+  TYPE address_type IS RECORD (
+    street VARCHAR2(100),
+    city VARCHAR2(50),
+    state VARCHAR2(30),
+    zip_code VARCHAR2(10)
+  );
+  
+  TYPE employee_type IS RECORD (
+    emp_id NUMBER,
+    full_name VARCHAR2(100),
+    email VARCHAR2(100),
+    hire_date DATE,
+    salary NUMBER(10,2),
+    address address_type
+  );
+  
+  employee employee_type;
+  emp_address address_type;
+BEGIN
+  -- Initialize record
+  employee.emp_id := 101;
+  employee.full_name := 'John Smith';
+  employee.email := 'john.smith@company.com';
+  employee.hire_date := SYSDATE;
+  employee.salary := 75000;
+  
+  -- Initialize nested record
+  employee.address.street := '123 Main St';
+  employee.address.city := 'New York';
+  employee.address.state := 'NY';
+  employee.address.zip_code := '10001';
+  
+  -- Display record data
+  DBMS_OUTPUT.PUT_LINE('Employee Details:');
+  DBMS_OUTPUT.PUT_LINE('ID: ' || employee.emp_id);
+  DBMS_OUTPUT.PUT_LINE('Name: ' || employee.full_name);
+  DBMS_OUTPUT.PUT_LINE('Address: ' || employee.address.street || ', ' ||
+                       employee.address.city || ', ' || employee.address.state);
+END;
+/`
+    },
+    {
+        id: 27,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'What is UTL_FILE package used for?',
+        answer: 'UTL_FILE package is used for reading and writing operating system text files from PL/SQL, providing file I/O operations.',
+        language: 'PL/SQL',
+        code: `-- UTL_FILE package example
+DECLARE
+  file_handle UTL_FILE.FILE_TYPE;
+  v_line VARCHAR2(1000);
+  v_dir VARCHAR2(100) := 'TEMP_DIR'; -- Directory object
+  v_filename VARCHAR2(100) := 'employee_report.txt';
+BEGIN
+  -- Write to file
+  file_handle := UTL_FILE.FOPEN(v_dir, v_filename, 'W');
+  
+  UTL_FILE.PUT_LINE(file_handle, 'Employee Report Generated on: ' || 
+                    TO_CHAR(SYSDATE, 'DD-MON-YYYY'));
+  UTL_FILE.PUT_LINE(file_handle, '================================');
+  
+  -- Write employee data
+  FOR emp_rec IN (SELECT employee_name, salary FROM employees WHERE dept_id = 10) LOOP
+    UTL_FILE.PUT_LINE(file_handle, emp_rec.employee_name || ': $' || emp_rec.salary);
+  END LOOP;
+  
+  UTL_FILE.FCLOSE(file_handle);
+  DBMS_OUTPUT.PUT_LINE('File written successfully');
+  
+  -- Read from file
+  file_handle := UTL_FILE.FOPEN(v_dir, v_filename, 'R');
+  
+  DBMS_OUTPUT.PUT_LINE('Reading file contents:');
+  LOOP
+    BEGIN
+      UTL_FILE.GET_LINE(file_handle, v_line);
+      DBMS_OUTPUT.PUT_LINE(v_line);
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        EXIT;
+    END;
+  END LOOP;
+  
+  UTL_FILE.FCLOSE(file_handle);
+  
+EXCEPTION
+  WHEN UTL_FILE.INVALID_PATH THEN
+    DBMS_OUTPUT.PUT_LINE('Invalid file path');
+  WHEN UTL_FILE.INVALID_MODE THEN
+    DBMS_OUTPUT.PUT_LINE('Invalid file mode');
+  WHEN UTL_FILE.INVALID_FILEHANDLE THEN
+    DBMS_OUTPUT.PUT_LINE('Invalid file handle');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+    IF UTL_FILE.IS_OPEN(file_handle) THEN
+      UTL_FILE.FCLOSE(file_handle);
+    END IF;
+END;
+/
+
+-- Create directory object (requires DBA privileges)
+-- CREATE OR REPLACE DIRECTORY TEMP_DIR AS '/tmp/oracle_files/';
+-- GRANT READ, WRITE ON DIRECTORY TEMP_DIR TO your_user;`
+    },
+    {
+        id: 28,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'Write a PL/SQL program to check if a string is palindrome.',
+        answer: 'A palindrome reads the same forwards and backwards. Compare string with its reverse using loops and string functions.',
+        language: 'PL/SQL',
+        code: `-- Palindrome check program
+DECLARE
+  input_string VARCHAR2(100) := 'racecar';
+  reverse_string VARCHAR2(100) := '';
+  letter CHAR(1);
+  is_palindrome BOOLEAN := TRUE;
+  
+  -- Method 1: Using REVERSE loop
+  PROCEDURE check_palindrome_method1(p_string VARCHAR2) IS
+    v_reverse VARCHAR2(100) := '';
+  BEGIN
+    FOR i IN REVERSE 1..LENGTH(p_string) LOOP
+      letter := SUBSTR(p_string, i, 1);
+      v_reverse := v_reverse || letter;
+    END LOOP;
+    
+    IF UPPER(v_reverse) = UPPER(p_string) THEN
+      DBMS_OUTPUT.PUT_LINE(p_string || ' is a palindrome (Method 1)');
+    ELSE
+      DBMS_OUTPUT.PUT_LINE(p_string || ' is not a palindrome (Method 1)');
+    END IF;
+  END;
+  
+  -- Method 2: Compare from both ends
+  PROCEDURE check_palindrome_method2(p_string VARCHAR2) IS
+    v_length NUMBER := LENGTH(p_string);
+    v_is_palindrome BOOLEAN := TRUE;
+  BEGIN
+    FOR i IN 1..FLOOR(v_length/2) LOOP
+      IF UPPER(SUBSTR(p_string, i, 1)) != UPPER(SUBSTR(p_string, v_length - i + 1, 1)) THEN
+        v_is_palindrome := FALSE;
+        EXIT;
+      END IF;
+    END LOOP;
+    
+    IF v_is_palindrome THEN
+      DBMS_OUTPUT.PUT_LINE(p_string || ' is a palindrome (Method 2)');
+    ELSE
+      DBMS_OUTPUT.PUT_LINE(p_string || ' is not a palindrome (Method 2)');
+    END IF;
+  END;
+  
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('Testing palindrome: ' || input_string);
+  
+  -- Test Method 1
+  check_palindrome_method1(input_string);
+  
+  -- Test Method 2
+  check_palindrome_method2(input_string);
+  
+  -- Test multiple strings
+  DBMS_OUTPUT.PUT_LINE('--- Testing multiple strings ---');
+  check_palindrome_method1('level');
+  check_palindrome_method1('hello');
+  check_palindrome_method1('madam');
+  check_palindrome_method1('A man a plan a canal Panama');
+  
+END;
+/
+
+-- Function version
+CREATE OR REPLACE FUNCTION is_palindrome(p_string VARCHAR2) 
+RETURN BOOLEAN IS
+  v_clean_string VARCHAR2(1000);
+  v_length NUMBER;
+BEGIN
+  -- Remove spaces and convert to uppercase
+  v_clean_string := UPPER(REPLACE(p_string, ' ', ''));
+  v_length := LENGTH(v_clean_string);
+  
+  -- Check from both ends
+  FOR i IN 1..FLOOR(v_length/2) LOOP
+    IF SUBSTR(v_clean_string, i, 1) != SUBSTR(v_clean_string, v_length - i + 1, 1) THEN
+      RETURN FALSE;
+    END IF;
+  END LOOP;
+  
+  RETURN TRUE;
+END;
+/
+
+-- Test the function
+BEGIN
+  IF is_palindrome('racecar') THEN
+    DBMS_OUTPUT.PUT_LINE('racecar is palindrome');
+  END IF;
+  
+  IF NOT is_palindrome('hello') THEN
+    DBMS_OUTPUT.PUT_LINE('hello is not palindrome');
+  END IF;
+END;
+/`
+    },
+    {
+        id: 29,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'How to create and use nested tables in PL/SQL?',
+        answer: 'Nested tables are collections with no maximum size limit. They can be created at schema level or in PL/SQL blocks and support collection methods.',
+        language: 'PL/SQL',
+        code: `-- Nested Table Creation and Usage
+DECLARE
+  -- Declare nested table types
+  TYPE names_table IS TABLE OF VARCHAR2(50);
+  TYPE numbers_table IS TABLE OF NUMBER;
+  
+  -- Declare nested table variables
+  employee_names names_table;
+  employee_salaries numbers_table;
+  
+  -- Using constructor
+  dept_names names_table := names_table('Sales', 'Marketing', 'IT', 'HR');
+  
+BEGIN
+  -- Initialize nested tables
+  employee_names := names_table();
+  employee_salaries := numbers_table();
+  
+  -- Add elements using EXTEND and direct assignment
+  FOR i IN 1..5 LOOP
+    employee_names.EXTEND;
+    employee_salaries.EXTEND;
+    employee_names(i) := 'Employee ' || i;
+    employee_salaries(i) := 40000 + (i * 5000);
+  END LOOP;
+  
+  -- Display nested table contents
+  DBMS_OUTPUT.PUT_LINE('Employee Information:');
+  FOR i IN 1..employee_names.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE(employee_names(i) || ': $' || employee_salaries(i));
+  END LOOP;
+  
+  -- Collection methods
+  DBMS_OUTPUT.PUT_LINE('Total employees: ' || employee_names.COUNT);
+  DBMS_OUTPUT.PUT_LINE('First index: ' || employee_names.FIRST);
+  DBMS_OUTPUT.PUT_LINE('Last index: ' || employee_names.LAST);
+  
+  -- Delete specific element
+  employee_names.DELETE(3);
+  employee_salaries.DELETE(3);
+  
+  DBMS_OUTPUT.PUT_LINE('After deleting index 3:');
+  FOR i IN employee_names.FIRST..employee_names.LAST LOOP
+    IF employee_names.EXISTS(i) THEN
+      DBMS_OUTPUT.PUT_LINE(employee_names(i) || ': $' || employee_salaries(i));
+    END IF;
+  END LOOP;
+  
+  -- Using department names
+  DBMS_OUTPUT.PUT_LINE('Department Names:');
+  FOR i IN 1..dept_names.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE('Dept ' || i || ': ' || dept_names(i));
+  END LOOP;
+  
+  -- TRIM method (remove from end)
+  dept_names.TRIM(2); -- Remove last 2 elements
+  DBMS_OUTPUT.PUT_LINE('After TRIM(2):');
+  FOR i IN 1..dept_names.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE('Dept ' || i || ': ' || dept_names(i));
+  END LOOP;
+  
+END;
+/
+
+-- Schema-level nested table
+CREATE OR REPLACE TYPE string_array AS TABLE OF VARCHAR2(100);
+/
+
+-- Using schema-level nested table
+DECLARE
+  product_list string_array := string_array('Laptop', 'Mouse', 'Keyboard', 'Monitor');
+  
+  -- Nested table for complex data
+  TYPE product_info IS RECORD (
+    name VARCHAR2(50),
+    price NUMBER,
+    category VARCHAR2(30)
+  );
+  
+  TYPE product_table IS TABLE OF product_info;
+  products product_table := product_table();
+  
+BEGIN
+  -- Populate products
+  products.EXTEND(3);
+  
+  products(1).name := 'Dell Laptop';
+  products(1).price := 899.99;
+  products(1).category := 'Computer';
+  
+  products(2).name := 'Wireless Mouse';
+  products(2).price := 29.99;
+  products(2).category := 'Accessory';
+  
+  products(3).name := 'Gaming Keyboard';
+  products(3).price := 79.99;
+  products(3).category := 'Accessory';
+  
+  -- Display products
+  FOR i IN 1..products.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE(products(i).name || ' - $' || 
+                        products(i).price || ' (' || products(i).category || ')');
+  END LOOP;
+  
+END;
+/`
+    },
+    {
+        id: 30,
+        category: 'advanced',
+        difficulty: 'advanced',
+        question: 'What is raise_application_error and how to use it?',
+        answer: 'RAISE_APPLICATION_ERROR is used to generate user-defined error messages with custom error codes (-20000 to -20999) from stored procedures.',
+        language: 'PL/SQL',
+        code: `-- RAISE_APPLICATION_ERROR examples
+CREATE OR REPLACE PROCEDURE validate_employee_salary(
+  p_emp_id IN NUMBER,
+  p_new_salary IN NUMBER
+) IS
+  v_current_salary NUMBER;
+  v_dept_id NUMBER;
+  v_min_salary NUMBER;
+  v_max_salary NUMBER;
+BEGIN
+  -- Get current employee data
+  SELECT salary, department_id 
+  INTO v_current_salary, v_dept_id
+  FROM employees 
+  WHERE employee_id = p_emp_id;
+  
+  -- Get department salary range
+  SELECT min_salary, max_salary
+  INTO v_min_salary, v_max_salary
+  FROM departments
+  WHERE department_id = v_dept_id;
+  
+  -- Validation checks with custom errors
+  IF p_new_salary < 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'Salary cannot be negative. Employee ID: ' || p_emp_id);
+  END IF;
+  
+  IF p_new_salary < v_min_salary THEN
+    RAISE_APPLICATION_ERROR(-20002, 
+      'Salary $' || p_new_salary || ' is below department minimum of $' || v_min_salary);
+  END IF;
+  
+  IF p_new_salary > v_max_salary THEN
+    RAISE_APPLICATION_ERROR(-20003,
+      'Salary $' || p_new_salary || ' exceeds department maximum of $' || v_max_salary);
+  END IF;
+  
+  -- Check for excessive increase
+  IF p_new_salary > (v_current_salary * 1.5) THEN
+    RAISE_APPLICATION_ERROR(-20004,
+      'Salary increase of ' || ROUND(((p_new_salary - v_current_salary) / v_current_salary) * 100, 2) ||
+      '% exceeds 50% limit');
+  END IF;
+  
+  -- If all validations pass
+  UPDATE employees SET salary = p_new_salary WHERE employee_id = p_emp_id;
+  DBMS_OUTPUT.PUT_LINE('Salary updated successfully for employee ' || p_emp_id);
+  
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RAISE_APPLICATION_ERROR(-20005, 'Employee ID ' || p_emp_id || ' does not exist');
+  WHEN TOO_MANY_ROWS THEN
+    RAISE_APPLICATION_ERROR(-20006, 'Multiple employees found with ID ' || p_emp_id);
+END;
+/
+
+-- Business rule validation function
+CREATE OR REPLACE FUNCTION validate_business_rules(
+  p_operation VARCHAR2,
+  p_emp_id NUMBER,
+  p_value NUMBER
+) RETURN BOOLEAN IS
+  v_dept_budget NUMBER;
+  v_total_dept_salary NUMBER;
+BEGIN
+  CASE p_operation
+    WHEN 'SALARY_UPDATE' THEN
+      -- Check department budget
+      SELECT d.budget, NVL(SUM(e.salary), 0)
+      INTO v_dept_budget, v_total_dept_salary
+      FROM departments d
+      LEFT JOIN employees e ON d.department_id = e.department_id
+      WHERE d.department_id = (SELECT department_id FROM employees WHERE employee_id = p_emp_id)
+      GROUP BY d.budget;
+      
+      IF (v_total_dept_salary + p_value) > v_dept_budget THEN
+        RAISE_APPLICATION_ERROR(-20010,
+          'Salary update would exceed department budget. ' ||
+          'Current total: $' || v_total_dept_salary || 
+          ', Budget: $' || v_dept_budget);
+      END IF;
+      
+    WHEN 'BONUS_CALCULATION' THEN
+      IF p_value > 50000 THEN
+        RAISE_APPLICATION_ERROR(-20011,
+          'Bonus amount $' || p_value || ' exceeds maximum allowed bonus of $50,000');
+      END IF;
+      
+    ELSE
+      RAISE_APPLICATION_ERROR(-20099, 'Invalid operation: ' || p_operation);
+  END CASE;
+  
+  RETURN TRUE;
+END;
+/
+
+-- Test the procedures
+BEGIN
+  -- This should work
+  validate_employee_salary(101, 65000);
+  
+  -- This should raise custom error
+  validate_employee_salary(101, -5000);
+  
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error Code: ' || SQLCODE);
+    DBMS_OUTPUT.PUT_LINE('Error Message: ' || SQLERRM);
+END;
+/
+
+-- Error logging with RAISE_APPLICATION_ERROR
+CREATE OR REPLACE PROCEDURE process_employee_data(
+  p_emp_id NUMBER,
+  p_operation VARCHAR2
+) IS
+  v_error_msg VARCHAR2(4000);
+BEGIN
+  SAVEPOINT before_operation;
+  
+  CASE p_operation
+    WHEN 'DELETE' THEN
+      DELETE FROM employees WHERE employee_id = p_emp_id;
+      IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20020, 'Employee ID ' || p_emp_id || ' not found for deletion');
+      END IF;
+      
+    WHEN 'ARCHIVE' THEN
+      INSERT INTO archived_employees SELECT * FROM employees WHERE employee_id = p_emp_id;
+      DELETE FROM employees WHERE employee_id = p_emp_id;
+      
+    ELSE
+      RAISE_APPLICATION_ERROR(-20021, 'Invalid operation: ' || p_operation);
+  END CASE;
+  
+  COMMIT;
+  
+EXCEPTION
+  WHEN OTHERS THEN
+    ROLLBACK TO before_operation;
+    
+    -- Log error with context
+    v_error_msg := 'Operation: ' || p_operation || 
+                   ', Employee ID: ' || p_emp_id || 
+                   ', Error: ' || SQLERRM;
+    
+    INSERT INTO error_log(error_date, error_message, module_name)
+    VALUES(SYSDATE, v_error_msg, 'PROCESS_EMPLOYEE_DATA');
+    
+    COMMIT;
+    
+    -- Re-raise with additional context
+    RAISE_APPLICATION_ERROR(-20022, 
+      'Failed to process employee data. ' || v_error_msg);
+END;
+/`
+    }
+
+
+    
+];
+
+
+
+
+        
+
 
        // Load questions when page loads
        function loadQuestions() {
