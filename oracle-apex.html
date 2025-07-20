@@ -125,6 +125,9 @@
 
 
         // Oracle APEX Questions Data - Comprehensive from all PDFs
+
+
+        // Oracle APEX Questions Data - Comprehensive from all PDFs with formatted line breaks
 const oracleApexQuestions = [
     // BASIC LEVEL QUESTIONS (1-20)
     {
@@ -610,7 +613,7 @@ const oracleApexQuestions = [
         language: 'Client Side Validation'
     },
 
-    // ADVANCED LEVEL QUESTIONS (61-85)
+    // ADVANCED LEVEL QUESTIONS (61-95)
     {
         id: 61,
         category: 'advanced',
@@ -640,7 +643,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'What kind of activities you have done for APEX as APEX DBA?',
-        answer: '1. Setup of APEX environment, 2. SSL configuration, 3. USER access management, 4. Security modal definition, 5. Ad hoc issue resolution, 6. Patching and Performance optimization.',
+        answer: '<br>1. Setup of APEX environment<br>2. SSL configuration<br>3. USER access management<br>4. Security modal definition<br>5. Ad hoc issue resolution<br>6. Patching and Performance optimization.',
         language: 'DBA Activities'
     },
     {
@@ -715,8 +718,6 @@ const oracleApexQuestions = [
         answer: 'Error handling can be done using exception handling in PL/SQL, displaying error messages, and logging errors to the database. Implement proper exception blocks, use apex_error for custom error handling, and provide user-friendly error messages.',
         language: 'Error Handling'
     },
-
-
     {
        id: 74,
        category: 'advanced',
@@ -893,18 +894,14 @@ const oracleApexQuestions = [
        answer: 'Oracle APEX provides debugging tools such as the debug mode, error handling, and logging options to help identify and resolve issues during application development and deployment. Use debug mode, apex_debug package, browser developer tools, and error logging.',
        language: 'Debugging'
    },
-
-    
-{
+    {
         id: 96,
         category: 'advanced',
         difficulty: 'advanced',
         question: 'What are the 4 essential security pillars that every Oracle APEX application should implement?',
-        answer: 'According to Oracle APEX security best practices, the 4 essential security pillars are: 1. Authentication - Verifies the user\'s identity using methods like APEX accounts, LDAP, SSO, or OAuth2. This should be implemented in every APEX app, even internal ones, as no login equals an open door to your application. 2. Authorization - Defines what users can access by setting user permissions. Admins typically see all data while regular users see limited data. This is crucial when your app supports roles, restricted pages, or conditional visibility. 3. Session State Protection - Prevents users from manipulating hidden values and protects against URL tampering or form field injection by securing item values. Use Session State Protection on critical or hidden items, especially those passed between pages. 4. SQL Injection Prevention - Protects your app from malicious input that could compromise your database. Always use bind variables, sanitize user input, and avoid direct string concatenation in SQL.',
+        answer: 'According to Oracle APEX security best practices, the 4 essential security pillars are:<br>1. Authentication - Verifies the user\'s identity using methods like APEX accounts, LDAP, SSO, or OAuth2. This should be implemented in every APEX app, even internal ones, as no login equals an open door to your application.<br>2. Authorization - Defines what users can access by setting user permissions. Admins typically see all data while regular users see limited data. This is crucial when your app supports roles, restricted pages, or conditional visibility.<br>3. Session State Protection - Prevents users from manipulating hidden values and protects against URL tampering or form field injection by securing item values. Use Session State Protection on critical or hidden items, especially those passed between pages.<br>4. SQL Injection Prevention - Protects your app from malicious input that could compromise your database. Always use bind variables, sanitize user input, and avoid direct string concatenation in SQL.',
         language: 'Security Best Practices'
     },
-
- 
     {
         id: 97,
         category: 'intermediate',
@@ -918,7 +915,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'How would you implement a custom authentication scheme in Oracle APEX?',
-        answer: 'To implement a custom authentication scheme: 1. Navigate to Shared Components > Authentication Schemes, 2. Create a new scheme, 3. Choose "Custom" as the scheme type, 4. Define authentication function that returns TRUE for valid users, 5. Configure login processing, logout URL, and session verification, 6. Test the scheme thoroughly before making it current.',
+        answer: 'To implement a custom authentication scheme:<br>1. Navigate to Shared Components > Authentication Schemes<br>2. Create a new scheme<br>3. Choose "Custom" as the scheme type<br>4. Define authentication function that returns TRUE for valid users<br>5. Configure login processing, logout URL, and session verification<br>6. Test the scheme thoroughly before making it current.',
         language: 'Authentication'
     },
     {
@@ -926,7 +923,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'What are the different ways to implement navigation in an APEX application?',
-        answer: 'Navigation can be implemented through: 1. Navigation Menu (breadcrumb navigation), 2. List-based navigation (tabs, sidebar), 3. Button-based navigation, 4. Tree navigation for hierarchical data, 5. Custom navigation using dynamic actions, 6. URL-based navigation with page linking, 7. Breadcrumb regions for path tracking.',
+        answer: 'Navigation can be implemented through:<br>1. Navigation Menu (breadcrumb navigation)<br>2. List-based navigation (tabs, sidebar)<br>3. Button-based navigation<br>4. Tree navigation for hierarchical data<br>5. Custom navigation using dynamic actions<br>6. URL-based navigation with page linking<br>7. Breadcrumb regions for path tracking.',
         language: 'Navigation'
     },
     {
@@ -934,7 +931,7 @@ const oracleApexQuestions = [
         category: 'intermediate',
         difficulty: 'intermediate',
         question: 'How do you create and use dynamic lists in Oracle APEX?',
-        answer: 'Dynamic lists are created by: 1. Going to Shared Components > Lists, 2. Creating a new list with dynamic query, 3. Writing SQL query that returns list entries, 4. Using columns for display value, target, and attributes, 5. Adding the list to a page region, 6. Configuring list template for display format.',
+        answer: 'Dynamic lists are created by:<br>1. Going to Shared Components > Lists<br>2. Creating a new list with dynamic query<br>3. Writing SQL query that returns list entries<br>4. Using columns for display value, target, and attributes<br>5. Adding the list to a page region<br>6. Configuring list template for display format.',
         language: 'Dynamic Lists'
     },
     {
@@ -942,7 +939,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'How would you create a custom report with multiple data sources in APEX?',
-        answer: 'Custom reports with multiple data sources can be created by: 1. Using UNION or JOIN operations in SQL query, 2. Creating database views that combine multiple tables, 3. Using PL/SQL to fetch data from multiple sources, 4. Implementing web service integration for external data, 5. Using APEX collections to merge data from different sources.',
+        answer: 'Custom reports with multiple data sources can be created by:<br>1. Using UNION or JOIN operations in SQL query<br>2. Creating database views that combine multiple tables<br>3. Using PL/SQL to fetch data from multiple sources<br>4. Implementing web service integration for external data<br>5. Using APEX collections to merge data from different sources.',
         language: 'Multi-Source Reports'
     },
     {
@@ -950,7 +947,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'What are APEX error handling techniques, and how would you implement them?',
-        answer: 'Error handling techniques include: 1. Built-in error handling with apex_error package, 2. Custom error handling functions, 3. PL/SQL exception handling with BEGIN-EXCEPTION-END blocks, 4. Client-side JavaScript error handling, 5. Global error handling at application level, 6. Page-specific error handling, 7. Error logging to custom tables for debugging.',
+        answer: 'Error handling techniques include:<br>1. Built-in error handling with apex_error package<br>2. Custom error handling functions<br>3. PL/SQL exception handling with BEGIN-EXCEPTION-END blocks<br>4. Client-side JavaScript error handling<br>5. Global error handling at application level<br>6. Page-specific error handling<br>7. Error logging to custom tables for debugging.',
         language: 'Error Handling'
     },
     {
@@ -958,7 +955,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'How do you integrate third-party JavaScript libraries into an APEX application?',
-        answer: 'Integration steps: 1. Upload library files to Static Application Files or use CDN links, 2. Reference libraries in page template or specific pages, 3. Include library CSS and JS files in page header, 4. Create JavaScript functions to interface with APEX, 5. Use dynamic actions to trigger library functions, 6. Handle library initialization in page load events.',
+        answer: 'Integration steps:<br>1. Upload library files to Static Application Files or use CDN links<br>2. Reference libraries in page template or specific pages<br>3. Include library CSS and JS files in page header<br>4. Create JavaScript functions to interface with APEX<br>5. Use dynamic actions to trigger library functions<br>6. Handle library initialization in page load events.',
         language: 'JavaScript Integration'
     },
     {
@@ -974,7 +971,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'How would you optimize a slow-running report in an Oracle APEX application?',
-        answer: 'Optimization techniques: 1. Analyze SQL execution plan, 2. Add appropriate database indexes, 3. Use bind variables instead of literal values, 4. Implement pagination for large datasets, 5. Use caching for frequently accessed data, 6. Optimize joins and subqueries, 7. Consider materialized views for complex queries, 8. Use lazy loading for dynamic regions.',
+        answer: 'Optimization techniques:<br>1. Analyze SQL execution plan<br>2. Add appropriate database indexes<br>3. Use bind variables instead of literal values<br>4. Implement pagination for large datasets<br>5. Use caching for frequently accessed data<br>6. Optimize joins and subqueries<br>7. Consider materialized views for complex queries<br>8. Use lazy loading for dynamic regions.',
         language: 'Performance Optimization'
     },
     {
@@ -982,7 +979,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'How can you execute JavaScript code from PL/SQL process in Oracle APEX?',
-        answer: 'You can execute JavaScript from PL/SQL using: 1. apex_javascript.add_onload_code procedure, 2. htp.p or apex_application.g_print_success_message for inline JavaScript, 3. apex_json package to return data for JavaScript processing, 4. AJAX callbacks that execute JavaScript in success/error handlers, 5. Dynamic actions triggered by PL/SQL processes.',
+        answer: 'You can execute JavaScript from PL/SQL using:<br>1. apex_javascript.add_onload_code procedure<br>2. htp.p or apex_application.g_print_success_message for inline JavaScript<br>3. apex_json package to return data for JavaScript processing<br>4. AJAX callbacks that execute JavaScript in success/error handlers<br>5. Dynamic actions triggered by PL/SQL processes.',
         language: 'PL/SQL JavaScript Integration'
     },
     {
@@ -998,7 +995,7 @@ const oracleApexQuestions = [
         category: 'basic',
         difficulty: 'basic',
         question: 'What are some pre-packaged applications available in Oracle APEX?',
-        answer: 'Oracle APEX provides several pre-packaged applications including: 1. Employee Directory Lookup, 2. Ask the Expert (Q&A site), 3. Bug Tracker (logging and tracking bug reports), 4. Discussion Forum (threaded chat and user management), 5. Document Library (multi-user document repository), 6. Project Issue Tracker, 7. Online Store (catalog and shopping cart), 8. Software Projects (project task tracker).',
+        answer: 'Oracle APEX provides several pre-packaged applications including:<br>1. Employee Directory Lookup<br>2. Ask the Expert (Q&A site)<br>3. Bug Tracker (logging and tracking bug reports)<br>4. Discussion Forum (threaded chat and user management)<br>5. Document Library (multi-user document repository)<br>6. Project Issue Tracker<br>7. Online Store (catalog and shopping cart)<br>8. Software Projects (project task tracker).',
         language: 'Sample Applications'
     },
     {
@@ -1006,7 +1003,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'What are the aspects you should consider when deploying Oracle APEX applications for large-scale public use?',
-        answer: 'Considerations for large-scale deployment: 1. Load balancing and clustering, 2. SSL/TLS encryption, 3. CDN for static content, 4. Database performance tuning, 5. Security hardening, 6. Monitoring and logging, 7. Backup and disaster recovery, 8. Scalable infrastructure, 9. Session management, 10. Caching strategies, 11. Network optimization.',
+        answer: 'Considerations for large-scale deployment:<br>1. Load balancing and clustering<br>2. SSL/TLS encryption<br>3. CDN for static content<br>4. Database performance tuning<br>5. Security hardening<br>6. Monitoring and logging<br>7. Backup and disaster recovery<br>8. Scalable infrastructure<br>9. Session management<br>10. Caching strategies<br>11. Network optimization.',
         language: 'Enterprise Deployment'
     },
     {
@@ -1022,7 +1019,7 @@ const oracleApexQuestions = [
         category: 'intermediate',
         difficulty: 'intermediate',
         question: 'How do you create a drill-down report in Oracle APEX?',
-        answer: 'Creating a drill-down report involves: 1. Define a hyperlink on a column in the master report, 2. Configure the link to navigate to a detail report page, 3. Pass parameters (like ID) from master to detail report, 4. Create the detail report page with appropriate filters, 5. Use page items to receive parameters, 6. Implement breadcrumb navigation for user experience.',
+        answer: 'Creating a drill-down report involves:<br>1. Define a hyperlink on a column in the master report<br>2. Configure the link to navigate to a detail report page<br>3. Pass parameters (like ID) from master to detail report<br>4. Create the detail report page with appropriate filters<br>5. Use page items to receive parameters<br>6. Implement breadcrumb navigation for user experience.',
         language: 'Drill-down Reports'
     },
     {
@@ -1030,7 +1027,7 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'What are plugins in Oracle APEX and when would you choose to use them?',
-        answer: 'Plugins are reusable components that extend APEX functionality beyond built-in components. They\'re chosen when: 1. Custom functionality is required, 2. Third-party library integration is needed, 3. Complex validations or dynamic actions are required, 4. New item types are needed, 5. Enhanced user interface customization is desired. Plugins offer flexibility and control over data presentation and interaction.',
+        answer: 'Plugins are reusable components that extend APEX functionality beyond built-in components. They\'re chosen when:<br>1. Custom functionality is required<br>2. Third-party library integration is needed<br>3. Complex validations or dynamic actions are required<br>4. New item types are needed<br>5. Enhanced user interface customization is desired. Plugins offer flexibility and control over data presentation and interaction.',
         language: 'Plugins'
     },
     {
@@ -1054,7 +1051,7 @@ const oracleApexQuestions = [
         category: 'intermediate',
         difficulty: 'intermediate',
         question: 'How would you handle complex data validation in Oracle APEX?',
-        answer: 'Complex validation can be handled using: 1. Built-in validation features for basic rules, 2. Custom PL/SQL code for intricate business logic, 3. JavaScript for enhanced client-side validation, 4. Combination of page-level and item-level validations, 5. Cross-field validation using dynamic actions, 6. Database triggers for data integrity, 7. Custom validation functions that can be reused across applications.',
+        answer: 'Complex validation can be handled using:<br>1. Built-in validation features for basic rules<br>2. Custom PL/SQL code for intricate business logic<br>3. JavaScript for enhanced client-side validation<br>4. Combination of page-level and item-level validations<br>5. Cross-field validation using dynamic actions<br>6. Database triggers for data integrity<br>7. Custom validation functions that can be reused across applications.',
         language: 'Complex Validation'
     },
     {
@@ -1062,10 +1059,32 @@ const oracleApexQuestions = [
         category: 'advanced',
         difficulty: 'advanced',
         question: 'What are the different deployment options for Oracle APEX applications?',
-        answer: 'Deployment options include: <br> 1. On-premise deployment with Oracle HTTP Server/ORDS, 2. Oracle Cloud Infrastructure (OCI), 3. Oracle Autonomous Database, 4. Third-party cloud providers with Oracle Database, 5. Hybrid cloud deployments, 6. Docker containers, 7. Export/Import for application migration, 8. Manual deployment with supporting objects, 9. Automated deployment pipelines.',
+        answer: 'Deployment options include:<br>1. On-premise deployment with Oracle HTTP Server/ORDS<br>2. Oracle Cloud Infrastructure (OCI)<br>3. Oracle Autonomous Database<br>4. Third-party cloud providers with Oracle Database<br>5. Hybrid cloud deployments<br>6. Docker containers<br>7. Export/Import for application migration<br>8. Manual deployment with supporting objects<br>9. Automated deployment pipelines.',
         language: 'Deployment Options'
     }
 ];
+
+// Export for use in other modules if needed
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = oracleApexQuestions;
+}
+
+
+        
+
+        
+
+
+        
+
+
+        
+
+
+
+        
+
+        
 
 
 
