@@ -6521,8 +6521,437 @@ FROM sync_log
 WHERE sync_status = 'SUCCESS'
  AND created_date >= TRUNC(SYSDATE) - 1
 GROUP BY table_name;`
-   }
+   },
+
+      
+    {
+        id: 107,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Find duplicate rows in a table without using GROUP BY.',
+        answer: 'Use window functions like ROW_NUMBER() or analytical functions to identify duplicate records without GROUP BY clause.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using ROW_NUMBER() to find duplicates
+SELECT employee_id, first_name, last_name, email
+FROM (
+    SELECT employee_id, first_name, last_name, email,
+           ROW_NUMBER() OVER (PARTITION BY first_name, last_name, email ORDER BY employee_id) as rn
+    FROM employees
+)
+WHERE rn > 1;
+
+-- Method 2: Using COUNT() OVER() window function
+SELECT employee_id, first_name, last_name, email, duplicate_count
+FROM (
+    SELECT employee_id, first_name, last_name, email,
+           COUNT(*) OVER (PARTITION BY first_name, last_name, email) as duplicate_count
+    FROM employees
+)
+WHERE duplicate_count > 1;
+
+-- Method 3: Using EXISTS with correlation
+SELECT DISTINCT e1.employee_id, e1.first_name, e1.last_name, e1.email
+FROM employees e1
+WHERE EXISTS (
+    SELECT 1 FROM employees e2 
+    WHERE e2.first_name = e1.first_name 
+      AND e2.last_name = e1.last_name 
+      AND e2.email = e1.email 
+      AND e2.ROWID > e1.ROWID
+);
+
+-- Method 4: Using MINUS operation
+SELECT * FROM employees
+MINUS 
+SELECT * FROM (
+    SELECT DISTINCT * FROM employees
+);
+
+-- Method 5: Using analytical function DENSE_RANK
+SELECT employee_id, first_name, last_name, email
+FROM (
+    SELECT employee_id, first_name, last_name, email,
+           DENSE_RANK() OVER (PARTITION BY first_name, last_name, email ORDER BY employee_id) as rnk
+    FROM employees
+)
+WHERE rnk > 1;`
+    },
+    {
+        id: 108,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Write a SQL query to find the top 10% of earners in a table.',
+        answer: 'Use PERCENTILE_CONT, NTILE, or calculate percentage-based cutoffs to identify the top 10% salary earners.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using PERCENTILE_CONT to find 90th percentile
+WITH salary_percentile AS (
+    SELECT PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY salary) as top_10_percent_cutoff
+    FROM employees
+)
+SELECT e.employee_id, e.first_name, e.last_name, e.salary
+FROM employees e, salary_percentile sp
+WHERE e.salary >= sp.top_10_percent_cutoff
+ORDER BY e.salary DESC;
+
+-- Method 2: Using NTILE to divide into 10 groups
+SELECT employee_id, first_name, last_name, salary, salary_decile
+FROM (
+    SELECT employee_id, first_name, last_name, salary,
+           NTILE(10) OVER (ORDER BY salary DESC) as salary_decile
+    FROM employees
+)
+WHERE salary_decile = 1;
+
+-- Method 3: Using PERCENT_RANK function
+SELECT employee_id, first_name, last_name, salary, salary_percentile
+FROM (
+    SELECT employee_id, first_name, last_name, salary,
+           PERCENT_RANK() OVER (ORDER BY salary DESC) as salary_percentile
+    FROM employees
+)
+WHERE salary_percentile <= 0.1;
+
+-- Method 4: Calculate top 10% using COUNT and ROWNUM
+SELECT employee_id, first_name, last_name, salary
+FROM (
+    SELECT employee_id, first_name, last_name, salary,
+           ROWNUM as rn,
+           ROUND((SELECT COUNT(*) FROM employees) * 0.1) as top_10_percent_count
+    FROM (
+        SELECT employee_id, first_name, last_name, salary
+        FROM employees
+        ORDER BY salary DESC
+    )
+)
+WHERE rn <= top_10_percent_count;
+
+-- Method 5: Using analytical function with percentage calculation
+WITH ranked_salaries AS (
+    SELECT employee_id, first_name, last_name, salary,
+           ROW_NUMBER() OVER (ORDER BY salary DESC) as salary_rank,
+           COUNT(*) OVER () as total_employees
+    FROM employees
+)
+SELECT employee_id, first_name, last_name, salary, 
+       ROUND((salary_rank / total_employees) * 100, 2) as percentile
+FROM ranked_salaries
+WHERE salary_rank <= (total_employees * 0.1)
+ORDER BY salary DESC;`
+    },
+    {
+        id: 109,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Write a SQL query to find all employees who have never taken a leave.',
+        answer: 'Use NOT EXISTS, LEFT JOIN with NULL check, or NOT IN to find employees without any leave records.',
+        language: 'Oracle SQL',
+        code: `-- Assuming we have an employee_leaves table
+-- CREATE TABLE employee_leaves (leave_id NUMBER, employee_id NUMBER, leave_date DATE, leave_type VARCHAR2(20));
+
+-- Method 1: Using NOT EXISTS (most efficient)
+SELECT e.employee_id, e.first_name, e.last_name, e.department_id
+FROM employees e
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM employee_leaves el 
+    WHERE el.employee_id = e.employee_id
+);
+
+-- Method 2: Using LEFT JOIN with NULL check
+SELECT e.employee_id, e.first_name, e.last_name, e.department_id
+FROM employees e
+LEFT JOIN employee_leaves el ON e.employee_id = el.employee_id
+WHERE el.employee_id IS NULL;
+
+-- Method 3: Using NOT IN (be careful with NULLs)
+SELECT employee_id, first_name, last_name, department_id
+FROM employees
+WHERE employee_id NOT IN (
+    SELECT employee_id 
+    FROM employee_leaves 
+    WHERE employee_id IS NOT NULL
+);
+
+-- Method 4: Using MINUS operation
+SELECT employee_id, first_name, last_name, department_id
+FROM employees
+MINUS
+SELECT e.employee_id, e.first_name, e.last_name, e.department_id
+FROM employees e
+JOIN employee_leaves el ON e.employee_id = el.employee_id;
+
+-- Method 5: Using COUNT with HAVING
+SELECT e.employee_id, e.first_name, e.last_name, e.department_id,
+       COUNT(el.leave_id) as leave_count
+FROM employees e
+LEFT JOIN employee_leaves el ON e.employee_id = el.employee_id
+GROUP BY e.employee_id, e.first_name, e.last_name, e.department_id
+HAVING COUNT(el.leave_id) = 0;
+
+-- Method 6: Find employees with no leaves in specific time period
+SELECT e.employee_id, e.first_name, e.last_name
+FROM employees e
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM employee_leaves el 
+    WHERE el.employee_id = e.employee_id
+      AND el.leave_date >= DATE '2024-01-01'
+      AND el.leave_date <= DATE '2024-12-31'
+);`
+    },
+    {
+        id: 110,
+        category: 'basic',
+        difficulty: 'basic',
+        question: 'Write a SQL query to find all departments with more than one employee.',
+        answer: 'Use subqueries, window functions, or EXISTS to find departments with multiple employees without using GROUP BY in the main query.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using subquery with COUNT
+SELECT DISTINCT d.department_id, d.department_name
+FROM departments d
+WHERE (
+    SELECT COUNT(*) 
+    FROM employees e 
+    WHERE e.department_id = d.department_id
+) > 1;
+
+-- Method 2: Using EXISTS with correlated subquery
+SELECT d.department_id, d.department_name
+FROM departments d
+WHERE EXISTS (
+    SELECT e1.employee_id
+    FROM employees e1
+    WHERE e1.department_id = d.department_id
+      AND EXISTS (
+          SELECT 1 
+          FROM employees e2 
+          WHERE e2.department_id = e1.department_id 
+            AND e2.employee_id != e1.employee_id
+      )
+);
+
+-- Method 3: Using window function COUNT() OVER()
+SELECT DISTINCT department_id, 
+       (SELECT department_name FROM departments WHERE department_id = e.department_id) as department_name
+FROM (
+    SELECT department_id,
+           COUNT(*) OVER (PARTITION BY department_id) as emp_count
+    FROM employees
+)
+WHERE emp_count > 1;
+
+-- Method 4: Using MINUS to exclude single-employee departments
+SELECT department_id, department_name
+FROM departments
+MINUS
+SELECT d.department_id, d.department_name
+FROM departments d
+WHERE (
+    SELECT COUNT(*) 
+    FROM employees e 
+    WHERE e.department_id = d.department_id
+) <= 1;
+
+-- Method 5: Using self-join
+SELECT DISTINCT d.department_id, d.department_name
+FROM departments d
+WHERE EXISTS (
+    SELECT 1
+    FROM employees e1, employees e2
+    WHERE e1.department_id = d.department_id
+      AND e2.department_id = d.department_id
+      AND e1.employee_id != e2.employee_id
+);
+
+-- Method 6: Show department details with employee count
+SELECT department_id, department_name, employee_count
+FROM (
+    SELECT d.department_id, d.department_name,
+           (SELECT COUNT(*) FROM employees e WHERE e.department_id = d.department_id) as employee_count
+    FROM departments d
+)
+WHERE employee_count > 1
+ORDER BY employee_count DESC;`
+    },
+    {
+        id: 111,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Find the maximum value of a column for each group without using GROUP BY.',
+        answer: 'Use window functions like MAX() OVER() with PARTITION BY to find maximum values per group without GROUP BY clause.',
+        language: 'Oracle SQL',
+        code: `-- Method 1: Using MAX() OVER() window function
+SELECT DISTINCT department_id,
+       MAX(salary) OVER (PARTITION BY department_id) as max_salary_in_dept
+FROM employees
+ORDER BY department_id;
+
+-- Method 2: Using correlated subquery
+SELECT DISTINCT e1.department_id,
+       (SELECT MAX(e2.salary) 
+        FROM employees e2 
+        WHERE e2.department_id = e1.department_id) as max_salary
+FROM employees e1
+ORDER BY e1.department_id;
+
+-- Method 3: Show employees with their department's maximum salary
+SELECT employee_id, first_name, last_name, department_id, salary,
+       MAX(salary) OVER (PARTITION BY department_id) as dept_max_salary,
+       CASE WHEN salary = MAX(salary) OVER (PARTITION BY department_id) 
+            THEN 'HIGHEST PAID IN DEPT' 
+            ELSE 'NOT HIGHEST' 
+       END as salary_status
+FROM employees
+ORDER BY department_id, salary DESC;
+
+-- Method 4: Using FIRST_VALUE with window function
+SELECT DISTINCT department_id,
+       FIRST_VALUE(salary) OVER (
+           PARTITION BY department_id 
+           ORDER BY salary DESC 
+           ROWS UNBOUNDED PRECEDING
+       ) as max_salary
+FROM employees;
+
+-- Method 5: Find employees who earn the maximum in their department
+SELECT employee_id, first_name, last_name, department_id, salary
+FROM (
+    SELECT employee_id, first_name, last_name, department_id, salary,
+           MAX(salary) OVER (PARTITION BY department_id) as dept_max_salary
+    FROM employees
+)
+WHERE salary = dept_max_salary;
+
+-- Method 6: Multiple column maximums per group
+SELECT DISTINCT department_id,
+       MAX(salary) OVER (PARTITION BY department_id) as max_salary,
+       MAX(hire_date) OVER (PARTITION BY department_id) as latest_hire_date,
+       MIN(salary) OVER (PARTITION BY department_id) as min_salary,
+       COUNT(*) OVER (PARTITION BY department_id) as employee_count
+FROM employees
+ORDER BY department_id;
+
+-- Method 7: Using RANK() to identify maximum values
+SELECT department_id, salary as max_salary
+FROM (
+    SELECT department_id, salary,
+           RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as salary_rank
+    FROM employees
+)
+WHERE salary_rank = 1;`
+    },
+    {
+        id: 112,
+        category: 'intermediate',
+        difficulty: 'intermediate',
+        question: 'Write a SQL query to find all employees who have taken more than 3 leaves in a month.',
+        answer: 'Use window functions, subqueries with date functions, or analytical queries to count leaves per employee per month.',
+        language: 'Oracle SQL',
+        code: `-- Assuming employee_leaves table with columns: employee_id, leave_date, leave_type
+
+-- Method 1: Using window function COUNT() OVER()
+SELECT employee_id, year_month, monthly_leave_count
+FROM (
+    SELECT el.employee_id,
+           TO_CHAR(el.leave_date, 'YYYY-MM') as year_month,
+           COUNT(*) OVER (
+               PARTITION BY el.employee_id, TO_CHAR(el.leave_date, 'YYYY-MM')
+           ) as monthly_leave_count
+    FROM employee_leaves el
+)
+WHERE monthly_leave_count > 3
+ORDER BY employee_id, year_month;
+
+-- Method 2: Using subquery with date functions
+SELECT DISTINCT e.employee_id, e.first_name, e.last_name, 
+       leave_month, monthly_leaves
+FROM employees e
+JOIN (
+    SELECT employee_id,
+           TO_CHAR(leave_date, 'YYYY-MM') as leave_month,
+           COUNT(*) as monthly_leaves
+    FROM employee_leaves
+    WHERE leave_date IS NOT NULL
+    GROUP BY employee_id, TO_CHAR(leave_date, 'YYYY-MM')
+    HAVING COUNT(*) > 3
+) monthly_counts ON e.employee_id = monthly_counts.employee_id;
+
+-- Method 3: Using EXTRACT functions for year/month
+SELECT el.employee_id,
+       EXTRACT(YEAR FROM el.leave_date) as leave_year,
+       EXTRACT(MONTH FROM el.leave_date) as leave_month,
+       COUNT(*) as leaves_in_month
+FROM employee_leaves el
+WHERE el.leave_date >= ADD_MONTHS(SYSDATE, -12) -- Last 12 months
+GROUP BY el.employee_id, EXTRACT(YEAR FROM el.leave_date), EXTRACT(MONTH FROM el.leave_date)
+HAVING COUNT(*) > 3
+ORDER BY el.employee_id, leave_year, leave_month;
+
+-- Method 4: Detailed analysis with employee information
+SELECT e.employee_id, e.first_name, e.last_name, e.department_id,
+       leave_analysis.leave_month,
+       leave_analysis.leave_count,
+       leave_analysis.leave_types
+FROM employees e
+JOIN (
+    SELECT employee_id,
+           TO_CHAR(leave_date, 'Mon YYYY') as leave_month,
+           COUNT(*) as leave_count,
+           LISTAGG(leave_type, ', ') WITHIN GROUP (ORDER BY leave_date) as leave_types
+    FROM employee_leaves
+    GROUP BY employee_id, TO_CHAR(leave_date, 'Mon YYYY'), TO_CHAR(leave_date, 'YYYY-MM')
+    HAVING COUNT(*) > 3
+) leave_analysis ON e.employee_id = leave_analysis.employee_id
+ORDER BY e.employee_id, leave_analysis.leave_month;
+
+-- Method 5: Using TRUNC function for month boundaries
+WITH monthly_leaves AS (
+    SELECT employee_id,
+           TRUNC(leave_date, 'MM') as month_start,
+           COUNT(*) as leave_count,
+           MIN(leave_date) as first_leave,
+           MAX(leave_date) as last_leave
+    FROM employee_leaves
+    GROUP BY employee_id, TRUNC(leave_date, 'MM')
+    HAVING COUNT(*) > 3
+)
+SELECT e.employee_id, e.first_name, e.last_name,
+       TO_CHAR(ml.month_start, 'Month YYYY') as leave_month,
+       ml.leave_count,
+       ml.first_leave,
+       ml.last_leave
+FROM employees e
+JOIN monthly_leaves ml ON e.employee_id = ml.employee_id
+ORDER BY e.employee_id, ml.month_start DESC;
+
+-- Method 6: Current month analysis
+SELECT e.employee_id, e.first_name, e.last_name,
+       COUNT(el.leave_id) as current_month_leaves
+FROM employees e
+JOIN employee_leaves el ON e.employee_id = el.employee_id
+WHERE TRUNC(el.leave_date, 'MM') = TRUNC(SYSDATE, 'MM')
+GROUP BY e.employee_id, e.first_name, e.last_name
+HAVING COUNT(el.leave_id) > 3;
+
+-- Method 7: Trending analysis - employees with pattern of high leaves
+SELECT employee_id,
+       COUNT(CASE WHEN leave_count > 3 THEN 1 END) as months_with_high_leaves,
+       AVG(leave_count) as avg_monthly_leaves,
+       MAX(leave_count) as max_monthly_leaves
+FROM (
+    SELECT employee_id,
+           TO_CHAR(leave_date, 'YYYY-MM') as month_year,
+           COUNT(*) as leave_count
+    FROM employee_leaves
+    WHERE leave_date >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -6)
+    GROUP BY employee_id, TO_CHAR(leave_date, 'YYYY-MM')
+) monthly_summary
+GROUP BY employee_id
+HAVING COUNT(CASE WHEN leave_count > 3 THEN 1 END) >= 2
+ORDER BY months_with_high_leaves DESC;`
+    }
 ];
+      
 
            
 
