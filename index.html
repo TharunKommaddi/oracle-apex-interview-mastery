@@ -27,7 +27,7 @@
                 <i class="fas fa-code"></i>
                 APEX Interview Mastery
             </a>
-            <nav>
+            <nav class="main-nav">
                 <ul class="nav-menu" id="navMenu">
                     <li class="nav-item">
                         <a href="index.html" class="active">
@@ -61,9 +61,14 @@
                         </ul>
                     </li>
                 </ul>
-                <button class="mobile-menu-toggle" onclick="Navigation.toggleMobileMenu()" aria-label="Toggle mobile menu" aria-expanded="false">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </nav>
         </div>
     </header>
@@ -191,7 +196,7 @@
                     <i class="fas fa-users"></i> Community
                 </a>
             </div>
-            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div class="footer-bottom">
                 <p>&copy; 2024 Oracle APEX Interview Mastery. Built for developers by developers.</p>
             </div>
         </div>
