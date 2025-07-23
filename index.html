@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oracle APEX Interview Mastery - Modern Professional Platform</title>
     <meta name="description" content="Master Oracle APEX interviews with our comprehensive preparation platform featuring SQL, PL/SQL, and frontend questions.">
-    <meta name="theme-color" content="#bb0a31">
     
     <!-- Preload critical fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,20 +17,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💻</text></svg>">
-    
-    <!-- iOS PWA Support -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="APEX Interview Mastery">
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="assets/css/style.css" as="style">
-    <link rel="preload" href="assets/js/script.js" as="script">
 </head>
 <body>
     <header class="header">
@@ -40,156 +27,156 @@
                 <i class="fas fa-code"></i>
                 APEX Interview Mastery
             </a>
-            <div class="nav-right">
-                <nav>
-                    <ul class="nav-menu" id="navMenu">
-                        <li class="nav-item">
-                            <a href="index.html" class="active">
-                                <i class="fas fa-home"></i> Home
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="oracle-sql.html">
-                                <i class="fas fa-database"></i> Oracle SQL
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="plsql.html">
-                                <i class="fas fa-code-branch"></i> PL/SQL
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="oracle-apex.html">
-                                <i class="fas fa-layer-group"></i> Oracle APEX
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="#" class="dropdown-toggle">
-                                <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
-                                <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
-                                <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
-                                <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
-                <!-- Theme toggle will be inserted here by JavaScript -->
-                <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
+            <nav class="main-nav">
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html" class="active">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
         </div>
     </header>
 
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Master Oracle APEX Interviews</h1>
-                <p>Comprehensive preparation platform with curated questions, real-world scenarios, and expert insights to ace your Oracle APEX developer interviews.</p>
-                <div class="cta-buttons">
-                    <a href="oracle-sql.html" class="btn btn-primary">
-                        <i class="fas fa-rocket"></i> Start Learning
-                    </a>
-                    <a href="oracle-apex.html" class="btn btn-secondary">
-                        <i class="fas fa-layer-group"></i> APEX Questions
-                    </a>
-                </div>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Master Oracle APEX Interviews</h1>
+            <p>Comprehensive preparation platform with curated questions, real-world scenarios, and expert insights to ace your Oracle APEX developer interviews.</p>
+            <div class="cta-buttons">
+                <a href="oracle-sql.html" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i> Start Learning
+                </a>
+                <a href="oracle-apex.html" class="btn btn-secondary">
+                    <i class="fas fa-layer-group"></i> APEX Questions
+                </a>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <div class="container" id="main-content">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">50+</div>
-                    <div class="stat-label">Oracle SQL Questions</div>
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Oracle SQL Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">35+</div>
+                <div class="stat-label">PL/SQL Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">40+</div>
+                <div class="stat-label">APEX Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">60+</div>
+                <div class="stat-label">Frontend Questions</div>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Oracle SQL Mastery</div>
+                        <div class="card-subtitle">Advanced database concepts</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number">35+</div>
-                    <div class="stat-label">PL/SQL Questions</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">40+</div>
-                    <div class="stat-label">APEX Questions</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">60+</div>
-                    <div class="stat-label">Frontend Questions</div>
-                </div>
+                <p>Master Oracle SQL with comprehensive questions covering joins, subqueries, window functions, performance tuning, and complex real-world scenarios that you'll encounter in interviews.</p>
+                <a href="oracle-sql.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Explore Oracle SQL
+                </a>
             </div>
 
-            <div class="card-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-database"></i>
-                        </div>
-                        <div>
-                            <div class="card-title">Oracle SQL Mastery</div>
-                            <div class="card-subtitle">Advanced database concepts</div>
-                        </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-code-branch"></i>
                     </div>
-                    <p>Master Oracle SQL with comprehensive questions covering joins, subqueries, window functions, performance tuning, and complex real-world scenarios that you'll encounter in interviews.</p>
-                    <a href="oracle-sql.html" class="btn btn-primary">
-                        <i class="fas fa-arrow-right"></i> Explore Oracle SQL
-                    </a>
+                    <div>
+                        <div class="card-title">PL/SQL Programming</div>
+                        <div class="card-subtitle">Procedures, functions & packages</div>
+                    </div>
                 </div>
+                <p>Comprehensive PL/SQL preparation covering stored procedures, functions, packages, triggers, cursors, exception handling, and advanced programming concepts.</p>
+                <a href="plsql.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Learn PL/SQL
+                </a>
+            </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-code-branch"></i>
-                        </div>
-                        <div>
-                            <div class="card-title">PL/SQL Programming</div>
-                            <div class="card-subtitle">Procedures, functions & packages</div>
-                        </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-layer-group"></i>
                     </div>
-                    <p>Comprehensive PL/SQL preparation covering stored procedures, functions, packages, triggers, cursors, exception handling, and advanced programming concepts.</p>
-                    <a href="plsql.html" class="btn btn-primary">
-                        <i class="fas fa-arrow-right"></i> Learn PL/SQL
-                    </a>
+                    <div>
+                        <div class="card-title">Oracle APEX</div>
+                        <div class="card-subtitle">Low-code development platform</div>
+                    </div>
                 </div>
+                <p>Complete APEX preparation covering architecture, components, security, performance optimization, and real-world application development scenarios.</p>
+                <a href="oracle-apex.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Master APEX
+                </a>
+            </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-layer-group"></i>
-                        </div>
-                        <div>
-                            <div class="card-title">Oracle APEX</div>
-                            <div class="card-subtitle">Low-code development platform</div>
-                        </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-paint-brush"></i>
                     </div>
-                    <p>Complete APEX preparation covering architecture, components, security, performance optimization, and real-world application development scenarios.</p>
-                    <a href="oracle-apex.html" class="btn btn-primary">
-                        <i class="fas fa-arrow-right"></i> Master APEX
-                    </a>
+                    <div>
+                        <div class="card-title">Frontend Technologies</div>
+                        <div class="card-subtitle">HTML, CSS, JavaScript & jQuery</div>
+                    </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-paint-brush"></i>
-                        </div>
-                        <div>
-                            <div class="card-title">Frontend Technologies</div>
-                            <div class="card-subtitle">HTML, CSS, JavaScript & jQuery</div>
-                        </div>
-                    </div>
-                    <p>Essential frontend skills for APEX developers including responsive design, DOM manipulation, AJAX, modern JavaScript features, and jQuery integration.</p>
-                    <div class="btn-group">
-                        <a href="html-questions.html" class="btn btn-sm">HTML</a>
-                        <a href="css-questions.html" class="btn btn-sm">CSS</a>
-                        <a href="javascript-questions.html" class="btn btn-sm">JavaScript</a>
-                        <a href="jquery-questions.html" class="btn btn-sm">jQuery</a>
-                    </div>
+                <p>Essential frontend skills for APEX developers including responsive design, DOM manipulation, AJAX, modern JavaScript features, and jQuery integration.</p>
+                <div class="btn-group">
+                    <a href="html-questions.html" class="btn btn-sm">HTML</a>
+                    <a href="css-questions.html" class="btn btn-sm">CSS</a>
+                    <a href="javascript-questions.html" class="btn btn-sm">JavaScript</a>
+                    <a href="jquery-questions.html" class="btn btn-sm">jQuery</a>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <footer class="footer">
         <div class="footer-content">
@@ -209,7 +196,7 @@
                     <i class="fas fa-users"></i> Community
                 </a>
             </div>
-            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div class="footer-bottom">
                 <p>&copy; 2024 Oracle APEX Interview Mastery. Built for developers by developers.</p>
             </div>
         </div>
