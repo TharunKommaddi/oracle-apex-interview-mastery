@@ -1,202 +1,252 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSS Interview Questions - APEX Interview Mastery</title>
-    <meta name="description" content="Master CSS styling and layout techniques for modern web development.">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="assets/css/style.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎨</text></svg>">
-</head>
-<body>
-    <header class="header">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-code"></i>
-                APEX Interview Mastery
-            </a>
-            <nav class="main-nav">
-                <ul class="nav-menu" id="navMenu">
-                    <li class="nav-item">
-                        <a href="index.html">
-                            <i class="fas fa-home"></i> Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="oracle-sql.html">
-                            <i class="fas fa-database"></i> Oracle SQL
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="plsql.html">
-                            <i class="fas fa-code-branch"></i> PL/SQL
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="oracle-apex.html">
-                            <i class="fas fa-layer-group"></i> Oracle APEX
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
-                            <li><a href="css-questions.html" class="active"><i class="fab fa-css3-alt"></i> CSS</a></li>
-                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
-                            <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <div class="nav-actions">
-                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
-            </nav>
-        </div>
-    </header>
+// Modern JavaScript for APEX Interview Mastery Platform
+'use strict';
 
-    <section class="page-header">
-        <h1 class="page-title">CSS Interview Questions</h1>
-        <p class="page-subtitle">Master CSS styling and layout techniques for modern web development</p>
-    </section>
+// Global state management
+const AppState = {
+    currentFilters: { category: 'all' },
+    isMenuOpen: false,
+};
 
-    <div class="container">
-        <div class="filter-section">
-            <div class="filter-title">
-                <i class="fab fa-css3-alt"></i> Filter Questions
-            </div>
-            <div class="filter-tabs">
-                <button class="filter-tab active" data-filter="all">All Questions</button>
-                <button class="filter-tab" data-filter="basic">Basic</button>
-                <button class="filter-tab" data-filter="intermediate">Intermediate</button>
-                <button class="filter-tab" data-filter="advanced">Advanced</button>
-            </div>
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search CSS questions..." id="searchInput" aria-label="Search questions">
-            </div>
-        </div>
-
-        <div id="questionsContainer" class="questions-container">
-            <!-- Questions will be loaded here by JavaScript -->
-        </div>
-    </div>
-
-    <footer class="footer">
-        <div class="footer-content">
-            <h3>Ready to Master CSS?</h3>
-            <p>Essential CSS knowledge for creating beautiful and responsive web applications</p>
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="html-questions.html">HTML Questions</a>
-                <a href="javascript-questions.html">JavaScript Questions</a>
-            </div>
-             <div class="footer-bottom">
-                <p>&copy; 2024 Oracle APEX Interview Mastery. Built for developers by developers.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="assets/js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const cssQuestions = [
-                {
-                    id: 1,
-                    category: 'basic',
-                    difficulty: 'basic',
-                    question: 'What is the CSS Box Model and how does it work?',
-                    answer: 'The CSS Box Model describes how elements are structured with content, padding, border, and margin areas. It determines the total space an element occupies on the page.',
-                    language: 'CSS',
-                    code: `/* CSS Box Model Components */
-.box-model-demo {
-    /* Content area - the actual content */
-    width: 300px;
-    height: 200px;
-    
-    /* Padding - space inside the border */
-    padding: 20px;
-    
-    /* Border - outline around padding */
-    border: 3px solid #3182ce;
-    
-    /* Margin - space outside the border */
-    margin: 20px;
-    
-    /* box-sizing property controls calculation */
-    box-sizing: border-box;  /* Width includes padding and border */
-}`
-                },
-                {
-                    id: 2,
-                    category: 'intermediate',
-                    difficulty: 'intermediate',
-                    question: 'What is Flexbox and how does it work for modern layouts?',
-                    answer: 'Flexbox (Flexible Box Layout) is a CSS layout method for arranging items in a single dimension (row or column) with flexible sizing and alignment options.',
-                    language: 'CSS',
-                    code: `/* Modern Flexbox Container */
-.flex-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* Flexbox Items (Children) */
-.flex-item {
-    flex: 1 1 200px; /* grow, shrink, basis */
-}`
-                },
-                {
-                    id: 3,
-                    category: 'advanced',
-                    difficulty: 'advanced',
-                    question: 'Explain CSS Grid and how it differs from Flexbox for complex layouts.',
-                    answer: 'CSS Grid is a 2D layout system for creating complex grid-based layouts. Unlike Flexbox (1D), Grid can handle both rows and columns simultaneously, making it perfect for page layouts.',
-                    language: 'CSS',
-                    code: `/* Modern CSS Grid Container */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    grid-template-rows: auto 1fr auto;
-    gap: 1.5rem;
-}
-
-/* Grid Items with Named Areas */
-.header { grid-area: header; }
-.sidebar { grid-area: sidebar; }
-.main { grid-area: main; }
-.footer { grid-area: footer; }`
-                }
-            ];
-
-            const container = document.getElementById('questionsContainer');
-            if (container) {
-                container.innerHTML = '';
-                cssQuestions.forEach(q => {
-                    container.appendChild(createQuestionElement(q));
-                });
+// Utility functions
+const Utils = {
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    $(selector) { return document.querySelector(selector); },
+    $$(selector) { return document.querySelectorAll(selector); },
+    createElement(tag, attributes = {}, children = []) {
+        const element = document.createElement(tag);
+        Object.entries(attributes).forEach(([key, value]) => {
+            if (key.startsWith('data-')) {
+                element.setAttribute(key, value);
+            } else {
+                element[key] = value;
             }
         });
-    </script>
-</body>
-</html>
+        children.forEach(child => {
+            element.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
+        });
+        return element;
+    },
+};
+
+// Theme management
+const ThemeSwitcher = {
+    init() {
+        this.themeToggleBtn = Utils.$('#theme-toggle');
+        this.body = document.body;
+        this.sunIcon = 'fa-sun';
+        this.moonIcon = 'fa-moon';
+        this.bindEvents();
+        this.applyInitialTheme();
+    },
+
+    bindEvents() {
+        if (this.themeToggleBtn) {
+            this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+        }
+    },
+
+    applyInitialTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            this.body.classList.add('dark-mode');
+            this.updateIcon(true);
+        } else {
+            this.body.classList.remove('dark-mode');
+            this.updateIcon(false);
+        }
+    },
+
+    toggleTheme() {
+        const isDark = this.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        this.updateIcon(isDark);
+    },
+    
+    updateIcon(isDark) {
+        if (this.themeToggleBtn) {
+            const icon = this.themeToggleBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove(isDark ? this.moonIcon : this.sunIcon);
+                icon.classList.add(isDark ? this.sunIcon : this.moonIcon);
+            }
+        }
+    }
+};
+
+// Navigation management
+const Navigation = {
+    init() {
+        this.mobileToggle = Utils.$('.mobile-menu-toggle');
+        this.navMenu = Utils.$('.nav-menu');
+        this.bindEvents();
+        this.handleActiveStates();
+    },
+
+    bindEvents() {
+        if (this.mobileToggle) {
+            this.mobileToggle.addEventListener('click', () => this.toggleMobileMenu());
+        }
+    },
+
+    toggleMobileMenu() {
+        AppState.isMenuOpen = !AppState.isMenuOpen;
+        this.navMenu.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+        this.mobileToggle.setAttribute('aria-expanded', AppState.isMenuOpen);
+        const icon = this.mobileToggle.querySelector('i');
+        icon.classList.toggle('fa-bars', !AppState.isMenuOpen);
+        icon.classList.toggle('fa-times', AppState.isMenuOpen);
+    },
+
+    handleActiveStates() {
+        const currentPath = window.location.pathname.split('/').pop();
+        Utils.$$('.nav-item a').forEach(link => {
+            const linkPath = new URL(link.href).pathname.split('/').pop();
+            if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
+                link.classList.add('active');
+            }
+        });
+    }
+};
+
+// Questions management
+const Questions = {
+    init() {
+        this.container = Utils.$('#questionsContainer');
+        if (!this.container) return;
+        this.bindEvents();
+        this.setupSearch();
+    },
+
+    bindEvents() {
+        Utils.$$('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => this.filterQuestions(e.target.dataset.filter));
+        });
+        this.container.addEventListener('click', (e) => {
+            const header = e.target.closest('.question-header');
+            const copyBtn = e.target.closest('.copy-btn');
+            if (header) this.toggleQuestion(header);
+            if (copyBtn) this.copyCode(copyBtn);
+        });
+    },
+
+    setupSearch() {
+        const searchInput = Utils.$('#searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', Utils.debounce((e) => {
+                this.searchQuestions(e.target.value);
+            }, 300));
+        }
+    },
+
+    toggleQuestion(headerElement) {
+        const content = headerElement.nextElementSibling;
+        const toggleIcon = headerElement.querySelector('.question-toggle');
+        
+        if (content.style.display === 'block') {
+            content.style.display = 'none';
+            toggleIcon.classList.remove('rotated');
+        } else {
+            content.style.display = 'block';
+            toggleIcon.classList.add('rotated');
+        }
+    },
+
+    filterQuestions(category) {
+        AppState.currentFilters.category = category;
+        Utils.$$('.filter-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.filter === category);
+        });
+        this.applyFilters();
+    },
+
+    searchQuestions(searchTerm) {
+        AppState.currentFilters.search = searchTerm.toLowerCase();
+        this.applyFilters();
+    },
+
+    applyFilters() {
+        const { category = 'all', search = '' } = AppState.currentFilters;
+        Utils.$$('.question-container').forEach(question => {
+            const questionCategory = question.dataset.category;
+            const questionText = question.textContent.toLowerCase();
+            
+            const categoryMatch = category === 'all' || questionCategory === category;
+            const searchMatch = !search || questionText.includes(search);
+
+            question.style.display = (categoryMatch && searchMatch) ? 'block' : 'none';
+        });
+    },
+
+    copyCode(buttonElement) {
+        const codeText = buttonElement.closest('.code-block').querySelector('pre').textContent;
+        navigator.clipboard.writeText(codeText).then(() => {
+            const originalText = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => { buttonElement.innerHTML = originalText; }, 2000);
+        }).catch(err => console.error('Failed to copy text: ', err));
+    },
+
+    createQuestionElement(q) {
+        const difficultyClass = `difficulty-${q.difficulty}`;
+        const container = Utils.createElement('div', {
+            className: 'question-container fade-in',
+            'data-category': q.category,
+            'data-difficulty': q.difficulty,
+        });
+
+        container.innerHTML = `
+            <div class="question-header">
+                <div class="question-text">${q.question}</div>
+                <div class="question-details">
+                    <span class="difficulty-badge ${difficultyClass}">${q.difficulty}</span>
+                    <div class="question-toggle"><i class="fas fa-chevron-down"></i></div>
+                </div>
+            </div>
+            <div class="question-content" style="display: none;">
+                <div class="answer-content">${q.answer}</div>
+                ${q.code ? `
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">${q.language || 'Code'}</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <pre><code>${q.code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        return container;
+    }
+};
+
+// App initialization
+class App {
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            ThemeSwitcher.init();
+            Navigation.init();
+            Questions.init();
+        });
+    }
+}
+
+// Global functions for backward compatibility if needed on HTML pages
+window.filterQuestions = (category) => Questions.filterQuestions(category);
+window.searchQuestions = () => Questions.searchQuestions(Utils.$('#searchInput').value);
+window.createQuestionElement = (q) => Questions.createQuestionElement(q);
+
+// Initialize the app
+new App().init();
