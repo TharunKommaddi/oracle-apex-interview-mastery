@@ -1,4 +1,4 @@
-// Modern JavaScript for APEX Interview Mastery Platform
+// Modern JavaScript for APEX Interview Mastery Platform - Dark Mode Only
 'use strict';
 
 // Global state management
@@ -51,52 +51,16 @@ const Navigation = {
         if (this.mobileToggle) {
             this.mobileToggle.addEventListener('click', () => this.toggleMobileMenu());
         }
-
-        // Close mobile menu when clicking on nav links
-        Utils.$$('.nav-item a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (AppState.isMenuOpen) {
-                    this.closeMobileMenu();
-                }
-            });
-        });
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (AppState.isMenuOpen && 
-                !this.navMenu.contains(e.target) && 
-                !this.mobileToggle.contains(e.target)) {
-                this.closeMobileMenu();
-            }
-        });
     },
 
     toggleMobileMenu() {
-        if (AppState.isMenuOpen) {
-            this.closeMobileMenu();
-        } else {
-            this.openMobileMenu();
-        }
-    },
-
-    openMobileMenu() {
-        AppState.isMenuOpen = true;
-        this.navMenu.classList.add('active');
-        document.body.classList.add('menu-open');
-        this.mobileToggle.setAttribute('aria-expanded', 'true');
+        AppState.isMenuOpen = !AppState.isMenuOpen;
+        this.navMenu.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+        this.mobileToggle.setAttribute('aria-expanded', AppState.isMenuOpen);
         const icon = this.mobileToggle.querySelector('i');
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-times');
-    },
-
-    closeMobileMenu() {
-        AppState.isMenuOpen = false;
-        this.navMenu.classList.remove('active');
-        document.body.classList.remove('menu-open');
-        this.mobileToggle.setAttribute('aria-expanded', 'false');
-        const icon = this.mobileToggle.querySelector('i');
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
+        icon.classList.toggle('fa-bars', !AppState.isMenuOpen);
+        icon.classList.toggle('fa-times', AppState.isMenuOpen);
     },
 
     handleActiveStates() {
@@ -209,26 +173,26 @@ const Questions = {
                 ${q.code ? `
                     <div class="code-block">
                         <div class="code-header">
-                           <span class="code-lang">${q.language || 'Code'}</span>
-                           <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-                       </div>
-                       <pre><code>${q.code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
-                   </div>
-               ` : ''}
-           </div>
-       `;
-       return container;
-   }
+                            <span class="code-lang">${q.language || 'Code'}</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <pre><code>${q.code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        return container;
+    }
 };
 
 // App initialization
 class App {
-   init() {
-       document.addEventListener('DOMContentLoaded', () => {
-           Navigation.init();
-           Questions.init();
-       });
-   }
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            Navigation.init();
+            Questions.init();
+        });
+    }
 }
 
 // Global functions for backward compatibility
