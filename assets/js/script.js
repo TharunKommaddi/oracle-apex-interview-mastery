@@ -1,4 +1,4 @@
-// Modern JavaScript for APEX Interview Mastery Platform - Dark Mode Only
+// Modern JavaScript for APEX Interview Mastery Platform
 'use strict';
 
 // Global state management
@@ -36,6 +36,53 @@ const Utils = {
         });
         return element;
     },
+};
+
+// Theme management
+const ThemeSwitcher = {
+    init() {
+        this.themeToggleBtn = Utils.$('#theme-toggle');
+        this.body = document.body;
+        this.sunIcon = 'fa-sun';
+        this.moonIcon = 'fa-moon';
+        this.bindEvents();
+        this.applyInitialTheme();
+    },
+
+    bindEvents() {
+        if (this.themeToggleBtn) {
+            this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+        }
+    },
+
+    applyInitialTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            this.body.classList.add('dark-mode');
+            this.updateIcon(true);
+        } else {
+            this.body.classList.remove('dark-mode');
+            this.updateIcon(false);
+        }
+    },
+
+    toggleTheme() {
+        const isDark = this.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        this.updateIcon(isDark);
+    },
+    
+    updateIcon(isDark) {
+        if (this.themeToggleBtn) {
+            const icon = this.themeToggleBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove(isDark ? this.moonIcon : this.sunIcon);
+                icon.classList.add(isDark ? this.sunIcon : this.moonIcon);
+            }
+        }
+    }
 };
 
 // Navigation management
@@ -189,13 +236,14 @@ const Questions = {
 class App {
     init() {
         document.addEventListener('DOMContentLoaded', () => {
+            ThemeSwitcher.init();
             Navigation.init();
             Questions.init();
         });
     }
 }
 
-// Global functions for backward compatibility
+// Global functions for backward compatibility if needed on HTML pages
 window.filterQuestions = (category) => Questions.filterQuestions(category);
 window.searchQuestions = () => Questions.searchQuestions(Utils.$('#searchInput').value);
 window.createQuestionElement = (q) => Questions.createQuestionElement(q);
