@@ -3,6 +3,7 @@
 
 // Global state management
 const AppState = {
+    
     currentFilters: { category: 'all' },
     isMenuOpen: false,
 };
