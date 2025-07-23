@@ -460,9 +460,9 @@ a:hover {
 .filter-tab {
     background: var(--bg-tertiary);
     color: var(--text-secondary);
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--space-sm) var(--space-xl);
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
+    border-radius: 50px; /* Changed from var(--radius-md) to 50px */
     cursor: pointer;
     font-weight: 500;
     font-size: 0.875rem;
@@ -479,6 +479,7 @@ a:hover {
     color: var(--text-white);
     border-color: var(--primary);
 }
+
 
 .search-container {
     position: relative;
