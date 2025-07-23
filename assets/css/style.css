@@ -276,7 +276,7 @@ a:hover {
     gap: var(--space-sm);
     padding: var(--space-md) var(--space-xl);
     border: 2px solid transparent;
-    border-radius: var(--radius-md);
+    border-radius: 50px; /* Changed from var(--radius-md) to 50px */
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
@@ -310,7 +310,7 @@ a:hover {
 .btn-sm {
     padding: var(--space-sm) var(--space-lg);
     font-size: 0.8rem;
-    border-radius: var(--radius-sm);
+    border-radius: 50px; /* Changed from var(--radius-sm) to 50px */
 }
 
 .btn-group {
