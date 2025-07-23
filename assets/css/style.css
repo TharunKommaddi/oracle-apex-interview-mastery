@@ -10,11 +10,11 @@
 /* CSS Custom Properties - Dark Mode Only */
 :root {
     /* Main Theme Colors */
-    --primary: #bb0a31;
-    --primary-light: #d12851;
-    --primary-dark: #8f0825;
-    --secondary: #bb0a31;
-    --secondary-light: #d12851;
+    --primary: #e53e3e;
+    --primary-light: #fc8181;
+    --primary-dark: #c53030;
+    --secondary: #e53e3e;
+    --secondary-light: #fc8181;
     --accent: #ff6b6b;
     --success: #48bb78;
     --warning: #ed8936;
@@ -37,32 +37,30 @@
     --border-medium: #718096;
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.16);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.14);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
     
-    /* Spacing */
+    /* Spacing - More compact */
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
     --space-md: 0.75rem;
     --space-lg: 1rem;
-    --space-xl: 1.5rem;
-    --space-2xl: 2rem;
+    --space-xl: 1.25rem;
+    --space-2xl: 1.5rem;
     
-    /* Border Radius - Original values */
+    /* Border Radius - Minimal */
     --radius-sm: 0.25rem;
     --radius-md: 0.375rem;
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
-    --radius-full: 9999px;
     
     /* Typography */
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
     /* Transitions */
-    --transition-speed: 0.3s;
+    --transition-speed: 0.2s;
 }
 
 /* Base Styles */
@@ -72,25 +70,24 @@ html {
 
 body {
     font-family: var(--font-sans);
-    line-height: 1.6;
+    line-height: 1.5;
     color: var(--text-primary);
     background-color: var(--bg-secondary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.2;
     margin-bottom: var(--space-md);
     color: var(--text-primary);
 }
 
-h1 { font-size: clamp(2rem, 5vw, 3rem); }
-h2 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
-h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+h1 { font-size: clamp(2rem, 4vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: clamp(1.25rem, 2.5vw, 1.5rem); }
 h4 { font-size: 1.125rem; }
 h5 { font-size: 1rem; }
 h6 { font-size: 0.875rem; }
@@ -99,7 +96,7 @@ p {
     margin-bottom: var(--space-lg);
     color: var(--text-secondary);
     font-size: 1rem;
-    line-height: 1.7;
+    line-height: 1.6;
 }
 
 a {
@@ -119,19 +116,18 @@ a:hover {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(26, 32, 44, 0.9);
+    background: rgba(26, 32, 44, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-light);
-    transition: all var(--transition-speed) ease;
 }
 
 .nav-container {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-md) var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
 }
 
 .logo {
@@ -187,7 +183,7 @@ a:hover {
     position: absolute;
     top: calc(100% + var(--space-sm));
     left: 0;
-    min-width: 200px;
+    min-width: 180px;
     background: var(--bg-primary);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
@@ -230,8 +226,8 @@ a:hover {
     border-radius: var(--radius-md);
     transition: background var(--transition-speed) ease;
     z-index: 1200;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
 }
 
 .mobile-menu-toggle:hover {
@@ -240,9 +236,9 @@ a:hover {
 
 /* Hero Section */
 .hero {
-    margin-top: 80px;
-    padding: 4rem var(--space-xl);
-    background: var(--primary);
+    margin-top: 70px;
+    padding: 4rem var(--space-lg);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: var(--text-white);
     position: relative;
     overflow: hidden;
@@ -259,11 +255,10 @@ a:hover {
 .hero h1 {
     color: var(--text-white);
     margin-bottom: var(--space-lg);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .hero p {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     margin-bottom: var(--space-2xl);
     color: rgba(255, 255, 255, 0.9);
     max-width: 600px;
@@ -285,14 +280,12 @@ a:hover {
     gap: var(--space-sm);
     padding: var(--space-md) var(--space-xl);
     border: 2px solid transparent;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-lg);
     font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     transition: all var(--transition-speed) ease;
-    position: relative;
-    overflow: hidden;
 }
 
 .btn-primary {
@@ -304,7 +297,6 @@ a:hover {
 .btn-primary:hover {
     background: var(--bg-tertiary);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
 }
 
 .btn-secondary {
@@ -318,7 +310,7 @@ a:hover {
 }
 
 .btn-sm {
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
     font-size: 0.875rem;
 }
 
@@ -331,9 +323,9 @@ a:hover {
 
 /* Container */
 .container {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: var(--space-2xl) var(--space-xl);
+    padding: var(--space-2xl) var(--space-lg);
 }
 
 /* Card & Stat Grids */
@@ -348,20 +340,20 @@ a:hover {
 }
 
 .card-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .stat-card, .card {
     background: var(--bg-primary);
     padding: var(--space-xl);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-md);
     transition: all var(--transition-speed) ease;
 }
 
 .stat-card:hover, .card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -370,7 +362,7 @@ a:hover {
 }
 
 .stat-number {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: var(--primary);
     margin-bottom: var(--space-sm);
@@ -389,8 +381,8 @@ a:hover {
 }
 
 .card-icon {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     background: var(--primary);
     color: var(--text-white);
     border-radius: var(--radius-lg);
@@ -414,22 +406,22 @@ a:hover {
 
 /* Page Header */
 .page-header {
-    margin-top: 80px;
-    padding: 3rem var(--space-xl);
+    margin-top: 70px;
+    padding: 3rem var(--space-lg);
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-light);
     text-align: center;
 }
 
 .page-title {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(2rem, 4vw, 3rem);
     color: var(--primary);
 }
 
 .page-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     color: var(--text-secondary);
-    max-width: 700px;
+    max-width: 600px;
     margin: 0 auto;
 }
 
@@ -437,7 +429,7 @@ a:hover {
 .filter-section {
     background: var(--bg-primary);
     padding: var(--space-xl);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     margin-bottom: var(--space-2xl);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-light);
@@ -462,7 +454,7 @@ a:hover {
     color: var(--text-secondary);
     padding: var(--space-sm) var(--space-lg);
     border: none;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-lg);
     cursor: pointer;
     font-weight: 500;
     transition: all var(--transition-speed) ease;
@@ -491,7 +483,7 @@ a:hover {
 .search-input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(187, 10, 49, 0.2);
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
 }
 
 .search-icon {
@@ -540,7 +532,7 @@ a:hover {
 
 .difficulty-badge {
     padding: var(--space-xs) var(--space-md);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-lg);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -562,12 +554,12 @@ a:hover {
 
 .question-content {
     display: none;
-    padding: 0 var(--space-xl) var(--space-xl);
+    padding: 0 var(--space-lg) var(--space-lg);
 }
 
 .answer-content {
     color: var(--text-secondary);
-    line-height: 1.7;
+    line-height: 1.6;
     margin-bottom: var(--space-lg);
 }
 
@@ -620,7 +612,7 @@ pre {
     padding: var(--space-lg);
     font-family: var(--font-mono);
     font-size: 0.9rem;
-    line-height: 1.6;
+    line-height: 1.5;
     white-space: pre-wrap;
     word-wrap: break-word;
     overflow-x: auto;
@@ -630,13 +622,13 @@ pre {
 .footer {
     background: var(--bg-primary);
     color: var(--text-secondary);
-    padding: 2rem var(--space-xl);
+    padding: 2rem var(--space-lg);
     margin-top: 3rem;
     border-top: 1px solid var(--border-light);
 }
 
 .footer-content {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
     text-align: center;
 }
@@ -673,14 +665,14 @@ pre {
     .nav-menu {
         display: none;
         position: fixed;
-        top: 73px;
+        top: 71px;
         left: 0;
         right: 0;
         background: var(--bg-primary);
         flex-direction: column;
         padding: var(--space-xl);
         gap: var(--space-lg);
-        height: calc(100vh - 73px);
+        height: calc(100vh - 71px);
         overflow-y: auto;
         border-top: 1px solid var(--border-light);
     }
@@ -711,11 +703,11 @@ pre {
 
 @media (max-width: 768px) {
     .container {
-        padding: var(--space-xl) var(--space-lg);
+        padding: var(--space-xl) var(--space-md);
     }
 
     .hero {
-        padding: 3rem var(--space-lg);
+        padding: 3rem var(--space-md);
     }
 
     .stats-grid {
@@ -771,7 +763,7 @@ pre {
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
