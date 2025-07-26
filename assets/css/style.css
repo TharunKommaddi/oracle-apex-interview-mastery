@@ -475,7 +475,7 @@ a:hover {
 
 .filter-tab:hover {
     border-color: var(--primary);
-/*     color: var(--primary); */
+    color: var(--primary);
 }
 
 .filter-tab.active {
@@ -2080,6 +2080,6 @@ a:focus-visible {
 
 .filter-tab:hover {
     border-color: rgba(229, 62, 62, 0.5);
-    color: var(--primary);
+/*     color: var(--primary); */
     transform: translateY(-1px);
 }
