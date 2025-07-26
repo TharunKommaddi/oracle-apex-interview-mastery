@@ -2083,3 +2083,80 @@ a:focus-visible {
 /*     color: var(--primary); */
     transform: translateY(-1px);
 }
+
+
+
+
+
+/* */
+
+
+/* Fix Double Triangle Issue in Mobile Menu */
+
+@media (max-width: 992px) {
+    /* Hide the original chevron icon in mobile dropdown */
+    .nav-item.dropdown .dropdown-toggle .fa-chevron-down {
+        display: none !important;
+    }
+    
+    /* Keep only our CSS triangle */
+    .nav-item.dropdown .dropdown-toggle::after {
+        content: '';
+        display: inline-block;
+        margin-left: auto;
+        border-top: 5px solid var(--text-muted);
+        border-right: 5px solid transparent;
+        border-left: 5px solid transparent;
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+    
+    /* Rotate our CSS triangle when active */
+    .nav-item.dropdown.active .dropdown-toggle::after {
+        transform: rotate(180deg);
+        border-top-color: var(--primary);
+    }
+    
+    /* Ensure proper spacing in dropdown toggle */
+    .nav-item.dropdown .dropdown-toggle {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    /* Text and icon part */
+    .nav-item.dropdown .dropdown-toggle > span,
+    .nav-item.dropdown .dropdown-toggle > i {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+    }
+}
+
+/* On desktop, show the original chevron and hide CSS triangle */
+@media (min-width: 993px) {
+    .nav-item.dropdown .dropdown-toggle::after {
+        display: none !important;
+    }
+    
+    .nav-item.dropdown .dropdown-toggle .fa-chevron-down {
+        display: inline-block !important;
+        transition: transform 0.3s ease;
+    }
+    
+    /* Optional: Rotate desktop chevron on hover */
+    .nav-item.dropdown:hover .dropdown-toggle .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+}
+
+/* Alternative fix if the above doesn't work completely */
+/* You can also update your HTML to wrap the text and icon */
+/*
+<a href="#" class="dropdown-toggle">
+    <span><i class="fas fa-paint-brush"></i> Frontend</span>
+</a>
+*/
