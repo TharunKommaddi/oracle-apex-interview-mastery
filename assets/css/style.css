@@ -2091,72 +2091,168 @@ a:focus-visible {
 /* */
 
 
-/* Fix Double Triangle Issue in Mobile Menu */
+/* Desktop-Style Mobile Dropdown - Same Elegant Approach */
 
 @media (max-width: 992px) {
-    /* Hide the original chevron icon in mobile dropdown */
-    .nav-item.dropdown .dropdown-toggle .fa-chevron-down {
-        display: none !important;
-    }
-    
-    /* Keep only our CSS triangle */
-    .nav-item.dropdown .dropdown-toggle::after {
-        content: '';
-        display: inline-block;
-        margin-left: auto;
-        border-top: 5px solid var(--text-muted);
-        border-right: 5px solid transparent;
-        border-left: 5px solid transparent;
-        transition: transform 0.3s ease;
-        flex-shrink: 0;
-    }
-    
-    /* Rotate our CSS triangle when active */
-    .nav-item.dropdown.active .dropdown-toggle::after {
-        transform: rotate(180deg);
-        border-top-color: var(--primary);
-    }
-    
-    /* Ensure proper spacing in dropdown toggle */
+    /* Use the same clean approach as desktop */
     .nav-item.dropdown .dropdown-toggle {
         position: relative;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
         width: 100%;
+        gap: var(--space-sm);
     }
     
-    /* Text and icon part */
-    .nav-item.dropdown .dropdown-toggle > span,
-    .nav-item.dropdown .dropdown-toggle > i {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        gap: var(--space-md);
+    /* Keep the original chevron icon like desktop */
+    .nav-item.dropdown .dropdown-toggle .fa-chevron-down {
+        display: inline-block !important;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        transition: all 0.3s ease;
+        margin-left: var(--space-sm);
     }
-}
-
-/* On desktop, show the original chevron and hide CSS triangle */
-@media (min-width: 993px) {
+    
+    /* Rotate the chevron when dropdown is active (same as desktop hover) */
+    .nav-item.dropdown.active .dropdown-toggle .fa-chevron-down {
+        transform: rotate(180deg);
+        color: var(--primary);
+    }
+    
+    /* Remove our custom CSS triangle - use only the font awesome icon */
     .nav-item.dropdown .dropdown-toggle::after {
         display: none !important;
     }
     
-    .nav-item.dropdown .dropdown-toggle .fa-chevron-down {
-        display: inline-block !important;
-        transition: transform 0.3s ease;
+    /* Enhanced dropdown menu - same smooth style as desktop */
+    .dropdown-menu {
+        position: static;
+        opacity: 0;
+        visibility: hidden;
+        max-height: 0;
+        overflow: hidden;
+        box-shadow: none;
+        border: none;
+        background: var(--bg-secondary);
+        padding: 0;
+        margin: var(--space-sm) auto 0;
+        border-radius: var(--radius-lg);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 90%;
+        /* Same elegant shadow as desktop */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
     
-    /* Optional: Rotate desktop chevron on hover */
-    .nav-item.dropdown:hover .dropdown-toggle .fa-chevron-down {
+    /* Active state - same smooth transition as desktop */
+    .nav-item.dropdown.active .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        max-height: 300px;
+        padding: var(--space-md);
+        /* Enhanced shadow when open */
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Dropdown items - same styling as desktop */
+    .dropdown-menu li {
+        width: 100%;
+        margin: var(--space-xs) 0;
+    }
+    
+    .dropdown-menu li a {
+        padding: var(--space-md) var(--space-lg) !important;
+        font-size: 0.9rem;
+        min-height: 44px;
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-md);
+        justify-content: center;
+        border: 1px solid var(--border-light);
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+    
+    .dropdown-menu li a:hover {
+        background: var(--bg-card);
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(229, 62, 62, 0.15);
+    }
+    
+    .dropdown-menu li a i {
+        margin-right: var(--space-sm);
+        width: 16px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--primary-light);
+    }
+    
+    /* Frontend dropdown hover effect like desktop */
+    .nav-item.dropdown a:hover {
+        color: var(--primary);
+        background: var(--bg-tertiary);
+        transform: scale(1.02);
+    }
+    
+    .nav-item.dropdown a:hover .fa-chevron-down {
+        color: var(--primary);
         transform: rotate(180deg);
     }
 }
 
-/* Alternative fix if the above doesn't work completely */
-/* You can also update your HTML to wrap the text and icon */
-/*
-<a href="#" class="dropdown-toggle">
-    <span><i class="fas fa-paint-brush"></i> Frontend</span>
-</a>
-*/
+/* Ensure desktop behavior stays the same */
+@media (min-width: 993px) {
+    /* Desktop dropdown - keep original elegant behavior */
+    .nav-item.dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .nav-item.dropdown:hover .dropdown-toggle .fa-chevron-down {
+        transform: rotate(180deg);
+        color: var(--primary);
+    }
+    
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + var(--space-sm));
+        left: 0;
+        min-width: 180px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all var(--transition-speed) ease;
+        list-style: none;
+        padding: var(--space-sm);
+        z-index: 1100;
+    }
+}
+
+/* Smooth animations for both desktop and mobile */
+.nav-item.dropdown .dropdown-toggle,
+.nav-item.dropdown .dropdown-toggle .fa-chevron-down,
+.dropdown-menu,
+.dropdown-menu li a {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Add a subtle pulse effect when dropdown is opening */
+@keyframes dropdownPulse {
+    0% { transform: scale(0.95); opacity: 0; }
+    50% { transform: scale(1.02); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.nav-item.dropdown.active .dropdown-menu {
+    animation: dropdownPulse 0.3s ease-out;
+}
