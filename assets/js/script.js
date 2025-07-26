@@ -433,3 +433,214 @@ new App().init();
 
         
         
+// Enhanced Mobile Navigation JavaScript - Add to your script.js
+
+// Enhanced Navigation management
+const EnhancedNavigation = {
+    init() {
+        this.mobileToggle = Utils.$('.mobile-menu-toggle');
+        this.navMenu = Utils.$('.nav-menu');
+        this.header = Utils.$('.header');
+        this.dropdownItems = Utils.$$('.nav-item.dropdown');
+        this.bindEvents();
+        this.handleActiveStates();
+        this.initScrollEffects();
+        this.setupDropdowns();
+    },
+
+    bindEvents() {
+        if (this.mobileToggle) {
+            this.mobileToggle.addEventListener('click', () => this.toggleMobileMenu());
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (AppState.isMenuOpen && !e.target.closest('.main-nav') && !e.target.closest('.mobile-menu-toggle')) {
+                this.closeMobileMenu();
+            }
+        });
+
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && AppState.isMenuOpen) {
+                this.closeMobileMenu();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', Utils.throttle(() => {
+            if (window.innerWidth > 992 && AppState.isMenuOpen) {
+                this.closeMobileMenu();
+            }
+        }, 250));
+
+        // Close menu when clicking on nav links (except dropdown toggles)
+        Utils.$$('.nav-item a').forEach(link => {
+            if (!link.classList.contains('dropdown-toggle')) {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 992) {
+                        setTimeout(() => this.closeMobileMenu(), 300);
+                    }
+                });
+            }
+        });
+    },
+
+    setupDropdowns() {
+        this.dropdownItems.forEach(dropdown => {
+            const toggle = dropdown.querySelector('.dropdown-toggle');
+            if (toggle) {
+                toggle.classList.add('dropdown-toggle-js');
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.toggleDropdown(dropdown);
+                });
+            }
+        });
+    },
+
+    toggleDropdown(dropdown) {
+        const isActive = dropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        this.dropdownItems.forEach(item => {
+            if (item !== dropdown) {
+                item.classList.remove('active');
+            }
+        });
+
+        // Toggle current dropdown
+        dropdown.classList.toggle('active', !isActive);
+    },
+
+    toggleMobileMenu() {
+        AppState.isMenuOpen = !AppState.isMenuOpen;
+        
+        if (AppState.isMenuOpen) {
+            this.openMobileMenu();
+        } else {
+            this.closeMobileMenu();
+        }
+    },
+
+    openMobileMenu() {
+        this.navMenu.classList.add('active');
+        this.mobileToggle.classList.add('active');
+        document.body.classList.add('menu-open');
+        this.header.classList.add('menu-open');
+        this.mobileToggle.setAttribute('aria-expanded', 'true');
+
+        const icon = this.mobileToggle.querySelector('i');
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+
+        // Close all dropdowns when opening menu
+        this.dropdownItems.forEach(item => {
+            item.classList.remove('active');
+        });
+    },
+
+    closeMobileMenu() {
+        AppState.isMenuOpen = false;
+        this.navMenu.classList.remove('active');
+        this.mobileToggle.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        this.header.classList.remove('menu-open');
+        this.mobileToggle.setAttribute('aria-expanded', 'false');
+        
+        const icon = this.mobileToggle.querySelector('i');
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+
+        // Close all dropdowns when closing menu
+        this.dropdownItems.forEach(item => {
+            item.classList.remove('active');
+        });
+    },
+
+    handleActiveStates() {
+        const currentPath = window.location.pathname.split('/').pop();
+        Utils.$$('.nav-item a').forEach(link => {
+            const linkPath = new URL(link.href).pathname.split('/').pop();
+            if (linkPath === currentPath || (currentPath === '' && linkPath === 'index.html')) {
+                link.classList.add('active');
+                
+                // If it's in a dropdown, mark the parent as active too
+                const parentDropdown = link.closest('.nav-item.dropdown');
+                if (parentDropdown) {
+                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                }
+            }
+        });
+    },
+
+    initScrollEffects() {
+        let lastScrollY = window.scrollY;
+        
+        window.addEventListener('scroll', Utils.throttle(() => {
+            const currentScrollY = window.scrollY;
+            
+            // Header background opacity based on scroll
+            if (currentScrollY > 50) {
+                this.header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.3)';
+            } else {
+                this.header.style.boxShadow = 'none';
+            }
+            
+            // Close mobile menu on scroll
+            if (AppState.isMenuOpen && Math.abs(currentScrollY - lastScrollY) > 50) {
+                this.closeMobileMenu();
+            }
+            
+            lastScrollY = currentScrollY;
+        }, 100));
+    }
+};
+
+// Replace the original Navigation object in your script.js with EnhancedNavigation
+// Or update your existing Navigation.init() call to EnhancedNavigation.init()
+
+// Add touch gestures for mobile
+const MobileGestures = {
+    init() {
+        if ('ontouchstart' in window) {
+            this.setupSwipeGestures();
+        }
+    },
+
+    setupSwipeGestures() {
+        let startX = null;
+        let startY = null;
+
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (!startX || !startY) return;
+
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+
+            // Only handle horizontal swipes
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0 && AppState.isMenuOpen) {
+                    // Swipe left to close menu
+                    EnhancedNavigation.closeMobileMenu();
+                }
+            }
+
+            startX = null;
+            startY = null;
+        });
+    }
+};
+
+// Initialize enhanced navigation and gestures
+document.addEventListener('DOMContentLoaded', function() {
+    EnhancedNavigation.init();
+    MobileGestures.init();
+});
