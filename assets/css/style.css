@@ -291,7 +291,7 @@ a:hover {
 }
 
 .btn-primary:hover {
-    background: var(--primary-light);
+/*     background: var(--primary-light); */
     border-color: var(--primary-light);
 }
 
@@ -302,7 +302,7 @@ a:hover {
 }
 
 .btn-secondary:hover {
-    background: var(--bg-tertiary);
+/*     background: var(--bg-tertiary); */
     border-color: var(--primary);
     color: var(--primary);
 }
