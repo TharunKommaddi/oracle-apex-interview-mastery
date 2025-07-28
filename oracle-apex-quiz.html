@@ -548,20 +548,739 @@
 
     <script>
         // Test with just 1 question
-        const quizQuestions = [
-            {
-                id: 1,
-                question: "What is Oracle Application Express (APEX)?",
-                options: [
-                    "A high-code development platform for complex enterprise applications",
-                    "A low-code development platform that allows developers to build scalable web applications quickly using SQL and PL/SQL",
-                    "A database management system for Oracle databases",
-                    "A reporting tool exclusively for Oracle databases"
-                ],
-                correct: 1,
-                explanation: "Oracle Application Express (APEX) is a low-code development platform that enables developers to build scalable, secure enterprise apps with world-class features. It allows rapid development using SQL and PL/SQL, and applications can be deployed anywhere."
-            }
-        ];
+        // Replace the existing quizQuestions array with this complete one:
+const quizQuestions = [
+    // BASIC LEVEL QUESTIONS (1-40)
+    {
+        id: 1,
+        question: "What is Oracle Application Express (APEX)?",
+        options: [
+            "A high-code development platform for complex enterprise applications",
+            "A low-code development platform that allows developers to build scalable web applications quickly using SQL and PL/SQL",
+            "A database management system for Oracle databases",
+            "A reporting tool exclusively for Oracle databases"
+        ],
+        correct: 1,
+        explanation: "Oracle Application Express (APEX) is a low-code development platform that enables developers to build scalable, secure enterprise apps with world-class features. It allows rapid development using SQL and PL/SQL, and applications can be deployed anywhere."
+    },
+    {
+        id: 2,
+        question: "What are the key components of Oracle APEX?",
+        options: [
+            "Oracle APEX Builder, Oracle APEX Listener, Oracle APEX Runtime",
+            "Only Oracle Database and Web Server",
+            "SQL Workshop and Application Builder only",
+            "Workspace and Theme components only"
+        ],
+        correct: 0,
+        explanation: "Oracle APEX consists of three primary components: the Oracle APEX Builder (development environment), Oracle APEX Listener (web server integration), and Oracle APEX Runtime (execution engine). Key components also include Workspace, Application Builder, SQL Workshop, Team Development, and App Gallery."
+    },
+    {
+        id: 3,
+        question: "What are the advantages of using Oracle APEX?",
+        options: [
+            "Only rapid development",
+            "Rapid application development, easy deployment, scalability, security features, seamless integration with Oracle Database",
+            "Only cost-effectiveness",
+            "Only responsive design"
+        ],
+        correct: 1,
+        explanation: "Oracle APEX offers several advantages including rapid application development, easy deployment, scalability, security features, seamless integration with Oracle Database, low-code development approach, responsive design capabilities, and cost-effectiveness with no additional licensing costs."
+    },
+    {
+        id: 4,
+        question: "What are APEX pages and regions?",
+        options: [
+            "Only database tables",
+            "APEX pages are building blocks representing web pages; Regions define areas on a page for displaying content",
+            "Only user interfaces",
+            "Only templates"
+        ],
+        correct: 1,
+        explanation: "APEX pages are the building blocks of an application, representing individual web pages. Regions define areas on a page for displaying content such as reports, charts, forms, and other components. Regions help organize the layout and structure of a page."
+    },
+    {
+        id: 5,
+        question: "What is a theme in Oracle APEX?",
+        options: [
+            "Only color settings",
+            "A predefined set of templates and styles that determine the look and feel of an APEX application",
+            "Only font settings",
+            "Only layout settings"
+        ],
+        correct: 1,
+        explanation: "A theme is a predefined set of templates and styles that determine the look and feel of an APEX application. Themes ensure consistent design across all pages and include page templates, region templates, list templates, and other UI components."
+    },
+    {
+        id: 6,
+        question: "What is a Workspace in Oracle APEX?",
+        options: [
+            "A single user environment",
+            "A shared work area within an Oracle APEX instance that allows multiple users to work on applications and database objects",
+            "Only for database administrators",
+            "A temporary storage area"
+        ],
+        correct: 1,
+        explanation: "A Workspace is a shared work area within an Oracle APEX instance that allows multiple users to work on applications and database objects. Each workspace has its own schemas and can contain multiple applications, providing logical separation between different development teams or projects."
+    },
+    {
+        id: 7,
+        question: "What is a Page in Oracle APEX?",
+        options: [
+            "Only a database table",
+            "A web page that is part of an application with unique identifier and UI components",
+            "Only a form component",
+            "A server configuration file"
+        ],
+        correct: 1,
+        explanation: "A Page in Oracle APEX is a web page that is part of an application. Pages can contain various regions, items, buttons, and other components. Each page has a unique identifier within the application and serves as the basic building block for user interfaces."
+    },
+    {
+        id: 8,
+        question: "What is a Region in Oracle APEX?",
+        options: [
+            "A database schema",
+            "A container within a page that holds content such as reports, charts, forms, and other components",
+            "A user account",
+            "A server location"
+        ],
+        correct: 1,
+        explanation: "A Region is a container within a page that holds content such as reports, charts, forms, and other components. Regions help organize the layout and structure of a page and can be positioned in different areas of the page template."
+    },
+    {
+        id: 9,
+        question: "What are the different types of pages in Oracle APEX?",
+        options: [
+            "Only Form Pages",
+            "Form Pages, Report Pages, Chart Pages, Dashboard Pages, Calendar Pages, and Wizard Pages",
+            "Only Report Pages",
+            "Only Dashboard Pages"
+        ],
+        correct: 1,
+        explanation: "Oracle APEX supports various types of pages including Form Pages (data entry), Report Pages (tabular data display), Chart Pages (visual data representation), Dashboard Pages (key metrics summary), Calendar Pages (calendar format data), and Wizard Pages (multi-step processes)."
+    },
+    {
+        id: 10,
+        question: "What is the difference between an APEX page and a component?",
+        options: [
+            "They are the same thing",
+            "APEX pages are containers for components; Components are individual elements like buttons, items, reports",
+            "Components contain pages",
+            "Pages are smaller than components"
+        ],
+        correct: 1,
+        explanation: "APEX pages are containers for components. Components are individual elements like buttons, items, reports, and charts that reside within pages. Pages provide the structure while components provide the functionality."
+    },
+    {
+        id: 11,
+        question: "What are the main features of Oracle APEX?",
+        options: [
+            "Only SQL Workshop",
+            "Low-code development, Responsive design, Built-in security, Interactive Reports, RESTful Web Services, Themes and Templates",
+            "Only Application Builder",
+            "Only Theme management"
+        ],
+        correct: 1,
+        explanation: "Main features include: Low-code development, Responsive design, Built-in security, Interactive Reports, RESTful Web Services, Themes and Templates, Dynamic Actions, Version Control, and seamless Oracle Database integration."
+    },
+    {
+        id: 12,
+        question: "Does APEX work with non-Oracle databases?",
+        options: [
+            "Yes, it works with all databases",
+            "No, Oracle APEX will work only with Oracle database",
+            "Yes, but only with MySQL",
+            "Yes, but only with PostgreSQL"
+        ],
+        correct: 1,
+        explanation: "No. Oracle APEX will work only with Oracle database. It is tightly integrated with Oracle Database and cannot be used with other database systems."
+    },
+    {
+        id: 13,
+        question: "What are the skills required for APEX Developers?",
+        options: [
+            "Only Java programming",
+            "SQL and PL/SQL are essential; HTML, CSS, and JavaScript are good to have skills",
+            "Only database administration",
+            "Only web design"
+        ],
+        correct: 1,
+        explanation: "SQL and PL/SQL are essential skills. HTML, CSS, and JavaScript are good to have skills to understand and customize look and feel (themes, templates). Knowledge of Oracle Database concepts is also important."
+    },
+    {
+        id: 14,
+        question: "What are the different types of APEX items?",
+        options: [
+            "Only text fields",
+            "Text fields, select lists, radio groups, checkboxes, date pickers, file upload items, number fields, password fields",
+            "Only select lists",
+            "Only checkboxes"
+        ],
+        correct: 1,
+        explanation: "APEX items include text fields, select lists, radio groups, checkboxes, date pickers, file upload items, number fields, password fields, textarea, and hidden items. Each item type serves different purposes for capturing user input."
+    },
+    {
+        id: 15,
+        question: "What is a LOV (List of Values) in Oracle APEX?",
+        options: [
+            "A database table",
+            "A predefined list of options that can be used to populate select lists, radio groups, and other form elements",
+            "A user permission",
+            "A page template"
+        ],
+        correct: 1,
+        explanation: "A List of Values (LOV) is a predefined list of options that can be used to populate select lists, radio groups, and other form elements. LOVs can be static (hardcoded values) or dynamic (based on a SQL query)."
+    },
+    {
+        id: 16,
+        question: "What are Page Items and how do you use them in Oracle APEX?",
+        options: [
+            "Only database columns",
+            "Form elements such as text fields, select lists, and checkboxes that capture user input",
+            "Only display elements",
+            "Only validation rules"
+        ],
+        correct: 1,
+        explanation: "Page Items are form elements such as text fields, select lists, and checkboxes that capture user input. They are used to interact with data and control the behavior of the application. Each page item has a unique name within the page."
+    },
+    {
+        id: 17,
+        question: "What are the different types of Reports available in Oracle APEX?",
+        options: [
+            "Only Interactive Reports",
+            "Interactive Reports, Classic Reports, Interactive Grid, Cards, Faceted Search, and Calendar Reports",
+            "Only Classic Reports",
+            "Only Cards"
+        ],
+        correct: 1,
+        explanation: "There are several types of reports available: Interactive Reports (user customizable), Classic Reports (static with predefined formatting), Interactive Grid (Excel-like editing), Cards (card-based layout), Faceted Search (search with filters), and Calendar Reports."
+    },
+    {
+        id: 18,
+        question: "Which report type allows end users to add, modify, and refresh data directly on the report?",
+        options: [
+            "Interactive Report",
+            "Interactive Grid",
+            "Classic Report",
+            "All of the above"
+        ],
+        correct: 1,
+        explanation: "Interactive Grid is the only report type that allows end users to add, modify, and refresh data directly on the report. Interactive Reports and Classic Reports are primarily for viewing and analyzing data, not for direct data manipulation."
+    },
+    {
+        id: 19,
+        question: "Can you explain the difference between shared and local workspaces in Oracle Application Express?",
+        options: [
+            "There is no difference",
+            "Shared workspaces are accessible to all users; local workspaces are only accessible to the user who created them",
+            "Local workspaces are for administrators only",
+            "Shared workspaces are temporary"
+        ],
+        correct: 1,
+        explanation: "Shared workspaces are those that are accessible to all users of the application, while local workspaces are only accessible to the user who created them. In a shared workspace, all users have the same privileges, while in a local workspace, the creator has full control over access."
+    },
+    {
+        id: 20,
+        question: "Who uses APEX?",
+        options: [
+            "Only database administrators",
+            "Developers running on Oracle database who want to build rich web applications with limited Java experience",
+            "Only web designers",
+            "Only system administrators"
+        ],
+        correct: 1,
+        explanation: "If you are running on an Oracle database and you want to build rich web applications with reports, forms, charts, drill downs and dashboards with limited Java experienced developers in a short time frame, Oracle APEX is the most likely candidate for consideration."
+    },
+    {
+        id: 21,
+        question: "Who created Oracle APEX?",
+        options: [
+            "Mike Robbin",
+            "Lord Thomas",
+            "Mike Uchida",
+            "Andrew Flow"
+        ],
+        correct: 2,
+        explanation: "Oracle APEX was created by Mike Uchida and his team at Oracle Corporation."
+    },
+    {
+        id: 22,
+        question: "Among the third-party libraries with which APEX comes standard except?",
+        options: [
+            "JQuery System",
+            "CKEditor",
+            "JQuery Mobile",
+            "AnuChart"
+        ],
+        correct: 3,
+        explanation: "Oracle APEX comes with jQuery System, CKEditor, and jQuery Mobile as standard third-party libraries, but not AnuChart."
+    },
+    {
+        id: 23,
+        question: "Oracle APEX 5.1.0 was released in:",
+        options: [
+            "March 2017",
+            "June 2017",
+            "April 2017",
+            "May 2017"
+        ],
+        correct: 0,
+        explanation: "Oracle APEX 5.1.0 was released in March 2017."
+    },
+    {
+        id: 24,
+        question: "The Oracle APEX was previously called as:",
+        options: [
+            "HTML DB",
+            "Oracle DB",
+            "Oracle APEX",
+            "Oracle Tool"
+        ],
+        correct: 0,
+        explanation: "Oracle APEX was previously called HTML DB (HTML Database). It evolved from this earlier name to become Oracle Application Express."
+    },
+    {
+        id: 25,
+        question: "The Oracle APEX supports all the operating systems except:",
+        options: [
+            "Linux",
+            "IBM AIX",
+            "Chrome OS",
+            "Windows"
+        ],
+        correct: 2,
+        explanation: "Oracle APEX supports Linux, IBM AIX, and Windows operating systems, but not Chrome OS."
+    },
+    {
+        id: 26,
+        question: "Which of these is the designer of Oracle APEX?",
+        options: [
+            "Oracle Company",
+            "Oracle Inc",
+            "Oracle Corporation",
+            "Oracle Team"
+        ],
+        correct: 2,
+        explanation: "Oracle Corporation is the designer and developer of Oracle APEX (Application Express)."
+    },
+    {
+        id: 27,
+        question: "Regarding Oracle APEX names, which of these is odd?",
+        options: [
+            "Oracle Platform",
+            "Project Marvel",
+            "Flows",
+            "APEX Tool"
+        ],
+        correct: 3,
+        explanation: "Oracle Platform, Project Marvel, and Flows are all names associated with Oracle APEX history, while 'APEX Tool' is not a recognized name variant."
+    },
+    {
+        id: 28,
+        question: "The following are the classes of vulnerability that impact APEX applications except:",
+        options: [
+            "Cross-site scripting",
+            "SQL Injection",
+            "Automated Control",
+            "Access Control"
+        ],
+        correct: 2,
+        explanation: "Cross-site scripting, SQL Injection, and Access Control are classes of vulnerability that impact APEX applications, but 'Automated Control' is not a recognized vulnerability class."
+    },
+    {
+        id: 29,
+        question: "Which of the below is not a true source type for the report?",
+        options: [
+            "SQL Query",
+            "View/Table",
+            "Database Procedure",
+            "Function body returning the SQL Query"
+        ],
+        correct: 2,
+        explanation: "SQL Query, View/Table, and Function body returning SQL Query are valid source types for reports. 'Database Procedure' is not a standard report source type in APEX."
+    },
+    {
+        id: 30,
+        question: "For one Region, you can stretch a maximum of how many columns?",
+        options: [
+            "15",
+            "10",
+            "20",
+            "12"
+        ],
+        correct: 3,
+        explanation: "For one Region in Oracle APEX, you can stretch a maximum of 12 columns in the grid layout system."
+    },
+    {
+        id: 31,
+        question: "In which source property of the Static Content Region can you insert custom HTML?",
+        options: [
+            "Custom Attributes",
+            "HTML Expression",
+            "Column",
+            "Text"
+        ],
+        correct: 3,
+        explanation: "In the Static Content Region, you can insert custom HTML in the 'Text' source property."
+    },
+    {
+        id: 32,
+        question: "Can we submit a page using dynamic action?",
+        options: [
+            "False",
+            "True",
+            "Only with JavaScript",
+            "Only with PL/SQL"
+        ],
+        correct: 1,
+        explanation: "Yes, we can submit a page using dynamic actions in Oracle APEX. Dynamic actions provide this functionality without requiring custom JavaScript."
+    },
+    {
+        id: 33,
+        question: "Which one below needs to be corrected for Page type in Oracle APEX?",
+        options: [
+            "Normal",
+            "Non-Modal Dialog",
+            "Normal Form",
+            "Modal Dialog"
+        ],
+        correct: 2,
+        explanation: "Normal, Non-Modal Dialog, and Modal Dialog are correct page types in Oracle APEX. 'Normal Form' is not a standard page type."
+    },
+    {
+        id: 34,
+        question: "Which one is correct PL/SQL expression for checking the salary item is greater than 1000?",
+        options: [
+            "P1_SALARY >: 1000",
+            "$V('P1_SALARY')>1000",
+            ":P1_SALARY>1000",
+            "P1_SALARY>1000"
+        ],
+        correct: 2,
+        explanation: "The correct PL/SQL expression for checking if the salary item is greater than 1000 is ':P1_SALARY>1000' using the bind variable syntax."
+    },
+    {
+        id: 35,
+        question: "Which one of the following is not proper JavaScript command for setting the item value?",
+        options: [
+            "apex.item('P1_Name').setValue('Vinish')",
+            "$s('P1_Name', 'VINISH')",
+            "apex.item.setValue('P1_Name', 'VINISH')",
+            "All of the above"
+        ],
+        correct: 2,
+        explanation: "The correct JavaScript commands are apex.item('P1_Name').setValue('Vinish') and $s('P1_Name', 'VINISH'). The syntax 'apex.item.setValue('P1_Name', 'VINISH')' is incorrect."
+    },
+    {
+        id: 36,
+        question: "In the Master-Detail form, for linking details to Master, what do you have to specify?",
+        options: [
+            "Master Region",
+            "Master Block",
+            "Master Table",
+            "Master Form Process"
+        ],
+        correct: 0,
+        explanation: "In the Master-Detail form, for linking details to Master, you have to specify the Master Region."
+    },
+    {
+        id: 37,
+        question: "Which one of the below will give a 'Hello World!' message in the alert box?",
+        options: [
+            "apex.message.text('Hello World!');",
+            "apex.alert.message('Hello World!');",
+            "apex.message.dialog('Hello World!');",
+            "apex.message.alert('Hello World!');"
+        ],
+        correct: 3,
+        explanation: "The correct syntax to show a 'Hello World!' message in an alert box is 'apex.message.alert('Hello World!');'."
+    },
+    {
+        id: 38,
+        question: "Data workshop feature introduced in which version of Oracle APEX?",
+        options: [
+            "Version 5.1",
+            "Version 20.2",
+            "Version 19.1",
+            "Version 20.1"
+        ],
+        correct: 2,
+        explanation: "The Data workshop feature was introduced in Oracle APEX Version 19.1."
+    },
+    {
+        id: 39,
+        question: "To set the Item label to the left side, which template setting is utilized?",
+        options: [
+            "Hidden",
+            "Required Floating",
+            "Optional",
+            "Optional Floating"
+        ],
+        correct: 2,
+        explanation: "To set the Item label to the left side, the 'Optional' template setting is utilized."
+    },
+    {
+        id: 40,
+        question: "What is the name of the primary Oracle APEX installation SQL script?",
+        options: [
+            "apexins.sql",
+            "apexinstall.sql",
+            "apex_sql.sql",
+            "apxins.sql"
+        ],
+        correct: 0,
+        explanation: "The name of the primary Oracle APEX installation SQL script is 'apexins.sql'."
+    },
+
+    // INTERMEDIATE LEVEL QUESTIONS (41-80)
+    {
+        id: 41,
+        question: "Can you explain the architecture of Oracle APEX?",
+        options: [
+            "Single-tier architecture",
+            "Three-tier architecture: client tier (web browsers), application server tier (hosts APEX runtime), and database tier",
+            "Two-tier architecture only",
+            "Four-tier architecture"
+        ],
+        correct: 1,
+        explanation: "Oracle APEX follows a three-tier architecture: the client tier (web browsers), the application server tier (hosts APEX runtime), and the database tier (stores application data). The APEX Engine resides in the Oracle Database and processes application requests."
+    },
+    {
+        id: 42,
+        question: "How does Oracle APEX handle security?",
+        options: [
+            "No security features",
+            "Oracle APEX provides robust security features such as authentication schemes, authorization schemes, session state protection, and data validation",
+            "Only basic password protection",
+            "Only database-level security"
+        ],
+        correct: 1,
+        explanation: "Oracle APEX provides robust security features such as authentication schemes, authorization schemes, session state protection, and data validation. It includes built-in authentication methods, SQL injection prevention, and secure session management."
+    },
+    {
+        id: 43,
+        question: "How can you create a report in Oracle APEX?",
+        options: [
+            "Only through SQL commands",
+            "Using the Report Wizard, SQL queries, or by utilizing the Interactive Grid component",
+            "Only through database views",
+            "Only through stored procedures"
+        ],
+        correct: 1,
+        explanation: "You can create reports using the Report Wizard, SQL queries, or by utilizing the Interactive Grid component. Navigate to Application Builder, click Create > Report, choose the type of report, select the data source, and configure the report settings."
+    },
+    {
+        id: 44,
+        question: "How can you handle validations in Oracle APEX?",
+        options: [
+            "Only client-side validations",
+            "Built-in validations, PL/SQL code, or custom JavaScript validation functions",
+            "Only server-side validations",
+            "Only database constraints"
+        ],
+        correct: 1,
+        explanation: "Validations can be implemented using built-in validations, PL/SQL code, or custom JavaScript validation functions. Oracle APEX provides several validation options such as required fields, data type validations, pattern validations, and custom PL/SQL validations."
+    },
+    {
+        id: 45,
+        question: "How do you perform data manipulation in Oracle APEX?",
+        options: [
+            "Only through SQL statements",
+            "SQL statements, interactive grids, or through PL/SQL processes",
+            "Only through forms",
+            "Only through reports"
+        ],
+        correct: 1,
+        explanation: "Data manipulation can be done using SQL statements, interactive grids, or through PL/SQL processes. You can create automatic DML processes for forms, use Interactive Grid for Excel-like editing, or write custom PL/SQL processes for complex data operations."
+    },
+    {
+        id: 46,
+        question: "What are shared components in Oracle APEX?",
+        options: [
+            "Only themes",
+            "Reusable objects like templates, items, and processes that can be used across multiple pages",
+            "Only navigation menus",
+            "Only LOVs"
+        ],
+        correct: 1,
+        explanation: "Shared components are reusable objects like templates, items, and processes that can be used across multiple pages in an application. Examples include Lists of Values (LOVs), Themes, Templates, Navigation Menus, and Dynamic Actions."
+    },
+    {
+        id: 47,
+        question: "How can you schedule jobs in Oracle APEX?",
+        options: [
+            "Not possible in APEX",
+            "Using Oracle APEX's built-in Scheduler functionality or by utilizing Oracle Database's Scheduler features",
+            "Only through external tools",
+            "Only manually"
+        ],
+        correct: 1,
+        explanation: "Jobs can be scheduled using Oracle APEX's built-in Scheduler functionality or by utilizing Oracle Database's Scheduler features. You can define the frequency and timing of job execution along with the PL/SQL code to be executed."
+    },
+    {
+        id: 48,
+        question: "How does Oracle APEX handle internationalization and localization?",
+        options: [
+            "No support for multiple languages",
+            "Features for translating applications to different languages and supporting localized date, number, and currency formats",
+            "Only English language support",
+            "Manual translation only"
+        ],
+        correct: 1,
+        explanation: "Oracle APEX provides features for translating applications to different languages and supporting localized date, number, and currency formats. It includes built-in support for creating multilingual applications with language-specific translations."
+    },
+    {
+        id: 49,
+        question: "How can you customize the appearance of an APEX application?",
+        options: [
+            "Only through themes",
+            "Using themes, templates, CSS styling, and JavaScript",
+            "Only through templates",
+            "Only through CSS"
+        ],
+        correct: 1,
+        explanation: "Appearance can be customized using themes, templates, CSS styling, and JavaScript. You can modify theme templates, add custom CSS, use template options, and apply JavaScript for enhanced user interactions."
+    },
+    {
+        id: 50,
+        question: "How do you debug an Oracle APEX application?",
+        options: [
+            "Only through database logs",
+            "Using debug mode, the Debug Messages window, logging, and using breakpoints in PL/SQL code",
+            "Only through SQL traces",
+            "Only through web browser console"
+        ],
+        correct: 1,
+        explanation: "Debugging can be done using debug mode, the Debug Messages window, logging, and using breakpoints in PL/SQL code. Enable debug mode by appending ?p_debug=YES to the URL, use apex_debug in PL/SQL code, and utilize browser developer tools."
+    },
+    {
+        id: 51,
+        question: "How can you create a LOV in Oracle APEX?",
+        options: [
+            "Only through SQL queries",
+            "Navigate to Shared Components > List of Values, click Create > From Scratch, choose type and define entries",
+            "Only through static values",
+            "Only through database views"
+        ],
+        correct: 1,
+        explanation: "Steps to create a LOV: Navigate to Shared Components > List of Values, click Create > From Scratch, choose the type of LOV (Static or Dynamic), define the LOV entries or SQL query, configure the settings and save."
+    },
+    {
+        id: 52,
+        question: "How do you create a Form in Oracle APEX?",
+        options: [
+            "Only through manual coding",
+            "Navigate to Application Builder, click Create > Form, choose type, select data source, configure settings",
+            "Only through templates",
+            "Only through wizards"
+        ],
+        correct: 1,
+        explanation: "Steps to create a form: Navigate to Application Builder, click Create > Form, choose the type of form (e.g., Form on a Table with Report), select the data source (table or view), configure the form settings and click Create."
+    },
+    {
+        id: 53,
+        question: "How do you create a Workspace in Oracle APEX?",
+        options: [
+            "Only through SQL commands",
+            "Log in to APEX Administration Services, Navigate to Manage Workspaces > Create Workspace, enter details",
+            "Only through database scripts",
+            "Automatically created"
+        ],
+        correct: 1,
+        explanation: "Steps to create a workspace: Log in to the APEX Administration Services, Navigate to Manage Workspaces > Create Workspace, enter the workspace name, schema name, and other details, click Create Workspace."
+    },
+    {
+        id: 54,
+        question: "How can you apply and customize a Theme in Oracle APEX?",
+        options: [
+            "Only through CSS files",
+            "Navigate to Shared Components > Themes, select and apply theme, then customize using Page Designer",
+            "Only through JavaScript",
+            "Only through templates"
+        ],
+        correct: 1,
+        explanation: "Steps to apply and customize a theme: Navigate to Shared Components > Themes, select a theme and click Apply. To customize, navigate to Page Designer, select the page, modify template options, and use CSS and JavaScript for further customization."
+    },
+    {
+        id: 55,
+        question: "What is the usage of the apex_util package in Oracle APEX?",
+        options: [
+            "Only for database connections",
+            "Used for retrieving session information, generating HTML, creating email messages, managing collections, and various utility functions",
+            "Only for user authentication",
+            "Only for error handling"
+        ],
+        correct: 1,
+        explanation: "The apex_util package is used for a variety of tasks related to Oracle Application Express, including retrieving session information, generating HTML, creating email messages, managing collections, and performing various utility functions."
+    },
+    {
+        id: 56,
+        question: "How do you design a responsive page using Oracle Application Express?",
+        options: [
+            "Only through CSS media queries",
+            "Use the fluid grid layout which allows creating pages that resize based on device size",
+            "Only through JavaScript",
+            "Only through templates"
+        ],
+        correct: 1,
+        explanation: "In order to design a responsive page using Oracle Application Express, you need to use the fluid grid layout. This allows you to create a page that will resize itself based on the size of the device that it is being viewed on."
+    },
+    {
+        id: 57,
+        question: "Is it possible to migrate code from one workspace to another? If yes, then how?",
+        options: [
+            "Not possible",
+            "Yes, using the Export/Import feature within Oracle Application Express",
+            "Only through database backup",
+            "Only manually"
+        ],
+        correct: 1,
+        explanation: "Yes, it is possible to migrate code from one workspace to another. You need to use the Export/Import feature within Oracle Application Express. Export the application from source workspace and import it into the target workspace."
+    },
+    {
+        id: 58,
+        question: "What are the key differences between SQL Workshop and APEX Workspace?",
+        options: [
+            "They are the same",
+            "SQL Workshop is for working with SQL databases; APEX Workspace is for developing and managing APEX applications",
+            "Only SQL Workshop is important",
+            "Only APEX Workspace is needed"
+        ],
+        correct: 1,
+        explanation: "SQL Workshop is a tool for working with SQL databases, providing a user interface for running SQL queries and commands. APEX Workspace is a tool for developing and managing Oracle Application Express applications, providing development environment features."
+    },
+    {
+        id: 59,
+        question: "How to install Oracle Application Express (APEX) on an existing database?",
+        options: [
+            "Only cloud installation",
+            "Two ways: On-Premise (download installer and run setup) and Cloud (use autonomous database)",
+            "Only on-premise installation",
+            "Automatic installation only"
+        ],
+        correct: 1,
+        explanation: "There are two ways: On-Premise: Download APEX installer, unzip and run setup.exe, choose installation type, provide database details, run configuration script. Cloud: Use existing autonomous database in Oracle Cloud Infrastructure, access APEX through Database Actions."
+    },
+    {
+        id: 60,
+        question: "Why would you want to build a mobile app using Oracle Application Express?",
+        options: [
+            "Only for desktop applications",
+            "Because it is user-friendly, easy to use, and offers flexibility in design with responsive design capabilities",
+            "Only for database applications",
+            "Only for web applications"
+        ],
+        correct: 1,
+        explanation: "Oracle Application Express is a great tool for building mobile apps because it is very user-friendly and easy to use. Additionally, it offers a lot of flexibility in terms of how you can design and build your app with responsive design capabilities."
+    },
+    {
+        id: 61,
+        question: "What is the difference between a static and dynamic action in Oracle APEX?",
+        options: [
+            "No difference",
+            "Static action is defined at design time; dynamic action is defined at runtime based on conditions",
+            "Static actions are faster",
+            "Dynamic actions are sim
 
         // Quiz state
         let answers = {};
