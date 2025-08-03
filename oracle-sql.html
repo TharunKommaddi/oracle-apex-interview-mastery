@@ -6959,7 +6959,233 @@ FROM (
 GROUP BY employee_id
 HAVING COUNT(CASE WHEN leave_count > 3 THEN 1 END) >= 2
 ORDER BY months_with_high_leaves DESC;`
-    }
+    },
+
+         },
+            {
+                id: 113,
+                category: 'basic',
+                difficulty: 'basic',
+                question: 'Explain the differences between DROP, DELETE, and TRUNCATE commands in Oracle with examples.',
+                answer: 'DROP removes the entire table structure and data, DELETE removes specific rows with WHERE conditions and can be rolled back, TRUNCATE removes all rows quickly but cannot be rolled back.',
+                language: 'Oracle SQL',
+                code: `-- CREATE sample table for demonstration
+CREATE TABLE employees_demo (
+    employee_id NUMBER PRIMARY KEY,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    salary NUMBER,
+    department_id NUMBER
+);
+
+-- Insert sample data
+INSERT ALL
+    INTO employees_demo VALUES (1, 'John', 'Doe', 50000, 10)
+    INTO employees_demo VALUES (2, 'Jane', 'Smith', 60000, 20)
+    INTO employees_demo VALUES (3, 'Bob', 'Johnson', 55000, 10)
+    INTO employees_demo VALUES (4, 'Alice', 'Brown', 65000, 30)
+    INTO employees_demo VALUES (5, 'Tom', 'Wilson', 52000, 20)
+SELECT * FROM dual;
+
+-- Verify data
+SELECT * FROM employees_demo;
+
+-- ========================================
+-- DELETE COMMAND
+-- ========================================
+-- Removes specific rows based on WHERE condition
+-- Can also remove ALL rows if no WHERE clause is used
+-- Can be rolled back
+-- Slower for large datasets
+-- Triggers fire for each deleted row
+
+-- Delete specific employees
+DELETE FROM employees_demo WHERE department_id = 10;
+-- Removes employees with department_id = 10
+
+-- Check remaining data
+SELECT * FROM employees_demo;
+
+-- Rollback is possible
+ROLLBACK;
+
+-- Data is restored
+SELECT * FROM employees_demo;
+
+-- Delete with more complex conditions
+DELETE FROM employees_demo 
+WHERE salary < 55000 AND department_id = 20;
+
+-- Delete ALL rows from table (without WHERE clause)
+DELETE FROM employees_demo;
+-- This removes ALL data but keeps table structure
+-- Same result as TRUNCATE but slower and can be rolled back
+
+-- ========================================
+-- TRUNCATE COMMAND  
+-- ========================================
+-- Removes ALL rows from table
+-- Cannot be rolled back (DDL command)
+-- Much faster than DELETE for large tables
+-- Resets high water mark
+-- Does not fire triggers
+
+-- Restore data first
+ROLLBACK;
+INSERT ALL
+    INTO employees_demo VALUES (1, 'John', 'Doe', 50000, 10)
+    INTO employees_demo VALUES (2, 'Jane', 'Smith', 60000, 20)
+    INTO employees_demo VALUES (3, 'Bob', 'Johnson', 55000, 10)
+SELECT * FROM dual;
+
+-- Truncate table (removes all data)
+TRUNCATE TABLE employees_demo;
+
+-- Check table - no data but structure exists
+SELECT * FROM employees_demo;
+DESC employees_demo;
+
+-- Cannot rollback TRUNCATE
+ROLLBACK; -- This won't restore data
+
+-- ========================================
+-- DROP COMMAND
+-- ========================================
+-- Removes entire table structure and data
+-- Cannot be rolled back
+-- Frees up storage space completely
+-- Removes indexes, triggers, constraints
+
+-- Recreate table with data
+CREATE TABLE employees_demo (
+    employee_id NUMBER PRIMARY KEY,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    salary NUMBER,
+    department_id NUMBER
+);
+
+INSERT INTO employees_demo VALUES (1, 'John', 'Doe', 50000, 10);
+
+-- Drop the entire table
+DROP TABLE employees_demo;
+
+-- Table no longer exists
+-- SELECT * FROM employees_demo; -- This would cause error
+
+-- Check if table exists
+SELECT table_name FROM user_tables WHERE table_name = 'EMPLOYEES_DEMO';
+
+-- ========================================
+-- COMPARISON TABLE
+-- ========================================
+
+/*
++------------------+------------------+------------------+------------------+
+| ASPECT           | DELETE           | TRUNCATE         | DROP             |
++------------------+------------------+------------------+------------------+
+| Purpose          | Remove specific  | Remove all rows  | Remove entire    |
+|                  | rows OR all rows |                  | table            |
++------------------+------------------+------------------+------------------+
+| WHERE Clause     | Yes (optional)   | No               | No               |
+|                  | Without WHERE =  |                  |                  |
+|                  | deletes all rows |                  |                  |
++------------------+------------------+------------------+------------------+
+| Rollback         | Yes (DML)        | No (DDL)         | No (DDL)         |
++------------------+------------------+------------------+------------------+
+| Speed            | Slower           | Very Fast        | Fast             |
+|                  | (even for all    |                  |                  |
+|                  | rows)            |                  |                  |
++------------------+------------------+------------------+------------------+
+| Table Structure  | Preserved        | Preserved        | Removed          |
++------------------+------------------+------------------+------------------+
+| Triggers         | Fire             | Don't Fire       | Removed          |
++------------------+------------------+------------------+------------------+
+| Indexes          | Preserved        | Preserved        | Removed          |
++------------------+------------------+------------------+------------------+
+| Storage Space    | Not released     | Released         | Completely freed |
++------------------+------------------+------------------+------------------+
+| Transaction Log  | Fully logged     | Minimally logged | Minimally logged |
++------------------+------------------+------------------+------------------+
+| Identity/Sequence| Continues        | Resets           | Removed          |
++------------------+------------------+------------------+------------------+
+*/
+
+-- ========================================
+-- PRACTICAL EXAMPLES
+-- ========================================
+
+-- Create table for examples
+CREATE TABLE sales_data (
+    sale_id NUMBER,
+    product_name VARCHAR2(100),
+    sale_amount NUMBER,
+    sale_date DATE
+);
+
+-- Create sequence
+CREATE SEQUENCE sales_seq START WITH 1;
+
+-- Create trigger
+CREATE OR REPLACE TRIGGER sales_audit_trg
+AFTER DELETE ON sales_data
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log VALUES (:OLD.sale_id, 'DELETED', SYSDATE);
+END;
+/
+
+-- Insert test data
+INSERT INTO sales_data VALUES (sales_seq.NEXTVAL, 'Laptop', 1200, SYSDATE-10);
+INSERT INTO sales_data VALUES (sales_seq.NEXTVAL, 'Mouse', 25, SYSDATE-5);
+INSERT INTO sales_data VALUES (sales_seq.NEXTVAL, 'Keyboard', 75, SYSDATE-2);
+
+-- Example 1: DELETE with condition
+DELETE FROM sales_data WHERE sale_amount < 50;
+-- Trigger fires, specific rows removed, can rollback
+
+-- Example 2: TRUNCATE all data
+TRUNCATE TABLE sales_data;
+-- All data gone, structure remains, triggers don't fire, cannot rollback
+
+-- Example 3: DROP entire table
+DROP TABLE sales_data;
+-- Everything gone including structure, triggers, indexes
+
+-- ========================================
+-- WHEN TO USE EACH COMMAND
+-- ========================================
+
+/*
+USE DELETE WHEN:
+- Need to remove specific rows based on conditions
+- Need to remove ALL rows but maintain rollback capability
+- Need ability to rollback the operation
+- Working with small to medium datasets
+- Need triggers to fire for audit/logging
+- Need to maintain referential integrity
+- Want to delete all data but slower than TRUNCATE (with rollback option)
+
+USE TRUNCATE WHEN:
+- Need to remove ALL rows from a table (faster than DELETE)
+- Working with large datasets (performance critical)
+- Don't need to rollback the operation  
+- Don't need triggers to fire
+- Want to reset table to empty state quickly
+- Want to reset sequences/identity columns
+
+USE DROP WHEN:
+- Need to completely remove the table
+- Table is no longer needed
+- Want to free up all storage space
+- Need to remove all associated objects (indexes, triggers, etc.)
+- Restructuring database schema
+*/
+
+-- Clean up demonstration
+-- DROP TABLE employees_demo; -- Already dropped above`
+            }
+
 ];
       
 
