@@ -1685,17 +1685,21 @@ const quizQuestions = [
 },
 
 
-
 {
     id: 95,
-    category: 'advanced',
-    difficulty: 'advanced',
-    question: 'How can you integrate Oracle APEX with other systems or applications?',
-    answer: 'Oracle APEX can be integrated with other systems using Web Services, RESTful Services, JavaScript APIs, and database links. It supports consuming and creating web services, REST APIs, and can integrate with external authentication systems.',
-    language: 'Integration'
+    question: "How can you integrate Oracle APEX with other systems or applications?",
+    options: [
+        "No integration possible",
+        "Using Web Services, RESTful Services, JavaScript APIs, and database links",
+        "Only through database connections",
+        "Only manual integration"
+    ],
+    correct: 1,
+    explanation: "Oracle APEX can be integrated with other systems using Web Services, RESTful Services, JavaScript APIs, and database links. It supports consuming and creating web services, REST APIs, and can integrate with external authentication systems."
 }
 
 
+    ];
 
 
 
@@ -1750,7 +1754,7 @@ const quizQuestions = [
             });
         }
 
-        ];
+    
 
         function setupOptionSelection() {
             document.addEventListener('click', function(e) {
