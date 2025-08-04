@@ -1683,13 +1683,23 @@ const quizQuestions = [
     correct: 1,
     explanation: "Data can be imported using various methods like SQL*Loader, External Tables, CSV files, and RESTful Web Services. APEX provides Data Loading wizard, APEX_DATA_PARSER package, and web service integration for importing external data."
 },
+
+
+
 {
     id: 95,
-    question: "How can you integrate Oracle APEX with other systems or applications?",
-    options: [
-        "No integration possible",
-        "Using Web Services, RESTful Services, JavaScript APIs
+    category: 'advanced',
+    difficulty: 'advanced',
+    question: 'How can you integrate Oracle APEX with other systems or applications?',
+    answer: 'Oracle APEX can be integrated with other systems using Web Services, RESTful Services, JavaScript APIs, and database links. It supports consuming and creating web services, REST APIs, and can integrate with external authentication systems.',
+    language: 'Integration'
+}
 
+    ];
+
+
+
+    
         // Quiz state
         let answers = {};
         let quizSubmitted = false;
