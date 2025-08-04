@@ -6959,7 +6959,6 @@ FROM (
 GROUP BY employee_id
 HAVING COUNT(CASE WHEN leave_count > 3 THEN 1 END) >= 2
 ORDER BY months_with_high_leaves DESC;`
-    },
 
          },
             {
