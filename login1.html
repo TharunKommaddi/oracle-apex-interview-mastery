@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - APEX Interview Mastery</title>
+    <meta name="description" content="Login to access Oracle APEX Interview Mastery platform.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔐</text></svg>">
+
+    <style>
+        /* Additional styles for the approval system */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            padding: var(--space-xl);
+        }
+        
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: var(--space-2xl);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .login-header {
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .login-logo i {
+            color: var(--primary-light);
+            font-size: 2rem;
+        }
+        
+        .login-title {
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            text-align: left;
+        }
+        
+        .form-group {
+            text-align: left;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: var(--space-md);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
+        }
+        
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+        
+        .input-group .form-input {
+            padding-left: 2.5rem;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color var(--transition-speed) ease;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .login-btn {
+            background: var(--primary);
+            color: var(--text-white);
+            border: none;
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            min-height: 48px;
+        }
+        
+        .login-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            display: none;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        
+        .success-message {
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            color: var(--success);
+        }
+        
+        .info-message {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .approval-status {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-top: var(--space-xl);
+            text-align: left;
+        }
+        
+        .status-title {
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .status-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .status-list li {
+            padding: var(--space-sm) 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .status-list li i {
+            color: var(--primary-light);
+            width: 16px;
+        }
+        
+        .footer-text {
+            margin-top: var(--space-xl);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Navigation tabs */
+        .nav-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            background: var(--bg-tertiary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Page visibility */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: var(--space-lg);
+            }
+            
+            .login-card {
+                padding: var(--space-xl);
+            }
+            
+            .login-title {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                border-radius: var(--radius-md);
+                border-bottom: 1px solid var(--border-light);
+            }
+
+            .nav-tab.active {
+                border-bottom: 1px solid var(--primary);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-code"></i>
+                    APEX Interview Mastery
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showPage('request-access')">
+                    <i class="fas fa-user-plus"></i> Request Access
+                </button>
+                <button class="nav-tab" onclick="showPage('check-status')">
+                    <i class="fas fa-clock"></i> Check Status
+                </button>
+                <button class="nav-tab" onclick="showPage('login')">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </div>
+
+            <!-- Request Access Page -->
+            <div id="page-request-access" class="page-content active">
+                <h1 class="login-title">Request Access</h1>
+                <p class="login-subtitle">Submit your details for approval to access the Oracle APEX Interview Mastery platform.</p>
+                
+                <div class="message error-message" id="requestErrorMessage"></div>
+                <div class="message success-message" id="requestSuccessMessage"></div>
+                
+                <form class="login-form" id="accessRequestForm">
+                    <div class="form-group">
+                        <label class="form-label" for="fullName">Full Name *</label>
+                        <div class="input-group">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address *</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="email" class="form-input" placeholder="Enter your email address" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="accessType">Access Type *</label>
+                        <select id="accessType" class="form-select" required>
+                            <option value="">Select access type</option>
+                            <option value="student">Student - Learning Oracle APEX</option>
+                            <option value="developer">Developer - Preparing for interviews</option>
+                            <option value="admin">Admin - Advanced access required</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="experience">Experience Level</label>
+                        <select id="experience" class="form-select">
+                            <option value="">Select experience level</option>
+                            <option value="beginner">Beginner (0-1 years)</option>
+                            <option value="intermediate">Intermediate (2-4 years)</option>
+                            <option value="advanced">Advanced (5+ years)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="reason">Why do you need access? *</label>
+                        <textarea id="reason" class="form-textarea" placeholder="Please explain why you need access to this platform..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="login-btn" id="requestBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Request
+                    </button>
+                </form>
+                
+                <div class="approval-status">
+                    <div class="status-title">
+                        <i class="fas fa-info-circle"></i>
+                        How it works:
+                    </div>
+                    <ul class="status-list">
+                        <li><i class="fas fa-check"></i> Submit your access request with required details</li>
+                        <li><i class="fas fa-envelope"></i> Admin receives email notification for review</li>
+                        <li><i class="fas fa-clock"></i> Wait for approval (usually within 24-48 hours)</li>
+                        <li><i class="fas fa-key"></i> Receive login credentials once approved</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Check Status Page -->
+            <div id="page-check-status" class="page-content">
+                <h1 class="login-title">Check Status</h1>
+                <p class="login-subtitle">Check the status of your access request.</p>
+                
+                <div class="message error-message" id="statusErrorMessage"></div>
+                <div class="message info-message" id="statusInfoMessage"></div>
+                
+                <form class="login-form" id="statusCheckForm">
+                    <div class="form-group">
+                        <label class="form-label" for="statusEmail">Email Address</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="statusEmail" class="form-input" placeholder="Enter your email address" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="login-btn" id="statusBtn">
+                        <i class="fas fa-search"></i>
+                        Check Status
+                    </button>
+                </form>
+            </div>
+
+            <!-- Login Page -->
+            <div id="page-login" class="page-content">
+                <h1 class="login-title">Login</h1>
+                <p class="login-subtitle">Sign in with your approved credentials.</p>
+                
+                <div class="message error-message" id="loginErrorMessage"></div>
+                <div class="message success-message" id="loginSuccessMessage"></div>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="loginEmail">Email Address</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email address" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                            <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="login-btn" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="approval-status">
+                    <div class="status-title">
+                        <i class="fas fa-question-circle"></i>
+                        Don't have credentials yet?
+                    </div>
+                    <ul class="status-list">
+                        <li><i class="fas fa-arrow-left"></i> Go to "Request Access" tab to submit your request</li>
+                        <li><i class="fas fa-clock"></i> Check "Check Status" tab to see your request status</li>
+                        <li><i class="fas fa-envelope"></i> You'll receive credentials via email once approved</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-text">
+                <i class="fas fa-shield-alt"></i>
+                All access requests are manually reviewed for security purposes
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS - REPLACE THESE VALUES
+        emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your actual EmailJS public key
+        
+        // Configuration - UPDATE THESE VALUES
+        const CONFIG = {
+            adminEmail: 'tharunkommaddi@gmail.com',
+            emailjsServiceId: 'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
+            emailjsTemplateId: 'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
+        };
+
+        // Storage keys
+        const STORAGE_KEY = 'apex_access_requests';
+        const APPROVED_USERS_KEY = 'apex_approved_users';
+
+        // Page navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Clear messages
+            clearAllMessages();
+        }
+
+        // Clear all messages
+        function clearAllMessages() {
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.style.display = 'none';
+                msg.textContent = '';
+            });
+        }
+
+        // Show message
+        function showMessage(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+            
+            // Auto hide after 10 seconds for non-error messages
+            if (!isError) {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 10000);
+            }
+        }
+
+        // Generate unique request ID
+        function generateRequestId() {
+            return 'REQ-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Save access request to localStorage
+        function saveAccessRequest(requestData) {
+            const requests = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            requests.push(requestData);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+        }
+
+        // Get access request by email
+        function getAccessRequest(email) {
+            const requests = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            return requests.find(req => req.email.toLowerCase() === email.toLowerCase());
+        }
+
+        // Send email notification to admin
+        async function sendAdminNotification(requestData) {
+            const templateParams = {
+                to_email: CONFIG.adminEmail,
+                from_name: 'APEX Interview Mastery',
+                subject: `New Access Request - ${requestData.fullName}`,
+                request_id: requestData.requestId,
+                full_name: requestData.fullName,
+                email: requestData.email,
+                access_type: requestData.accessType,
+                experience: requestData.experience || 'Not specified',
+                reason: requestData.reason,
+                submitted_date: new Date(requestData.submittedAt).toLocaleString(),
+                message: `
+New access request received for APEX Interview Mastery:
+
+Full Name: ${requestData.fullName}
+Email: ${requestData.email}
+Access Type: ${requestData.accessType}
+Experience: ${requestData.experience || 'Not specified'}
+Request ID: ${requestData.requestId}
+Submitted: ${new Date(requestData.submittedAt).toLocaleString()}
+
+Reason for access:
+${requestData.reason}
+
+To approve this request, open browser console and run:
+AuthAdmin.approveUser("${requestData.email}", "${requestData.fullName}", "${requestData.accessType}", "TempPass123!")
+
+To reject this request, run:
+AuthAdmin.rejectUser("${requestData.email}", "Reason for rejection")
+                `
+            };
+
+            try {
+                const response = await emailjs.send(
+                    CONFIG.emailjsServiceId,
+                    CONFIG.emailjsTemplateId,
+                    templateParams
+                );
+                return response.status === 200;
+            } catch (error) {
+                console.error('Email sending failed:', error);
+                return false;
+            }
+        }
+
+        // Password toggle functionality
+        document.getElementById('passwordToggle').addEventListener('click', function() {
+            const passwordInput = document.getElementById('loginPassword');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            if (type === 'text') {
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+
+        // Handle access request form submission
+        document.getElementById('accessRequestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('requestBtn');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div> Submitting...';
+            
+            const formData = {
+                requestId: generateRequestId(),
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                accessType: document.getElementById('accessType').value,
+                experience: document.getElementById('experience').value,
+                reason: document.getElementById('reason').value.trim(),
+                status: 'pending',
+                submittedAt: new Date().toISOString()
+            };
+
+            // Validate form
+            if (!formData.fullName || !formData.email || !formData.accessType || !formData.reason) {
+                showMessage('requestErrorMessage', 'Please fill in all required fields.', true);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+
+            // Check if request already exists
+            const existingRequest = getAccessRequest(formData.email);
+            if (existingRequest) {
+                showMessage('requestErrorMessage', 'A request already exists for this email address. Check the "Check Status" tab.', true);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+
+            try {
+                // Save request locally
+                saveAccessRequest(formData);
+                
+                // Send email notification
+                const emailSent = await sendAdminNotification(formData);
+                
+                if (emailSent) {
+                    showMessage('requestSuccessMessage', 
+                        `Your request has been submitted successfully! Request ID: ${formData.requestId}. ` +
+                        'You will receive an email notification once your request is reviewed and approved.'
+                    );
+                    document.getElementById('accessRequestForm').reset();
+                } else {
+                    showMessage('requestSuccessMessage', 
+                        `Your request was saved with ID: ${formData.requestId}. ` +
+                        'However, there was an issue sending the email notification. Please contact the administrator directly at tharunkommaddi@gmail.com'
+                    );
+                }
+                
+            } catch (error) {
+                console.error('Error submitting request:', error);
+                showMessage('requestErrorMessage', 'An error occurred while submitting your request. Please try again.', true);
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+
+        // Handle status check form submission
+        document.getElementById('statusCheckForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('statusEmail').value.trim();
+            const request = getAccessRequest(email);
+            
+            if (!request) {
+                showMessage('statusErrorMessage', 'No request found for this email address.', true);
+                return;
+            }
+            
+            const statusMessage = `
+                Request Status: <strong>${request.status.toUpperCase()}</strong><br>
+                Request ID: ${request.requestId}<br>
+                Submitted: ${new Date(request.submittedAt).toLocaleDateString()}<br>
+                Access Type: ${request.accessType}<br><br>
+                ${request.status === 'pending' ? 'Your request is being reviewed. You will receive an email notification once approved.' : ''}
+                ${request.status === 'approved' ? 'Congratulations! Your request has been approved. Check your email for login credentials.' : ''}
+                ${request.status === 'rejected' ? 'Your request was not approved. Please contact the administrator for more information.' : ''}
+            `;
+            
+            const messageElement = document.getElementById('statusInfoMessage');
+            messageElement.innerHTML = statusMessage;
+            messageElement.style.display = 'block';
+        });
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.innerHTML;
+            
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<div class="loading-spinner"></div> Signing In...';
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            // Check if user is approved
+            const approvedUsers = JSON.parse(localStorage.getItem(APPROVED_USERS_KEY) || '[]');
+            const approvedUser = approvedUsers.find(user => 
+                user.email.toLowerCase() === email.toLowerCase() && user.password === password
+            );
+            
+            setTimeout(() => {
+                if (approvedUser) {
+                    // Set login session
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('username', approvedUser.fullName || email);
+                    sessionStorage.setItem('userEmail', email);
+                    sessionStorage.setItem('accessType', approvedUser.accessType);
+                    sessionStorage.setItem('loginTime', new Date().toISOString());
+                    
+                    showMessage('loginSuccessMessage', 'Login successful! Redirecting to dashboard...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    showMessage('loginErrorMessage', 
+                        'Invalid credentials or your access has not been approved yet. ' +
+                        'Please check your request status or contact the administrator.', true
+                    );
+                }
+                
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+            }, 1000);
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'index.html';
+            }
+
+            // Show configuration notice for EmailJS
+            if (CONFIG.emailjsServiceId === 'YOUR_SERVICE_ID') {
+                console.warn('⚠️ EmailJS not configured. Please set up EmailJS service for email notifications.');
+                console.log('📧 Update CONFIG object with your EmailJS credentials in login.html');
+            }
+        });
+
+        // Expose admin functions for console access (for your convenience)
+        window.adminHelpers = {
+            // View all requests
+            viewRequests: () => {
+                const requests = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                console.table(requests);
+                return requests;
+            },
+            
+            // View approved users
+            viewApprovedUsers: () => {
+                const users = JSON.parse(localStorage.getItem(APPROVED_USERS_KEY) || '[]');
+                console.table(users);
+                return users;
+            },
+            
+            // Quick approve (will be replaced by AuthAdmin when auth.js loads)
+            quickApprove: (email, name, type, password = 'TempPass123!') => {
+                console.log(`To approve: AuthAdmin.approveUser("${email}", "${name}", "${type}", "${password}")`);
+            }
+        };
+
+        console.log('🚀 APEX Interview Mastery Login System loaded!');
+        console.log('📧 Admin Email:', CONFIG.adminEmail);
+        console.log('🔧 Helper functions: adminHelpers.viewRequests(), adminHelpers.viewApprovedUsers()');
+        console.log('📝 After auth.js loads, use: AuthAdmin.approveUser(email, name, type, password)');
+    </script>
+</body>
+</html>
