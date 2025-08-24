@@ -107,7 +107,7 @@
             padding: var(--space-lg);
             border-bottom: 1px solid var(--border-light);
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: var(--space-md);
@@ -151,7 +151,7 @@
             width: 100%;
             height: 800px;
             border: none;
-            background: #fff;
+            background: #f5f5f5;
         }
 
         .pdf-placeholder {
@@ -183,6 +183,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            color: white;
+            text-align: center;
         }
 
         .loading-spinner.show {
@@ -192,10 +197,11 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid var(--border-light);
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-top: 4px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto var(--space-md) auto;
         }
 
         @keyframes spin {
@@ -209,6 +215,68 @@
             font-size: 0.75rem;
             color: var(--text-muted);
             margin-top: var(--space-xs);
+        }
+
+        .viewer-mode-selector {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .mode-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .mode-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-white);
+        }
+
+        .mode-btn:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Status messages */
+        .status-message {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            max-width: 350px;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+        }
+
+        .status-message.success {
+            background: rgba(72, 187, 120, 0.95);
+            border: 1px solid var(--success);
+            color: white;
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.95);
+            border: 1px solid #ef4444;
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         /* Mobile responsiveness */
@@ -265,28 +333,13 @@
                 height: 500px;
                 padding: var(--space-lg);
             }
-        }
 
-        /* Error state */
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-            padding: var(--space-lg);
-            border-radius: var(--radius-md);
-            text-align: center;
-            margin: var(--space-lg);
-        }
-
-        /* Success state */
-        .success-message {
-            background: rgba(72, 187, 120, 0.1);
-            border: 1px solid rgba(72, 187, 120, 0.3);
-            color: var(--success);
-            padding: var(--space-md);
-            border-radius: var(--radius-md);
-            text-align: center;
-            margin-bottom: var(--space-lg);
+            .status-message {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -372,6 +425,11 @@
                 <div class="pdf-viewer-header">
                     <h3 class="pdf-title" id="currentPdfTitle">Select a PDF to view</h3>
                     <div class="pdf-controls">
+                        <div class="viewer-mode-selector" id="viewerModeSelector" style="display: none;">
+                            <button class="mode-btn active" data-mode="embed">Embed</button>
+                            <button class="mode-btn" data-mode="google">Google</button>
+                            <button class="mode-btn" data-mode="mozilla">Mozilla</button>
+                        </div>
                         <button class="control-btn" id="downloadBtn" style="display: none;">
                             <i class="fas fa-download"></i> Download
                         </button>
@@ -386,6 +444,7 @@
                 
                 <div class="loading-spinner" id="loadingSpinner">
                     <div class="spinner"></div>
+                    <div>Loading PDF...</div>
                 </div>
                 
                 <div class="pdf-placeholder" id="pdfPlaceholder">
@@ -395,7 +454,7 @@
                     All materials are prepared specifically for Oracle SQL interviews.</p>
                 </div>
                 
-                <iframe class="pdf-viewer" id="pdfViewer" style="display: none;"></iframe>
+                <iframe class="pdf-viewer" id="pdfViewer" style="display: none;" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
             </div>
         </div>
     </div>
@@ -417,61 +476,57 @@
 
     <script src="assets/js/script.js"></script>
     <script>
-        // Configuration - UPDATE THIS WITH YOUR GITHUB INFO
+        // Configuration - YOUR GITHUB INFO
         const PDF_CONFIG = {
-            githubUser: 'TharunKommaddi', // Replace with your GitHub username
-            githubRepo: 'oracle-apex-interview-mastery', // Replace with your repo name
-            pdfFolder: 'SQL/Pdf', // Folder name where PDFs are stored
-            branch: 'main' // Usually 'main' or 'master'
+            githubUser: 'TharunKommaddi',
+            githubRepo: 'oracle-apex-interview-mastery',
+            pdfFolder: 'SQL/Pdf',
+            branch: 'main'
         };
 
-        // PDF data structure
+        // PDF Resources Data
         const PDF_RESOURCES = [
             {
                 id: 'sql-1',
                 filename: 'SQL cheatsheet (1).pdf',
                 title: 'Oracle SQL Basics',
                 description: 'Fundamental SQL concepts and syntax',
-                category: 'Basic',
-                downloadCount: 0
+                category: 'Basic'
             },
             {
                 id: 'sql-2',
                 filename: 'sql-2.pdf',
                 title: 'Advanced SQL Queries',
                 description: 'Complex queries, joins, and subqueries',
-                category: 'Advanced',
-                downloadCount: 0
+                category: 'Advanced'
             },
             {
                 id: 'sql-3',
                 filename: 'sql-3.pdf',
                 title: 'SQL Functions & Operators',
                 description: 'Built-in functions and operators guide',
-                category: 'Intermediate',
-                downloadCount: 0
+                category: 'Intermediate'
             },
             {
                 id: 'sql-4',
                 filename: 'sql-4.pdf',
                 title: 'Database Design & Normalization',
                 description: 'Database design principles and normalization',
-                category: 'Advanced',
-                downloadCount: 0
+                category: 'Advanced'
             },
             {
                 id: 'sql-5',
                 filename: 'sql-5.pdf',
                 title: 'Performance Tuning',
                 description: 'SQL optimization and performance tips',
-                category: 'Expert',
-                downloadCount: 0
+                category: 'Expert'
             }
         ];
 
         class PDFViewer {
             constructor() {
                 this.currentPdf = null;
+                this.currentViewerMode = 'embed';
                 this.downloadCounts = JSON.parse(localStorage.getItem('pdf_download_counts') || '{}');
                 this.init();
             }
@@ -479,15 +534,37 @@
             init() {
                 this.renderPdfList();
                 this.setupEventListeners();
-                this.loadDownloadCounts();
             }
 
-            // Generate GitHub raw URL for PDF
-            getPdfUrl(filename) {
-                return `https://raw.githubusercontent.com/${PDF_CONFIG.githubUser}/${PDF_CONFIG.githubRepo}/${PDF_CONFIG.branch}/${PDF_CONFIG.pdfFolder}/${filename}`;
+            // Generate GitHub raw URL
+            getRawPdfUrl(filename) {
+                const encodedFilename = encodeURIComponent(filename);
+                return `https://raw.githubusercontent.com/${PDF_CONFIG.githubUser}/${PDF_CONFIG.githubRepo}/${PDF_CONFIG.branch}/${PDF_CONFIG.pdfFolder}/${encodedFilename}`;
             }
 
-            // Render PDF list in sidebar
+            // Different viewer modes optimized for Chrome/Edge
+            getViewerUrl(filename, mode = 'embed') {
+                const rawUrl = this.getRawPdfUrl(filename);
+                
+                switch (mode) {
+                    case 'embed':
+                        // Direct embed - works best in Chrome/Edge
+                        return rawUrl + '#toolbar=1&navpanes=1&scrollbar=1&view=FitH&zoom=page-width';
+                    
+                    case 'google':
+                        // Google Docs viewer
+                        return `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
+                    
+                    case 'mozilla':
+                        // Mozilla PDF.js viewer
+                        return `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(rawUrl)}`;
+                    
+                    default:
+                        return rawUrl;
+                }
+            }
+
+            // Render PDF list
             renderPdfList() {
                 const pdfList = document.getElementById('pdfList');
                 pdfList.innerHTML = PDF_RESOURCES.map(pdf => {
@@ -512,7 +589,7 @@
                 }).join('');
             }
 
-            // Setup event listeners
+            // Setup all event listeners
             setupEventListeners() {
                 // PDF item clicks
                 document.getElementById('pdfList').addEventListener('click', (e) => {
@@ -520,6 +597,14 @@
                     if (pdfItem) {
                         const pdfId = pdfItem.dataset.pdfId;
                         this.loadPdf(pdfId);
+                    }
+                });
+
+                // Viewer mode selector
+                document.getElementById('viewerModeSelector').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('mode-btn')) {
+                        const mode = e.target.dataset.mode;
+                        this.switchViewerMode(mode);
                     }
                 });
 
@@ -536,43 +621,86 @@
 
                 document.getElementById('newTabBtn').addEventListener('click', () => {
                     if (this.currentPdf) {
-                        window.open(this.getPdfUrl(this.currentPdf.filename), '_blank');
+                        const url = this.getViewerUrl(this.currentPdf.filename, this.currentViewerMode);
+                        window.open(url, '_blank');
                     }
                 });
             }
 
-            // Load and display PDF
+            // Load PDF with the current viewer mode
             loadPdf(pdfId) {
                 const pdf = PDF_RESOURCES.find(p => p.id === pdfId);
                 if (!pdf) return;
 
-                // Update UI state
                 this.setActivePdf(pdfId);
                 this.showLoading();
                 this.currentPdf = pdf;
 
-                // Update title
                 document.getElementById('currentPdfTitle').textContent = pdf.title;
 
-                // Load PDF in iframe
-                const pdfViewer = document.getElementById('pdfViewer');
-                const pdfUrl = this.getPdfUrl(pdf.filename);
+                this.loadPdfWithMode(pdf, this.currentViewerMode);
+            }
 
-                // Create PDF viewer URL (using PDF.js or browser default)
-                const viewerUrl = `${pdfUrl}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`;
-                
+            // Load PDF with specific viewer mode
+            loadPdfWithMode(pdf, mode) {
+                const pdfViewer = document.getElementById('pdfViewer');
+                const viewerUrl = this.getViewerUrl(pdf.filename, mode);
+
+                // Setup load handlers
                 pdfViewer.onload = () => {
-                    this.hideLoading();
-                    this.showViewer();
-                    this.showControls();
+                    setTimeout(() => {
+                        this.hideLoading();
+                        this.showViewer();
+                        this.showControls();
+                    }, 500);
                 };
 
                 pdfViewer.onerror = () => {
-                    this.hideLoading();
-                    this.showError('Failed to load PDF. Please try again.');
+                    this.handleLoadError();
                 };
 
+                // Load the PDF
                 pdfViewer.src = viewerUrl;
+
+                // Fallback timeout
+                setTimeout(() => {
+                    if (document.getElementById('loadingSpinner').classList.contains('show')) {
+                        this.hideLoading();
+                        this.showViewer();
+                        this.showControls();
+                    }
+                }, 8000);
+            }
+
+            // Switch viewer mode
+            switchViewerMode(mode) {
+                this.currentViewerMode = mode;
+                
+                // Update active button
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+
+                // Reload current PDF with new mode
+                if (this.currentPdf) {
+                    this.showLoading();
+                    this.loadPdfWithMode(this.currentPdf, mode);
+                }
+            }
+
+            // Handle loading errors
+            handleLoadError() {
+                console.log('PDF load failed, trying fallback...');
+                
+                if (this.currentViewerMode === 'embed') {
+                    this.switchViewerMode('google');
+                } else if (this.currentViewerMode === 'google') {
+                    this.switchViewerMode('mozilla');
+                } else {
+                    this.hideLoading();
+                    this.showError('Unable to load PDF. Please try downloading it instead.');
+                }
             }
 
             // Set active PDF in sidebar
@@ -580,73 +708,101 @@
                 document.querySelectorAll('.pdf-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                document.querySelector(`[data-pdf-id="${pdfId}"]`).classList.add('active');
+                const activeItem = document.querySelector(`[data-pdf-id="${pdfId}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
             }
 
-            // Show loading spinner
+            // Show/hide UI elements
             showLoading() {
                 document.getElementById('loadingSpinner').classList.add('show');
                 document.getElementById('pdfPlaceholder').style.display = 'none';
                 document.getElementById('pdfViewer').style.display = 'none';
             }
 
-            // Hide loading spinner
             hideLoading() {
                 document.getElementById('loadingSpinner').classList.remove('show');
             }
 
-            // Show PDF viewer
             showViewer() {
                 document.getElementById('pdfPlaceholder').style.display = 'none';
                 document.getElementById('pdfViewer').style.display = 'block';
             }
 
-            // Show control buttons
             showControls() {
+                document.getElementById('viewerModeSelector').style.display = 'flex';
                 document.getElementById('downloadBtn').style.display = 'flex';
                 document.getElementById('fullscreenBtn').style.display = 'flex';
                 document.getElementById('newTabBtn').style.display = 'flex';
             }
 
-            // Show error message
+            // Show error
             showError(message) {
                 const placeholder = document.getElementById('pdfPlaceholder');
                 placeholder.innerHTML = `
-                    <i class="fas fa-exclamation-triangle" style="color: var(--error);"></i>
-                    <h3 style="color: var(--error);">Error Loading PDF</h3>
-                    <p>${message}</p>
-                    <button class="btn btn-primary" onclick="location.reload()">
-                        <i class="fas fa-refresh"></i> Retry
-                    </button>
+                    <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 3rem; margin-bottom: var(--space-lg);"></i>
+                    <h3 style="color: #ef4444; margin-bottom: var(--space-md);">Unable to Load PDF</h3>
+                    <p style="margin-bottom: var(--space-lg); max-width: 400px;">${message}</p>
+                    <div style="display: flex; gap: var(--space-md); flex-wrap: wrap; justify-content: center;">
+                        <button class="btn btn-primary" onclick="window.pdfViewer.retryLoad()">
+                            <i class="fas fa-refresh"></i> Try Again
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.pdfViewer.downloadPdf(window.pdfViewer.currentPdf)">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                    </div>
                 `;
                 placeholder.style.display = 'flex';
                 document.getElementById('pdfViewer').style.display = 'none';
+                this.hideLoading();
+            }
+
+            // Retry loading
+            retryLoad() {
+                if (this.currentPdf) {
+                    this.loadPdf(this.currentPdf.id);
+                }
             }
 
             // Download PDF
             downloadPdf(pdf) {
+                if (!pdf) return;
+
                 const link = document.createElement('a');
-                link.href = this.getPdfUrl(pdf.filename);
+                link.href = this.getRawPdfUrl(pdf.filename);
                 link.download = pdf.filename;
                 link.target = '_blank';
+                
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
 
-                // Update download count
                 this.updateDownloadCount(pdf.id);
+                this.showStatusMessage(`"${pdf.title}" download started!`, 'success');
             }
 
             // Update download count
             updateDownloadCount(pdfId) {
                 this.downloadCounts[pdfId] = (this.downloadCounts[pdfId] || 0) + 1;
                 localStorage.setItem('pdf_download_counts', JSON.stringify(this.downloadCounts));
-                this.renderPdfList(); // Re-render to show updated count
+                this.renderPdfList();
             }
 
-            // Load download counts
-            loadDownloadCounts() {
-                // Download counts are loaded from localStorage in constructor
+            // Show status message
+            showStatusMessage(message, type = 'success') {
+                const statusMsg = document.createElement('div');
+                statusMsg.className = `status-message ${type}`;
+                statusMsg.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                document.body.appendChild(statusMsg);
+                
+                setTimeout(() => {
+                    statusMsg.remove();
+                }, 4000);
             }
 
             // Open fullscreen
@@ -662,9 +818,9 @@
             }
         }
 
-        // Initialize PDF viewer when page loads
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in (using your existing auth system)
+            // Auth check
             if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) {
                 window.location.href = 'login.html';
                 return;
@@ -673,18 +829,17 @@
             // Initialize PDF viewer
             window.pdfViewer = new PDFViewer();
 
-            // Show success message if coming from other pages
+            // Welcome message
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('welcome')) {
-                const successMsg = document.createElement('div');
-                successMsg.className = 'success-message';
-                successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Welcome to PDF Resources! Select any PDF to start reading.';
-                document.querySelector('.pdf-container').prepend(successMsg);
-                
                 setTimeout(() => {
-                    successMsg.remove();
-                }, 5000);
+                    window.pdfViewer.showStatusMessage('Welcome to PDF Resources! Select any PDF to start reading.', 'success');
+                }, 1000);
             }
+
+            console.log('🎯 PDF Viewer loaded successfully!');
+            console.log('📁 GitHub Repository:', `${PDF_CONFIG.githubUser}/${PDF_CONFIG.githubRepo}`);
+            console.log('📂 PDF Folder:', PDF_CONFIG.pdfFolder);
         });
     </script>
 </body>
