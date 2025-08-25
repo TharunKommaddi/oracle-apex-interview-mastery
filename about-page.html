@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - APEX Interview Mastery</title>
+    <meta name="description" content="Learn about APEX Interview Mastery - comprehensive Oracle APEX preparation platform for developers.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ℹ️</text></svg>">
+
+    <script src="assets/js/auth.js"></script>
+
+    <style>
+        .about-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-xl);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .about-section h2 {
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .about-section h2 i {
+            font-size: 1.5rem;
+            color: var(--primary-light);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-xl);
+            margin: var(--space-2xl) 0;
+        }
+
+        .feature-item {
+            background: var(--bg-tertiary);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .feature-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: var(--text-white);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: var(--space-lg);
+        }
+
+        .stats-showcase {
+            background: var(--bg-primary);
+            padding: var(--space-2xl);
+            border-radius: var(--radius-xl);
+            margin: var(--space-2xl) 0;
+            text-align: center;
+        }
+
+        .stats-showcase h3 {
+            color: var(--text-white);
+            margin-bottom: var(--space-xl);
+            font-size: 1.75rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding: var(--space-xl) 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: var(--space-2xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 12px;
+            bottom: -20px;
+            width: 2px;
+            background: var(--border-light);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-content h4 {
+            color: var(--primary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .team-section {
+            text-align: center;
+        }
+
+        .team-member {
+            background: var(--bg-tertiary);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            color: var(--text-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto var(--space-lg);
+        }
+
+        @media (max-width: 768px) {
+            .about-section {
+                padding: var(--space-xl) var(--space-lg);
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- USE THE UNIVERSAL NAVIGATION FROM PREVIOUS ARTIFACT HERE -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                APEX Interview Mastery
+            </a>
+            <nav class="main-nav">
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="nav-item"><a href="oracle-sql.html"><i class="fas fa-database"></i> Oracle SQL</a></li>
+                    <li class="nav-item"><a href="plsql.html"><i class="fas fa-code-branch"></i> PL/SQL</a></li>
+                    <li class="nav-item"><a href="oracle-apex.html"><i class="fas fa-layer-group"></i> Oracle APEX</a></li>
+                    <li class="nav-item"><a href="oracle-apex-quiz.html"><i class="fas fa-question-circle"></i> APEX Quiz</a></li>
+                    <li class="nav-item"><a href="pdf-resources.html"><i class="fas fa-file-pdf"></i> PDF Resources</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li class="nav-item"><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">About APEX Interview Mastery</h1>
+        <p class="page-subtitle">Empowering developers with comprehensive Oracle APEX preparation platform</p>
+    </section>
+
+    <div class="container">
+        <!-- Mission Section -->
+        <div class="about-section">
+            <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+            <p>APEX Interview Mastery is dedicated to helping Oracle developers excel in their career journey. We provide comprehensive, practical, and up-to-date interview preparation materials specifically designed for Oracle APEX developers and database professionals.</p>
+            <p>Our platform combines years of industry experience with modern learning techniques to deliver the most effective preparation experience. Whether you're a beginner starting your Oracle journey or an experienced developer looking to advance your career, we have the resources you need.</p>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Comprehensive Coverage</h3>
+                <p>Over 300+ carefully curated questions covering Oracle SQL, PL/SQL, APEX, and Frontend technologies with real-world scenarios and detailed explanations.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Industry Expert Content</h3>
+                <p>Content developed by experienced Oracle professionals who have conducted hundreds of technical interviews and worked on large-scale APEX applications.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Modern Learning Experience</h3>
+                <p>Responsive design, interactive quizzes, code examples, and mobile-friendly interface ensure you can learn anywhere, anytime.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Progressive Difficulty</h3>
+                <p>Questions are organized by difficulty levels from basic to advanced, allowing you to gradually build your expertise and confidence.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>Practical Code Examples</h3>
+                <p>Every concept is supported with working code examples, best practices, and real-world implementation scenarios you'll encounter in interviews.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Secure & Reliable</h3>
+                <p>Built with modern security practices, responsive design, and reliable infrastructure to ensure consistent learning experience.</p>
+            </div>
+        </div>
+
+        <!-- Stats Showcase -->
+        <div class="stats-showcase">
+            <h3>Trusted by Developers Worldwide</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">300+</div>
+                    <div class="stat-label">Interview Questions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Code Examples</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">Technology Areas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Free Access</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform Journey -->
+        <div class="about-section">
+            <h2><i class="fas fa-road"></i> Platform Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Concept & Research (2024 Q1)</h4>
+                        <p>Identified the gap in Oracle APEX interview preparation materials. Conducted extensive research on common interview patterns and developer pain points.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Content Development (2024 Q2)</h4>
+                        <p>Collaborated with industry experts to create comprehensive question banks, code examples, and detailed explanations covering all skill levels.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Platform Development (2024 Q3)</h4>
+                        <p>Built modern, responsive web platform with advanced search, filtering, and user authentication. Optimized for both desktop and mobile learning.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Launch & Community Building (2024 Q4)</h4>
+                        <p>Public launch with comprehensive question bank, PDF resources, interactive quizzes, and approval-based access system for quality control.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Continuous Improvement (Ongoing)</h4>
+                        <p>Regular updates with new questions, enhanced features, community feedback integration, and expansion to cover emerging Oracle technologies.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="about-section">
+            <h2><i class="fas fa-cogs"></i> Technology Stack</h2>
+            <p>Built with modern web technologies for optimal performance and user experience:</p>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fab fa-html5"></i>
+                    </div>
+                    <h4>Frontend</h4>
+                    <p>HTML5, CSS3, Vanilla JavaScript, Progressive Web App principles for fast, responsive interface.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h4>Data Management</h4>
+                    <p>Local Storage, Session Management, JSON-based content delivery for offline capability.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Security</h4>
+                    <p>Approval-based access system, session management, secure authentication workflow.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="about-section team-section">
+            <h2><i class="fas fa-users"></i> Our Team</h2>
+            <p style="margin-bottom: var(--space-xl);">Dedicated professionals committed to your success</p>
+            
+            <div class="team-member">
+                <div class="team-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3>Development Team</h3>
+                <p><strong>Oracle APEX Specialists</strong></p>
+                <p>Experienced developers with 10+ years in Oracle technologies, specializing in enterprise APEX applications and database development. Contributors include certified Oracle professionals who have conducted technical interviews for major companies.</p>
+            </div>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="about-section" style="text-align: center; background: var(--bg-primary); color: var(--text-white);">
+            <h2 style="color: var(--text-white);"><i class="fas fa-heart" style="color: var(--primary-light);"></i> Join Our Community</h2>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-xl);">Ready to advance your Oracle career? Request access to start your preparation journey.</p>
+            <div class="cta-buttons">
+                <a href="login.html" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i> Request Access
+                </a>
+                <a href="contact.html" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Empowering Oracle Developers Worldwide</h3>
+            <p>Join thousands of developers who trust APEX Interview Mastery for their career advancement</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="oracle-apex.html">APEX Questions</a>
+                <a href="oracle-sql.html">SQL Questions</a>
+                <a href="pdf-resources.html">PDF Resources</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Oracle APEX Interview Mastery. Built for developers by developers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

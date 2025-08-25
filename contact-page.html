@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - APEX Interview Mastery</title>
+    <meta name="description" content="Get in touch with APEX Interview Mastery team. Support, feedback, and inquiries welcome.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📧</text></svg>">
+
+    <script src="assets/js/auth.js"></script>
+
+    <style>
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-2xl);
+            margin: var(--space-2xl) 0;
+        }
+
+        .contact-info {
+            background: var(--bg-card);
+            padding: var(--space-2xl);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .contact-form-container {
+            background: var(--bg-card);
+            padding: var(--space-2xl);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            transition: all var(--transition-speed) ease;
+            border: 1px solid var(--border-light);
+        }
+
+        .contact-method:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .contact-method-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: var(--text-white);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .contact-method-info h3 {
+            margin-bottom: var(--space-xs);
+            color: var(--text-primary);
+        }
+
+        .contact-method-info p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .contact-method-info a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-method-info a:hover {
+            color: var(--primary-light);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: var(--space-md);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all var(--transition-speed) ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .contact-btn {
+            background: var(--primary);
+            color: var(--text-white);
+            border: none;
+            padding: var(--space-md) var(--space-2xl);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            width: 100%;
+            min-height: 50px;
+        }
+
+        .contact-btn:hover:not(:disabled) {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .contact-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .message {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            color: var(--success);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .faq-section {
+            background: var(--bg-card);
+            padding: var(--space-2xl);
+            border-radius: var(--radius-lg);
+            margin: var(--space-2xl) 0;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border-light);
+            padding: var(--space-lg) 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: var(--space-sm);
+        }
+
+        .faq-question:hover {
+            color: var(--primary);
+        }
+
+        .faq-question i {
+            transition: transform var(--transition-speed) ease;
+            color: var(--primary);
+        }
+
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            display: none;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-right: var(--space-xl);
+        }
+
+        .faq-answer.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 200px;
+            }
+        }
+
+        .response-time {
+            background: var(--bg-primary);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            margin: var(--space-2xl) 0;
+            color: var(--text-white);
+        }
+
+        .response-time h3 {
+            color: var(--text-white);
+            margin-bottom: var(--space-md);
+        }
+
+        .response-time p {
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-xl);
+            }
+            
+            .contact-info, .contact-form-container {
+                padding: var(--space-xl);
+            }
+            
+            .contact-method {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-md);
+            }
+            
+            .faq-answer {
+                padding-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation - Same as About page -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                APEX Interview Mastery
+            </a>
+            <nav class="main-nav">
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="nav-item"><a href="oracle-sql.html"><i class="fas fa-database"></i> Oracle SQL</a></li>
+                    <li class="nav-item"><a href="plsql.html"><i class="fas fa-code-branch"></i> PL/SQL</a></li>
+                    <li class="nav-item"><a href="oracle-apex.html"><i class="fas fa-layer-group"></i> Oracle APEX</a></li>
+                    <li class="nav-item"><a href="oracle-apex-quiz.html"><i class="fas fa-question-circle"></i> APEX Quiz</a></li>
+                    <li class="nav-item"><a href="pdf-resources.html"><i class="fas fa-file-pdf"></i> PDF Resources</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li class="nav-item"><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">Contact Us</h1>
+        <p class="page-subtitle">Get in touch with our team for support, feedback, or inquiries</p>
+    </section>
+
+    <div class="container">
+        <div class="contact-container">
+            <!-- Contact Information -->
+            <div class="contact-info">
+                <h2 style="margin-bottom: var(--space-xl); color: var(--primary);">
+                    <i class="fas fa-comments"></i> Get In Touch
+                </h2>
+                
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h3>Email Support</h3>
+                        <p>General inquiries and support</p>
+                        <a href="mailto:tharunkommaddi@gmail.com">tharunkommaddi@gmail.com</a>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h3>Access Requests</h3>
+                        <p>Platform access and account issues</p>
+                        <a href="login.html">Request Access Portal</a>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h3>Bug Reports</h3>
+                        <p>Technical issues and bug reports</p>
+                        <a href="mailto:tharunkommaddi@gmail.com?subject=Bug Report - APEX Interview Mastery">Report Issue</a>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h3>Feature Requests</h3>
+                        <p>Suggest new features or improvements</p>
+                        <a href="mailto:tharunkommaddi@gmail.com?subject=Feature Request - APEX Interview Mastery">Share Ideas</a>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h3>GitHub Repository</h3>
+                        <p>Source code and issue tracking</p>
+                        <a href="https://github.com/TharunKommaddi/oracle-apex-interview-mastery" target="_blank">View Repository</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form-container">
+                <h2 style="margin-bottom: var(--space-xl); color: var(--primary);">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </h2>
+                
+                <div class="message success-message" id="successMessage"></div>
+                <div class="message error-message" id="errorMessage"></div>
+                
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label class="form-label" for="fullName">Full Name *</label>
+                        <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address *</label>
+                        <input type="email" id="email" class="form-input" placeholder="Enter your email address" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="subject">Subject *</label>
+                        <select id="subject" class="form-select" required>
+                            <option value="">Select a subject</option>
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Access Request Support">Access Request Support</option>
+                            <option value="Technical Issue">Technical Issue</option>
+                            <option value="Bug Report">Bug Report</option>
+                            <option value="Feature Request">Feature Request</option>
+                            <option value="Content Feedback">Content Feedback</option>
+                            <option value="Partnership">Partnership Opportunity</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="message">Message *</label>
+                        <textarea id="message" class="form-textarea" placeholder="Enter your message here..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="userType">I am a... (Optional)</label>
+                        <select id="userType" class="form-select">
+                            <option value="">Select your profile</option>
+                            <option value="Student">Student Learning Oracle</option>
+                            <option value="Developer">Professional Developer</option>
+                            <option value="Job Seeker">Job Seeker</option>
+                            <option value="Interviewer">Technical Interviewer</option>
+                            <option value="Instructor">Instructor/Trainer</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="contact-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Response Time Info -->
+        <div class="response-time">
+            <h3><i class="fas fa-clock"></i> Response Time</h3>
+            <p>We typically respond to all inquiries within 24-48 hours during business days. For urgent access requests, please use the subject line "URGENT ACCESS REQUEST".</p>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 style="margin-bottom: var(--space-xl); color: var(--primary);">
+                <i class="fas fa-question-circle"></i> Frequently Asked Questions
+            </h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How do I get access to the platform?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Visit our <a href="login.html">Request Access</a> page and fill out the access request form. Our team manually reviews each request to ensure quality and security. You'll receive an email with your login credentials once approved.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How long does access approval take?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Access requests are typically reviewed and approved within 24-48 hours during business days. Requests submitted on weekends may take until the following Monday.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Is the platform completely free?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! APEX Interview Mastery is completely free to use. We believe in making high-quality Oracle education accessible to everyone. The approval process is only for maintaining platform quality and security.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Can I suggest new questions or improvements?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! We welcome community contributions. Use the "Feature Request" option in the contact form above or email us directly with your suggestions. We review all submissions and credit contributors when their content is added.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What if I forgot my login credentials?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Contact us using the form above with the subject "Access Request Support" and include your registered email address. We'll help you recover your access.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How often is new content added?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    We regularly update the platform with new questions, improved explanations, and additional resources. Major content updates are released monthly, with smaller improvements happening weekly.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Need Help? We're Here!</h3>
+            <p>Don't hesitate to reach out. Our team is committed to helping you succeed in your Oracle career journey.</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="oracle-apex.html">APEX Questions</a>
+                <a href="oracle-sql.html">SQL Questions</a>
+                <a href="pdf-resources.html">PDF Resources</a>
+                <a href="about.html">About</a>
+                <a href="login.html">Request Access</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Oracle APEX Interview Mastery. Built for developers by developers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // Initialize EmailJS
+        emailjs.init("ID6STN3otaCU5WKup");
+        
+        // Configuration
+        const CONTACT_CONFIG = {
+            serviceId: 'service_sd4wazn',
+            templateId: 'contact_form_template', // You'll need to create this template
+            adminEmail: 'tharunkommaddi@gmail.com'
+        };
+
+        // FAQ Toggle Function
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            
+            // Close all other FAQs
+            document.querySelectorAll('.faq-question').forEach(q => {
+                if (q !== element) {
+                    q.classList.remove('active');
+                    q.nextElementSibling.classList.remove('show');
+                }
+            });
+            
+            // Toggle current FAQ
+            element.classList.toggle('active');
+            answer.classList.toggle('show');
+        }
+
+        // Contact Form Submission
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalHTML = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div> Sending...';
+            
+            const formData = {
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value.trim(),
+                userType: document.getElementById('userType').value || 'Not specified',
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            };
+
+            // Basic validation
+            if (!formData.fullName || !formData.email || !formData.subject || !formData.message) {
+                showMessage('errorMessage', 'Please fill in all required fields.', true);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+                return;
+            }
+
+            try {
+                // Prepare email template parameters
+                const templateParams = {
+                    to_email: CONTACT_CONFIG.adminEmail,
+                    from_name: formData.fullName,
+                    from_email: formData.email,
+                    subject: `[APEX Interview Mastery] ${formData.subject}`,
+                    message: `
+Name: ${formData.fullName}
+Email: ${formData.email}
+Subject: ${formData.subject}
+User Type: ${formData.userType}
+Submitted: ${new Date(formData.timestamp).toLocaleString()}
+
+Message:
+${formData.message}
+
+---
+Technical Details:
+User Agent: ${formData.userAgent}
+Timestamp: ${formData.timestamp}
+                    `,
+                    reply_to: formData.email
+                };
+
+                // Send email
+                const response = await emailjs.send(
+                    CONTACT_CONFIG.serviceId,
+                    CONTACT_CONFIG.templateId,
+                    templateParams
+                );
+
+                if (response.status === 200) {
+                    showMessage('successMessage', `Thank you, ${formData.fullName}! Your message has been sent successfully. We'll respond within 24-48 hours.`);
+                    document.getElementById('contactForm').reset();
+                } else {
+                    throw new Error('Email service responded with non-200 status');
+                }
+
+            } catch (error) {
+                console.error('Contact form error:', error);
+                showMessage('errorMessage', 
+                    'Sorry, there was an error sending your message. Please try again or email us directly at tharunkommaddi@gmail.com', 
+                    true
+                );
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHTML;
+        });
+
+        // Show message function
+        function showMessage(elementId, message, isError = false) {
+            // Hide all messages first
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+
+            // Auto hide success messages after 8 seconds
+            if (!isError) {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 8000);
+            }
+
+            // Scroll to message
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Set current user email if logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+                const userEmail = Auth.getCurrentUserEmail();
+                if (userEmail) {
+                    document.getElementById('email').value = userEmail;
+                }
+            }
+
+            console.log('📧 Contact form loaded successfully!');
+            console.log('📨 EmailJS Service ID:', CONTACT_CONFIG.serviceId);
+        });
+    </script>
+</body>
+</html>
