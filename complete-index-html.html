@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle APEX Interview Mastery</title>
+    <meta name="description" content="Master Oracle APEX interviews with comprehensive preparation platform.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💻</text></svg>">
+
+    <script src="assets/js/auth.js"></script>
+</head>
+<body>
+    <!-- Updated Universal Navigation -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                APEX Interview Mastery
+            </a>
+            <nav class="main-nav">
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-sql.html">
+                            <i class="fas fa-database"></i> Oracle SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="plsql.html">
+                            <i class="fas fa-code-branch"></i> PL/SQL
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex.html">
+                            <i class="fas fa-layer-group"></i> Oracle APEX
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="oracle-apex-quiz.html">
+                            <i class="fas fa-question-circle"></i> APEX Quiz
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pdf-resources.html">
+                            <i class="fas fa-file-pdf"></i> PDF Resources
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-paint-brush"></i> Frontend <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="html-questions.html"><i class="fab fa-html5"></i> HTML</a></li>
+                            <li><a href="css-questions.html"><i class="fab fa-css3-alt"></i> CSS</a></li>
+                            <li><a href="javascript-questions.html"><i class="fab fa-js"></i> JavaScript</a></li>
+                            <li><a href="jquery-questions.html"><i class="fas fa-dollar-sign"></i> jQuery</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html">
+                            <i class="fas fa-info-circle"></i> About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html">
+                            <i class="fas fa-envelope"></i> Contact
+                        </a>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Admin Access (Hidden by default, shown to admin users) -->
+    <div id="admin-access" style="display: none;">
+        <a href="admin.html" class="admin-link">
+            <i class="fas fa-user-shield"></i> Admin Dashboard
+        </a>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Master Oracle APEX Interviews</h1>
+            <p>Comprehensive preparation platform with curated questions, real-world scenarios, and expert insights to ace your Oracle APEX developer interviews.</p>
+            <div class="cta-buttons">
+                <a href="oracle-sql.html" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i> Start Learning
+                </a>
+                <a href="oracle-apex.html" class="btn btn-secondary">
+                    <i class="fas fa-layer-group"></i> APEX Questions
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Enhanced Stats with Real Numbers -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">112+</div>
+                <div class="stat-label">Oracle SQL Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">30+</div>
+                <div class="stat-label">PL/SQL Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">116+</div>
+                <div class="stat-label">APEX Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">60+</div>
+                <div class="stat-label">Frontend Questions</div>
+            </div>
+        </div>
+
+        <!-- Enhanced Card Grid -->
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Oracle SQL Mastery</div>
+                        <div class="card-subtitle">Advanced database concepts</div>
+                    </div>
+                </div>
+                <p>Master Oracle SQL with comprehensive questions covering joins, subqueries, window functions, performance tuning, and complex real-world scenarios.</p>
+                <a href="oracle-sql.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Explore Oracle SQL
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">PL/SQL Programming</div>
+                        <div class="card-subtitle">Procedures, functions & packages</div>
+                    </div>
+                </div>
+                <p>Comprehensive PL/SQL preparation covering stored procedures, functions, packages, triggers, cursors, exception handling, and advanced programming concepts.</p>
+                <a href="plsql.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Learn PL/SQL
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Oracle APEX</div>
+                        <div class="card-subtitle">Low-code development platform</div>
+                    </div>
+                </div>
+                <p>Complete APEX preparation covering architecture, components, security, performance optimization, and real-world application development scenarios.</p>
+                <div class="btn-group">
+                    <a href="oracle-apex.html" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Master APEX
+                    </a>
+                    <a href="oracle-apex-quiz.html" class="btn btn-sm">
+                        <i class="fas fa-question-circle"></i> Take Quiz
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Frontend Technologies</div>
+                        <div class="card-subtitle">HTML, CSS, JavaScript & jQuery</div>
+                    </div>
+                </div>
+                <p>Essential frontend skills for APEX developers including responsive design, DOM manipulation, AJAX, modern JavaScript features, and jQuery integration.</p>
+                <div class="btn-group">
+                    <a href="html-questions.html" class="btn btn-sm">HTML</a>
+                    <a href="css-questions.html" class="btn btn-sm">CSS</a>
+                    <a href="javascript-questions.html" class="btn btn-sm">JavaScript</a>
+                    <a href="jquery-questions.html" class="btn btn-sm">jQuery</a>
+                </div>
+            </div>
+
+            <!-- New Resource Cards -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">PDF Resources</div>
+                        <div class="card-subtitle">Downloadable study materials</div>
+                    </div>
+                </div>
+                <p>Comprehensive PDF resources including cheat sheets, quick reference guides, and detailed explanations you can download and study offline.</p>
+                <a href="pdf-resources.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Browse PDFs
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Interactive Learning</div>
+                        <div class="card-subtitle">Quizzes and assessments</div>
+                    </div>
+                </div>
+                <p>Test your knowledge with interactive quizzes, track your progress, and identify areas that need more focus in your preparation journey.</p>
+                <div class="btn-group">
+                    <a href="oracle-apex-quiz.html" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Start Quiz
+                    </a>
+                    <a href="about.html" class="btn btn-sm">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Features Section -->
+        <div class="card" style="margin-top: var(--space-2xl); background: var(--bg-primary); color: var(--text-white); text-align: center;">
+            <h2 style="color: var(--text-white); margin-bottom: var(--space-lg);">
+                <i class="fas fa-star" style="color: var(--primary-light);"></i> 
+                Why Choose APEX Interview Mastery?
+            </h2>
+            <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-xl); margin-top: var(--space-xl);">
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; color: var(--primary-light); margin-bottom: var(--space-md);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 style="color: var(--text-white); margin-bottom: var(--space-sm);">100% Free</h3>
+                    <p style="color: var(--text-secondary);">Complete access to all resources without any hidden costs</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; color: var(--primary-light); margin-bottom: var(--space-md);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 style="color: var(--text-white); margin-bottom: var(--space-sm);">Updated Content</h3>
+                    <p style="color: var(--text-secondary);">Regular updates with latest Oracle features and interview trends</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; color: var(--primary-light); margin-bottom: var(--space-md);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 style="color: var(--text-white); margin-bottom: var(--space-sm);">Expert Curated</h3>
+                    <p style="color: var(--text-secondary);">Content reviewed by experienced Oracle professionals</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; color: var(--primary-light); margin-bottom: var(--space-md);">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 style="color: var(--text-white); margin-bottom: var(--space-sm);">Mobile Friendly</h3>
+                    <p style="color: var(--text-secondary);">Study anywhere with responsive design and offline PDFs</p>
+                </div>
+            </div>
+            <div style="margin-top: var(--space-2xl);">
+                <a href="login.html" class="btn btn-primary" style="margin-right: var(--space-md);">
+                    <i class="fas fa-rocket"></i> Get Started Now
+                </a>
+                <a href="about.html" class="btn btn-secondary">
+                    <i class="fas fa-info-circle"></i> Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Ready to Master Oracle APEX Interviews?</h3>
+            <p>This comprehensive platform covers everything you need to succeed in Oracle APEX developer interviews with hands-on examples and real-world scenarios.</p>
+            <div class="footer-links">
+                <a href="oracle-sql.html">
+                    <i class="fas fa-database"></i> SQL Questions
+                </a>
+                <a href="oracle-apex.html">
+                    <i class="fas fa-layer-group"></i> APEX Questions
+                </a>
+                <a href="pdf-resources.html">
+                    <i class="fas fa-file-pdf"></i> PDF Resources
+                </a>
+                <a href="oracle-apex-quiz.html">
+                    <i class="fas fa-question-circle"></i> Take Quiz
+                </a>
+                <a href="about.html">
+                    <i class="fas fa-info-circle"></i> About Us
+                </a>
+                <a href="contact.html">
+                    <i class="fas fa-envelope"></i> Contact
+                </a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Oracle APEX Interview Mastery. Built for developers by developers.</p>
+                <p style="margin-top: var(--space-sm); font-size: 0.8rem; color: var(--text-muted);">
+                    <i class="fas fa-shield-alt"></i> Secure • 
+                    <i class="fas fa-mobile-alt"></i> Mobile Friendly • 
+                    <i class="fas fa-heart" style="color: var(--primary);"></i> Made with Love
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+    
+    <!-- Navigation active state handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get current page filename
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active class to current page link
+            const currentPageLink = document.querySelector(`.nav-item a[href="${currentPage}"]`);
+            if (currentPageLink) {
+                currentPageLink.classList.add('active');
+            }
+            
+            // Handle dropdown active states
+            document.querySelectorAll('.dropdown-menu a').forEach(link => {
+                const linkHref = link.getAttribute('href');
+                if (linkHref === currentPage) {
+                    link.classList.add('active');
+                    // Also highlight the parent dropdown
+                    const dropdown = link.closest('.dropdown');
+                    if (dropdown) {
+                        dropdown.querySelector('.dropdown-toggle').classList.add('active');
+                    }
+                }
+            });
+            
+            // Show admin link for admin users
+            if (typeof Auth !== 'undefined' && Auth.getAccessType() === 'admin') {
+                const adminAccess = document.getElementById('admin-access');
+                if (adminAccess) {
+                    adminAccess.style.display = 'block';
+                    // Add to mobile menu as well
+                    const navMenu = document.querySelector('.nav-menu');
+                    const adminItem = document.createElement('li');
+                    adminItem.className = 'nav-item admin-item';
+                    adminItem.innerHTML = '<a href="admin.html"><i class="fas fa-user-shield"></i> Admin Dashboard</a>';
+                    navMenu.appendChild(adminItem);
+                }
+            }
+
+            // Enhanced mobile menu functionality
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileToggle && navMenu) {
+                // Enhanced toggle functionality
+                mobileToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isOpen = navMenu.classList.contains('active');
+                    
+                    if (isOpen) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    }
+                });
+
+                // Close menu when clicking menu items (except dropdowns)
+                navMenu.addEventListener('click', (e) => {
+                    const clickedLink = e.target.closest('a');
+                    const isDropdownToggle = clickedLink && clickedLink.classList.contains('dropdown-toggle');
+                    
+                    if (clickedLink && !isDropdownToggle && clickedLink.getAttribute('href') !== '#') {
+                        setTimeout(() => closeMobileMenu(), 300);
+                    }
+                });
+
+                // Enhanced dropdown functionality for mobile
+                document.querySelectorAll('.nav-item.dropdown').forEach(dropdown => {
+                    const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                    if (dropdownToggle) {
+                        dropdownToggle.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            
+                            if (window.innerWidth <= 992) {
+                                // Close other dropdowns
+                                document.querySelectorAll('.nav-item.dropdown').forEach(otherDropdown => {
+                                    if (otherDropdown !== dropdown) {
+                                        otherDropdown.classList.remove('active');
+                                    }
+                                });
+                                
+                                // Toggle current dropdown
+                                dropdown.classList.toggle('active');
+                            }
+                        });
+                    }
+                });
+
+                // Close menu on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                        closeMobileMenu();
+                    }
+                });
+
+                // Close menu on outside click
+                document.addEventListener('click', (e) => {
+                    const isClickInsideNav = e.target.closest('.main-nav');
+                    if (!isClickInsideNav && navMenu.classList.contains('active')) {
+                        closeMobileMenu();
+                    }
+                });
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 992 && navMenu.classList.contains('active')) {
+                        closeMobileMenu();
+                    }
+                });
+            }
+
+            function openMobileMenu() {
+                const mobileToggle = document.querySelector('.mobile-menu-toggle');
+                const navMenu = document.querySelector('.nav-menu');
+                
+                navMenu.classList.add('active');
+                mobileToggle.classList.add('active');
+                document.body.classList.add('menu-open');
+                mobileToggle.setAttribute('aria-expanded', 'true');
+
+                const icon = mobileToggle.querySelector('i');
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+
+            function closeMobileMenu() {
+                const mobileToggle = document.querySelector('.mobile-menu-toggle');
+                const navMenu = document.querySelector('.nav-menu');
+                
+                navMenu.classList.remove('active');
+                mobileToggle.classList.remove('active');
+                document.body.classList.remove('menu-open');
+                mobileToggle.setAttribute('aria-expanded', 'false');
+                
+                const icon = mobileToggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+                
+                // Close all mobile dropdowns
+                document.querySelectorAll('.nav-item.dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
